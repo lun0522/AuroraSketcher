@@ -46,12 +46,9 @@
 		BD915577207868BC00D7C7DF /* khrplatform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = khrplatform.h; sourceTree = "<group>"; };
 		BD915579207868BC00D7C7DF /* glad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glad.h; sourceTree = "<group>"; };
 		BD91557B207868BC00D7C7DF /* glad.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = glad.c; sourceTree = "<group>"; };
-		BD91558020786AC200D7C7DF /* earthmap.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = earthmap.jpg; sourceTree = "<group>"; };
 		BD91558220786BB400D7C7DF /* model.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = model.hpp; sourceTree = "<group>"; };
 		BD91558320786BB400D7C7DF /* loader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = loader.hpp; sourceTree = "<group>"; };
 		BD91558420786BB400D7C7DF /* mesh.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = mesh.hpp; sourceTree = "<group>"; };
-		BD91558520786BD000D7C7DF /* bumpmap.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = bumpmap.jpg; sourceTree = "<group>"; };
-		BD91558620786BE100D7C7DF /* normalmap.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = normalmap.png; sourceTree = "<group>"; };
 		BD91558720786C3A00D7C7DF /* mesh.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mesh.cpp; sourceTree = "<group>"; };
 		BD91558820786C3A00D7C7DF /* model.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = model.cpp; sourceTree = "<group>"; };
 		BD91558920786C3A00D7C7DF /* loader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = loader.cpp; sourceTree = "<group>"; };
@@ -70,6 +67,11 @@
 		BDB57A442079131B00C1DFC6 /* universe.vs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = universe.vs; sourceTree = "<group>"; };
 		BDB57A452079131C00C1DFC6 /* universe.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = universe.fs; sourceTree = "<group>"; };
 		BDB57A4720791B3400C1DFC6 /* skybox.obj */ = {isa = PBXFileReference; lastKnownFileType = text; path = skybox.obj; sourceTree = "<group>"; };
+		BDC69E57207A47980005232C /* rectangle.vs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = rectangle.vs; sourceTree = "<group>"; };
+		BDC69E58207A47A60005232C /* rectangle.gs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = rectangle.gs; sourceTree = "<group>"; };
+		BDC69E59207A47B00005232C /* rectangle.fs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = rectangle.fs; sourceTree = "<group>"; };
+		BDC69E5C207A7EFF0005232C /* earth_night.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = earth_night.jpg; sourceTree = "<group>"; };
+		BDC69E5D207A7F4D0005232C /* earth_day.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = earth_day.jpg; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -163,6 +165,9 @@
 				BD9155982078764100D7C7DF /* earth.fs */,
 				BDB57A442079131B00C1DFC6 /* universe.vs */,
 				BDB57A452079131C00C1DFC6 /* universe.fs */,
+				BDC69E57207A47980005232C /* rectangle.vs */,
+				BDC69E58207A47A60005232C /* rectangle.gs */,
+				BDC69E59207A47B00005232C /* rectangle.fs */,
 			);
 			path = shaders;
 			sourceTree = "<group>";
@@ -223,9 +228,8 @@
 			isa = PBXGroup;
 			children = (
 				BD91559920787E9900D7C7DF /* earth.obj */,
-				BD91558020786AC200D7C7DF /* earthmap.jpg */,
-				BD91558520786BD000D7C7DF /* bumpmap.jpg */,
-				BD91558620786BE100D7C7DF /* normalmap.png */,
+				BDC69E5D207A7F4D0005232C /* earth_day.jpg */,
+				BDC69E5C207A7EFF0005232C /* earth_night.jpg */,
 			);
 			path = earth;
 			sourceTree = "<group>";
