@@ -12,7 +12,7 @@
 
 int main(int argc, const char * argv[]) {
     try {
-        DrawPath drawPath;
+        DrawPath drawPath("/Users/lun/Desktop/Code/Aurora/CPP-OpenGL/Paint My Aurora/");
         drawPath.mainLoop();
         glfwTerminate();
         return 0;

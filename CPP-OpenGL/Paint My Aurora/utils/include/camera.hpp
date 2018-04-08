@@ -33,8 +33,8 @@ public:
            const float sensitivity = 0.05f);
     void setScreenSize(const int screenWidth, const int screenHeight);
     void processMouseMove(const double xPos, const double yPos);
-    void processMouseScroll(const double yOffset);
-    void processKeyboardInput(const CameraMoveDirection direction, const float deltaTime);
+    void processMouseScroll(const double yOffset, const double minVal, const double maxVal);
+    void processKeyboardInput(const CameraMoveDirection direction, const float distance);
     const glm::vec3& getPosition() const;
     const glm::vec3& getDirection() const;
     const glm::mat4& getViewMatrix() const;

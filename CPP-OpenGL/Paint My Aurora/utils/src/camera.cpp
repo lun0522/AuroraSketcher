@@ -65,27 +65,26 @@ void Camera::processMouseMove(const double xPos, const double yPos) {
     updateViewMatrix();
 }
 
-void Camera::processMouseScroll(const double yOffset) {
+void Camera::processMouseScroll(const double yOffset, const double minVal, const double maxVal) {
     fov += yOffset;
-    if (fov < 1.0f) fov = 1.0f;
-    else if (fov > 60.0f) fov = 60.0f;
+    if (fov < minVal) fov = minVal;
+    else if (fov > maxVal) fov = maxVal;
     updateProjectionMatrix();
 }
 
-void Camera::processKeyboardInput(const CameraMoveDirection direction, const float deltaTime) {
-    float speed = deltaTime * 10.0f;
+void Camera::processKeyboardInput(const CameraMoveDirection direction, const float distance) {
     switch (direction) {
         case UP:
-            position += front * speed;
+            position += front * distance;
             break;
         case DOWN:
-            position -= front * speed;
+            position -= front * distance;
             break;
         case LEFT:
-            position += right * speed;
+            position += right * distance;
             break;
         case RIGHT:
-            position -= right * speed;
+            position -= right * distance;
             break;
         default:
         throw runtime_error("Invalid direction");

@@ -67,14 +67,16 @@ GLuint Loader::loadTexture(const string& path, const bool gammaCorrection) {
     return texture;
 }
 
-GLuint Loader::loadCubemap(const string& path, const vector<string>& filename) {
+GLuint Loader::loadCubemap(const string& path,
+                           const vector<string>& filename,
+                           const bool gammaCorrection) {
     GLuint texture;
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_CUBE_MAP, texture);
     
     for (int i = 0; i < filename.size(); ++i) {
         string filepath = path + '/' + filename[i];
-        loadImage(filepath, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, false, true);
+        loadImage(filepath, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, false, gammaCorrection);
     }
     
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -83,7 +85,7 @@ GLuint Loader::loadCubemap(const string& path, const vector<string>& filename) {
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     
-    glBindTexture(GL_TEXTURE_2D, 0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
     return texture;
 }
 

@@ -61,6 +61,15 @@
 		BD9155972078762900D7C7DF /* earth.vs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = earth.vs; sourceTree = "<group>"; };
 		BD9155982078764100D7C7DF /* earth.fs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = earth.fs; sourceTree = "<group>"; };
 		BD91559920787E9900D7C7DF /* earth.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = earth.obj; sourceTree = "<group>"; };
+		BDB57A3E20790FB400C1DFC6 /* NegativeX.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = NegativeX.jpg; sourceTree = "<group>"; };
+		BDB57A3F20790FB500C1DFC6 /* PositiveZ.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = PositiveZ.jpg; sourceTree = "<group>"; };
+		BDB57A4020790FB500C1DFC6 /* PositiveY.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = PositiveY.jpg; sourceTree = "<group>"; };
+		BDB57A4120790FB500C1DFC6 /* NegativeZ.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = NegativeZ.jpg; sourceTree = "<group>"; };
+		BDB57A4220790FB500C1DFC6 /* PositiveX.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = PositiveX.jpg; sourceTree = "<group>"; };
+		BDB57A4320790FB500C1DFC6 /* NegativeY.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = NegativeY.jpg; sourceTree = "<group>"; };
+		BDB57A442079131B00C1DFC6 /* universe.vs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = universe.vs; sourceTree = "<group>"; };
+		BDB57A452079131C00C1DFC6 /* universe.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = universe.fs; sourceTree = "<group>"; };
+		BDB57A4720791B3400C1DFC6 /* skybox.obj */ = {isa = PBXFileReference; lastKnownFileType = text; path = skybox.obj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -152,6 +161,8 @@
 			children = (
 				BD9155972078762900D7C7DF /* earth.vs */,
 				BD9155982078764100D7C7DF /* earth.fs */,
+				BDB57A442079131B00C1DFC6 /* universe.vs */,
+				BDB57A452079131C00C1DFC6 /* universe.fs */,
 			);
 			path = shaders;
 			sourceTree = "<group>";
@@ -202,6 +213,7 @@
 		BD91557D20786A2500D7C7DF /* texture */ = {
 			isa = PBXGroup;
 			children = (
+				BDB57A3D20790D8B00C1DFC6 /* universe */,
 				BD91557F20786AB100D7C7DF /* earth */,
 			);
 			path = texture;
@@ -252,6 +264,20 @@
 				BD915593207871ED00D7C7DF /* drawpath.cpp */,
 			);
 			path = src;
+			sourceTree = "<group>";
+		};
+		BDB57A3D20790D8B00C1DFC6 /* universe */ = {
+			isa = PBXGroup;
+			children = (
+				BDB57A4720791B3400C1DFC6 /* skybox.obj */,
+				BDB57A4220790FB500C1DFC6 /* PositiveX.jpg */,
+				BDB57A3E20790FB400C1DFC6 /* NegativeX.jpg */,
+				BDB57A4020790FB500C1DFC6 /* PositiveY.jpg */,
+				BDB57A4320790FB500C1DFC6 /* NegativeY.jpg */,
+				BDB57A3F20790FB500C1DFC6 /* PositiveZ.jpg */,
+				BDB57A4120790FB500C1DFC6 /* NegativeZ.jpg */,
+			);
+			path = universe;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
