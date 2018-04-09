@@ -19,6 +19,7 @@
 #include "camera.hpp"
 #include "loader.hpp"
 #include "model.hpp"
+#include "crspline.hpp"
 #include "drawpath.hpp"
 
 using std::string;
@@ -28,8 +29,12 @@ using glm::vec3;
 using glm::vec4;
 using glm::mat4;
 
+const float EARTH_RADIUS = 6378.1f;
+const float AURORA_HEIGHT = 100.0f;
+const float AURORA_RELA_HEIGHT = (EARTH_RADIUS + AURORA_HEIGHT) / EARTH_RADIUS;
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
+const float INERTIAL_COEFF = 1.5f;
 
 vec3 cameraPos(0.0f, 0.0f, 30.0f);
 Camera camera(cameraPos);
@@ -37,13 +42,7 @@ vec2 originalSize, currentSize, retinaRatio;
 vec2 mousePos, posOffset;
 bool isNight = true;
 bool isClicking = false;
-bool cameraDidUpdate = true;
-
-void updateMousePos(GLFWwindow *window) {
-    double xPos, yPos;
-    glfwGetCursorPos(window, &xPos, &yPos);
-    mousePos = vec2(xPos, yPos);
-}
+bool shouldUpdateCamera = false;
 
 void framebufferSizeCallback(GLFWwindow *window, int width, int height) {
     currentSize = vec2(width, height);
@@ -55,13 +54,18 @@ void framebufferSizeCallback(GLFWwindow *window, int width, int height) {
 }
 
 void mouseClickCallback(GLFWwindow *window, int button, int action, int mods) {
-    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) isClicking = true;
-    else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) isClicking = false;
+    if (button == GLFW_MOUSE_BUTTON_LEFT) isClicking = action == GLFW_PRESS;
 }
 
 void mouseScrollCallback(GLFWwindow *window, double xPos, double yPos) {
-    camera.processMouseScroll(yPos, 10.0f, 45.0f);
-    cameraDidUpdate = true;
+    camera.processMouseScroll(yPos, 15.0f, 45.0f);
+    shouldUpdateCamera = true;
+}
+
+void DrawPath::updateMousePos() {
+    double xPos, yPos;
+    glfwGetCursorPos(window, &xPos, &yPos);
+    mousePos = vec2(xPos, yPos);
 }
 
 void DrawPath::processKeyboardInput() {
@@ -112,6 +116,17 @@ directory(directory) {
 
 void DrawPath::mainLoop() {
     // ------------------------------------
+    // store shared matrices
+    
+    GLuint uboMatrices;
+    glGenBuffers(1, &uboMatrices);
+    glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+    glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(mat4), NULL, GL_DYNAMIC_DRAW); // no data yet
+    glBindBufferBase(GL_UNIFORM_BUFFER, 0, uboMatrices); // or use glBindBufferRange for flexibility
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    
+    
+    // ------------------------------------
     // earth
     
     Model earth(directory + "texture/earth/earth.obj");
@@ -120,18 +135,27 @@ void DrawPath::mainLoop() {
     Shader earthShader(directory + "interface/shaders/earth.vs",
                        directory + "interface/shaders/earth.fs");
     
+    auto initialRotation = [] (mat4& model) {
+        // north pole will be in the center of the frame
+        model = glm::rotate(model, glm::radians( 90.0f), vec3( 1.0f,  0.0f, 0.0f));
+        model = glm::rotate(model, glm::radians(-90.0f), vec3( 0.0f, -1.0f, 0.0f));
+    };
+    
     earthShader.use();
     
     mat4 earthModel(1.0f);
     earthModel = glm::scale(earthModel, vec3(10.0f)); // scaling at last is okay for sphere
-    earthModel = glm::rotate(earthModel, glm::radians(90.0f), vec3(1.0f, 0.0f, 0.0f));
-    earthModel = glm::rotate(earthModel, glm::radians(-100.0f), vec3(0.0f, -1.0f, 0.0f));
-    earthShader.setMat4("model", earthModel);
+    initialRotation(earthModel);
     
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, earthDayTex);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, earthNightTex);
+    
+    // earth model is shared with the spline
+    glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(mat4), glm::value_ptr(earthModel));
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
     
     
     // ------------------------------------
@@ -154,8 +178,7 @@ void DrawPath::mainLoop() {
     
     mat4 universeModel(1.0f);
     universeModel = glm::translate(universeModel, camera.getPosition());
-    universeModel = glm::rotate(universeModel, glm::radians(90.0f), vec3(1.0f, 0.0f, 0.0f));
-    universeModel = glm::rotate(universeModel, glm::radians(-100.0f), vec3(0.0f, -1.0f, 0.0f));
+    initialRotation(universeModel);
     universeShader.setMat4("model", universeModel);
     
     glActiveTexture(GL_TEXTURE2);
@@ -164,26 +187,27 @@ void DrawPath::mainLoop() {
     
     
     // ------------------------------------
-    // point
+    // aurora path
     
-    Shader pointShader(directory + "interface/shaders/rectangle.vs",
-                       directory + "interface/shaders/rectangle.fs",
-                       directory + "interface/shaders/rectangle.gs");
+    std::vector<vec3> controlPoints {
+        vec3( 1.0f,  1.5f,  0.0f),
+        vec3( 0.0f,  1.5f,  1.0f),
+        vec3(-1.0f,  1.5f,  0.0f),
+        vec3( 0.0f,  1.5f, -1.0f),
+    };
+    for (vec3& point : controlPoints) {
+        point = glm::normalize(point) * AURORA_RELA_HEIGHT;
+    }
+    CRSpline spline(controlPoints, 0.1f);
+    
+    Shader pointShader(directory + "interface/shaders/spline.vs",
+                       directory + "interface/shaders/spline.fs",
+                       directory + "interface/shaders/spline.gs");
     pointShader.use();
-    pointShader.setMat4("model", earthModel);
     pointShader.setFloat("ratio", currentSize.x / currentSize.y);
     
-    GLuint VAO, VBO;
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    float vertices[] = { 0.0f, 0.0f, 0.0f };
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertices), (void *)0);
-    glEnableVertexAttribArray(0);
-    glBindVertexArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    Shader curveShader(directory + "interface/shaders/spline.vs",
+                       directory + "interface/shaders/spline.fs");
     
     
     // ------------------------------------
@@ -193,37 +217,59 @@ void DrawPath::mainLoop() {
     glEnable(GL_CULL_FACE);
     
     int frameCount = 0;
-    double lastTime = glfwGetTime();
-    mat4 worldToNDC, ndcToWorld, ndcToEarth, worldToEarth;
-    vec3 cameraEarth, lastIntersect;
-    bool didIntersect = false, earthDidUpdate = true;
+    float rotAngle = 0.0f, scrollStartTime = 0.0f, lastTime = glfwGetTime();
+    mat4 worldToNDC, ndcToWorld, ndcToEarth, worldToEarth = glm::inverse(earthModel);
+    vec3 lastIntersect, rotAxis, cameraEarth = worldToEarth * vec4(cameraPos, 1.0);;
+    bool didIntersect = false, isScrolling = false;
+    
+    auto updateCamera = [&] () {
+        worldToNDC = camera.getProjectionMatrix() * camera.getViewMatrix();
+        ndcToWorld = glm::inverse(worldToNDC);
+        ndcToEarth = worldToEarth * ndcToWorld;
+        
+        // worldToNDC i.e. viewProjection is shared everywhere
+        glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+        glBufferSubData(GL_UNIFORM_BUFFER, sizeof(mat4), sizeof(mat4), glm::value_ptr(worldToNDC));
+        glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    };
+    updateCamera(); // initialize matrices declared above
+    
+    auto rotateScene = [&] (const float angle, const vec3& axis) {
+        earthModel = glm::rotate(earthModel, angle, axis);
+        worldToEarth = glm::inverse(earthModel);
+        ndcToEarth = worldToEarth * ndcToWorld;
+        cameraEarth = worldToEarth * vec4(cameraPos, 1.0);
+        
+        glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+        glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(mat4), glm::value_ptr(earthModel));
+        glBindBuffer(GL_UNIFORM_BUFFER, 0);
+        
+        universeModel = glm::rotate(universeModel, angle, axis);
+        universeShader.use();
+        universeShader.setMat4("model", universeModel);
+    };
+    
+    auto scrollOnCondition = [&] () {
+        // start scrolling if rotated at the last frame, and:
+        // (1) the click point is out of the earth at this frame, or
+        // (2) the mouse key is released in this frame
+        if (didIntersect) {
+            isScrolling = true;
+            scrollStartTime = glfwGetTime();
+        }
+        didIntersect = false;
+    };
     
     while (!glfwWindowShouldClose(window)) {
         processKeyboardInput();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
-        if (earthDidUpdate) {
-            earthDidUpdate = false;
-            worldToEarth = glm::inverse(earthModel);
-            ndcToEarth = worldToEarth * ndcToWorld;
-            cameraEarth = worldToEarth * vec4(cameraPos, 1.0);
+        if (shouldUpdateCamera) {
+            shouldUpdateCamera = false;
+            updateCamera();
         }
         
-        if (cameraDidUpdate) {
-            cameraDidUpdate = false;
-            worldToNDC = camera.getProjectionMatrix() * camera.getViewMatrix();
-            ndcToWorld = glm::inverse(worldToNDC);
-            ndcToEarth = worldToEarth * ndcToWorld;
-            
-            earthShader.use();
-            earthShader.setMat4("viewProjection", worldToNDC);
-            universeShader.use();
-            universeShader.setMat4("viewProjection", worldToNDC);
-            pointShader.use();
-            pointShader.setMat4("viewProjection", worldToNDC);
-        }
-        
-        updateMousePos(window);
+        updateMousePos();
         if (isClicking && frameCount > 0) {
             vec2 clickScreen = (mousePos * retinaRatio + posOffset) / originalSize; // [0.0, 1.0]
             clickScreen = clickScreen * 2.0f - 1.0f; // [-1.0, 1.0]
@@ -234,59 +280,60 @@ void DrawPath::mainLoop() {
             vec3 intersectPos, intersectNorm;
             if (glm::intersectRaySphere(cameraEarth, glm::normalize(vec3(clickEarth) - cameraEarth),
                                         vec3(0.0f), 1.0f, intersectPos, intersectNorm)) {
-                glBindBuffer(GL_ARRAY_BUFFER, VBO);
-                glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), glm::value_ptr(intersectPos), GL_DYNAMIC_DRAW);
-                
                 if (didIntersect) {
                     float angle = glm::angle(lastIntersect, intersectPos);
                     if (angle > 3E-3) {
-                        vec3 axis = glm::cross(lastIntersect, intersectPos);
-                        
-                        earthModel = glm::rotate(earthModel, angle, axis);
-                        earthShader.use();
-                        earthShader.setMat4("model", earthModel);
-                        pointShader.use();
-                        pointShader.setMat4("model", earthModel);
-                        
-                        universeModel = glm::rotate(universeModel, angle, axis);
-                        universeShader.use();
-                        universeShader.setMat4("model", universeModel);
-                        
-                        earthDidUpdate = true;
+                        rotAngle = angle;
+                        rotAxis = glm::cross(lastIntersect, intersectPos);
+                        rotateScene(rotAngle, rotAxis);
                     }
                 } else {
                     // update lastIntersect only at the first intersection
                     // the intersection point on the earth should not change
                     // until the click stops
                     lastIntersect = intersectPos;
+                    didIntersect = true;
+                    rotAngle = 0.0f; // important when a click happens during inertial scrolling
                 }
                 
-                didIntersect = true;
+                isScrolling = false; // stop inertial scrolling
             } else {
-                didIntersect = false;
+                scrollOnCondition();
             }
         } else {
-            didIntersect = false;
+            scrollOnCondition();
+        }
+        
+        if (isScrolling) {
+            float elapsedTime = glfwGetTime() - scrollStartTime;
+            if (rotAngle == 0.0f || elapsedTime > INERTIAL_COEFF) {
+                isScrolling = false;
+            } else {
+                elapsedTime /= INERTIAL_COEFF;
+                float frac = (1.0f - elapsedTime * elapsedTime);
+                rotateScene(rotAngle * frac, rotAxis);
+            }
         }
         
         earthShader.use();
         earthShader.setInt("texture0", isNight? 1 : 0);
         earth.draw(earthShader);
         
-        glDepthFunc(GL_LEQUAL);
-        
         pointShader.use();
-        glBindVertexArray(VAO);
-        glDrawArrays(GL_POINTS, 0, 1);
-        universe.draw(universeShader);
+        spline.drawControlPoints();
         
+        curveShader.use();
+        spline.drawSplineCurve();
+        
+        glDepthFunc(GL_LEQUAL);
+        universe.draw(universeShader);
         glDepthFunc(GL_LESS);
         
         glfwSwapBuffers(window); // use color buffer to draw
         glfwPollEvents(); // check events (keyboard, mouse, ...)
         
         ++frameCount;
-        double currentTime = glfwGetTime();
+        float currentTime = glfwGetTime();
         if (currentTime - lastTime > 1.0) {
             std::cout <<  "FPS: " << std::to_string(frameCount) << std::endl;
             frameCount = 0;

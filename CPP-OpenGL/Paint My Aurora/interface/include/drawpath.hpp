@@ -16,6 +16,7 @@
 class DrawPath {
     std::string directory;
     GLFWwindow *window;
+    void updateMousePos();
     void processKeyboardInput();
 public:
     DrawPath(const char *directory);

@@ -5,7 +5,10 @@ layout (location = 0) in vec3 aPos;
 out vec3 texCoord;
 
 uniform mat4 model;
-uniform mat4 viewProjection;
+layout (std140) uniform Matrices {
+    uniform mat4 earthModel;
+    uniform mat4 viewProjection;
+};
 
 void main() {
     gl_Position = viewProjection * model * vec4(aPos, 1.0);

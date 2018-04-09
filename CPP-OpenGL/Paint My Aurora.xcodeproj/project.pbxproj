@@ -19,6 +19,7 @@
 		BD91558C20786C3A00D7C7DF /* loader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD91558920786C3A00D7C7DF /* loader.cpp */; };
 		BD91558E20786CE500D7C7DF /* libassimp.4.1.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BD91558D20786CE500D7C7DF /* libassimp.4.1.0.dylib */; };
 		BD915595207871ED00D7C7DF /* drawpath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD915593207871ED00D7C7DF /* drawpath.cpp */; };
+		BDA97B01207BABA20054AAB3 /* crspline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BDA97AFF207BABA20054AAB3 /* crspline.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -35,6 +36,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		BD4278D8207ACC2600D6E174 /* earth_night.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = earth_night.jpg; sourceTree = "<group>"; };
+		BD4278D9207ACC2600D6E174 /* earth_day.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = earth_day.jpg; sourceTree = "<group>"; };
 		BD91521020785B7A00D7C7DF /* Paint My Aurora */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Paint My Aurora"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BD91521320785B7A00D7C7DF /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		BD91521B20785C5400D7C7DF /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
@@ -58,6 +61,8 @@
 		BD9155972078762900D7C7DF /* earth.vs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = earth.vs; sourceTree = "<group>"; };
 		BD9155982078764100D7C7DF /* earth.fs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = earth.fs; sourceTree = "<group>"; };
 		BD91559920787E9900D7C7DF /* earth.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = earth.obj; sourceTree = "<group>"; };
+		BDA97AFF207BABA20054AAB3 /* crspline.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = crspline.cpp; sourceTree = "<group>"; };
+		BDA97B00207BABA20054AAB3 /* crspline.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = crspline.hpp; sourceTree = "<group>"; };
 		BDB57A3E20790FB400C1DFC6 /* NegativeX.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = NegativeX.jpg; sourceTree = "<group>"; };
 		BDB57A3F20790FB500C1DFC6 /* PositiveZ.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = PositiveZ.jpg; sourceTree = "<group>"; };
 		BDB57A4020790FB500C1DFC6 /* PositiveY.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = PositiveY.jpg; sourceTree = "<group>"; };
@@ -67,11 +72,9 @@
 		BDB57A442079131B00C1DFC6 /* universe.vs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = universe.vs; sourceTree = "<group>"; };
 		BDB57A452079131C00C1DFC6 /* universe.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = universe.fs; sourceTree = "<group>"; };
 		BDB57A4720791B3400C1DFC6 /* skybox.obj */ = {isa = PBXFileReference; lastKnownFileType = text; path = skybox.obj; sourceTree = "<group>"; };
-		BDC69E57207A47980005232C /* rectangle.vs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = rectangle.vs; sourceTree = "<group>"; };
-		BDC69E58207A47A60005232C /* rectangle.gs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = rectangle.gs; sourceTree = "<group>"; };
-		BDC69E59207A47B00005232C /* rectangle.fs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = rectangle.fs; sourceTree = "<group>"; };
-		BDC69E5C207A7EFF0005232C /* earth_night.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = earth_night.jpg; sourceTree = "<group>"; };
-		BDC69E5D207A7F4D0005232C /* earth_day.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = earth_day.jpg; sourceTree = "<group>"; };
+		BDC69E57207A47980005232C /* spline.vs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = spline.vs; sourceTree = "<group>"; };
+		BDC69E58207A47A60005232C /* spline.gs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = spline.gs; sourceTree = "<group>"; };
+		BDC69E59207A47B00005232C /* spline.fs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = spline.fs; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -165,9 +168,9 @@
 				BD9155982078764100D7C7DF /* earth.fs */,
 				BDB57A442079131B00C1DFC6 /* universe.vs */,
 				BDB57A452079131C00C1DFC6 /* universe.fs */,
-				BDC69E57207A47980005232C /* rectangle.vs */,
-				BDC69E58207A47A60005232C /* rectangle.gs */,
-				BDC69E59207A47B00005232C /* rectangle.fs */,
+				BDC69E57207A47980005232C /* spline.vs */,
+				BDC69E58207A47A60005232C /* spline.gs */,
+				BDC69E59207A47B00005232C /* spline.fs */,
 			);
 			path = shaders;
 			sourceTree = "<group>";
@@ -228,8 +231,8 @@
 			isa = PBXGroup;
 			children = (
 				BD91559920787E9900D7C7DF /* earth.obj */,
-				BDC69E5D207A7F4D0005232C /* earth_day.jpg */,
-				BDC69E5C207A7EFF0005232C /* earth_night.jpg */,
+				BD4278D9207ACC2600D6E174 /* earth_day.jpg */,
+				BD4278D8207ACC2600D6E174 /* earth_night.jpg */,
 			);
 			path = earth;
 			sourceTree = "<group>";
@@ -257,6 +260,7 @@
 			isa = PBXGroup;
 			children = (
 				BD915594207871ED00D7C7DF /* drawpath.hpp */,
+				BDA97B00207BABA20054AAB3 /* crspline.hpp */,
 			);
 			path = include;
 			sourceTree = "<group>";
@@ -266,6 +270,7 @@
 			children = (
 				BD91521320785B7A00D7C7DF /* main.cpp */,
 				BD915593207871ED00D7C7DF /* drawpath.cpp */,
+				BDA97AFF207BABA20054AAB3 /* crspline.cpp */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -347,6 +352,7 @@
 				BD91533F2078622700D7C7DF /* camera.cpp in Sources */,
 				BD91558A20786C3A00D7C7DF /* mesh.cpp in Sources */,
 				BD91557C207868BC00D7C7DF /* glad.c in Sources */,
+				BDA97B01207BABA20054AAB3 /* crspline.cpp in Sources */,
 				BD91558B20786C3A00D7C7DF /* model.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
