@@ -40,10 +40,15 @@ public:
     Mesh(const std::vector<Vertex>& vertices,
          const std::vector<GLuint>& indices,
          const std::vector<Texture>& textures);
-    void draw(const Shader& shader, const GLuint texOffset, const bool loadTexture) const;
-    void drawInstanced(const Shader& shader, const GLuint amount, const GLuint texOffset, const bool loadTexture) const;
+    void draw(const Shader& shader,
+              const GLuint texOffset,
+              const bool loadTexture) const;
+    void drawInstanced(const Shader& shader,
+                       const GLuint amount,
+                       const GLuint texOffset,
+                       const bool loadTexture) const;
     template<typename Func>
-    void appendData(Func& func) const {
+    void appendData(const Func& func) const {
         glBindVertexArray(VAO);
         func();
         glBindVertexArray(0);

@@ -44,15 +44,23 @@ void CRSpline::tessellate(const vec3& p0,
         return glm::angle(l0l1, l1l2) < epsilon && glm::angle(l1l2, l2l3) < epsilon;
     };
     
-    if (++depth == MAX_RECURSSION_DEPTH || isSmooth(p0, p1, p2, p3)) {
-        curvePoints.push_back(p0);
+    if (++depth == MAX_RECURSSION_DEPTH || glm::distance(p0, p3) < 1E-2 || isSmooth(p0, p1, p2, p3)) {
+        curvePoints.push_back(glm::normalize(p0) * height);
     } else {
-        vec3 p10 = glm::mix(p0, p1, 0.5f);
-        vec3 p11 = glm::mix(p1, p2, 0.5f);
-        vec3 p12 = glm::mix(p2, p3, 0.5f);
-        vec3 p20 = glm::mix(p10, p11, 0.5f);
-        vec3 p21 = glm::mix(p11, p12, 0.5f);
-        vec3 p30 = glm::mix(p20, p21, 0.5f);
+        // modified from glm::slerp
+        auto middlePoint = [] (const vec3& l0, const vec3& l1) -> vec3 {
+            float cosAlpha = dot(glm::normalize(l0), glm::normalize(l1));
+            float alpha = acos(cosAlpha);
+            float t = sin(0.5f * alpha) / sin(alpha);
+            return (l0 + l1) * t;
+        };
+        
+        vec3 p10 = middlePoint(p0, p1);
+        vec3 p11 = middlePoint(p1, p2);
+        vec3 p12 = middlePoint(p2, p3);
+        vec3 p20 = middlePoint(p10, p11);
+        vec3 p21 = middlePoint(p11, p12);
+        vec3 p30 = middlePoint(p20, p21);
         tessellate(p0, p10, p20, p30, depth);
         tessellate(p30, p21, p12, p3, depth);
     }
@@ -75,10 +83,13 @@ void CRSpline::constructSpline() {
                        controlPoints[(i+1) % controlPoints.size()],
                        controlPoints[(i+2) % controlPoints.size()],
                        controlPoints[(i+3) % controlPoints.size()]);
+    curvePoints.push_back(curvePoints[0]); // close the curve
 }
 
-CRSpline::CRSpline(const std::vector<glm::vec3>& ctrlPoints, const float epsilon):
-controlPoints(ctrlPoints), epsilon(epsilon) {
+CRSpline::CRSpline(const std::vector<glm::vec3>& ctrlPoints,
+                   const float height,
+                   const float epsilon):
+controlPoints(ctrlPoints), height(height), epsilon(epsilon) {
     if (controlPoints.size() < MIN_NUM_CONTROL_POINTS)
         throw runtime_error("No enough control points");
     
@@ -93,8 +104,14 @@ controlPoints(ctrlPoints), epsilon(epsilon) {
     };
     
     constructSpline();
+    std::for_each(controlPoints.begin(), controlPoints.end(),
+                  [=] (vec3& point) { point *= height; });
     configure(pointVAO, pointVBO, controlPoints);
     configure(curveVAO, curveVBO, curvePoints);
+}
+
+void CRSpline::processMouseClick(glm::vec3& pos) {
+    
 }
 
 void CRSpline::drawControlPoints() const {

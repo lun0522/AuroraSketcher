@@ -49,9 +49,7 @@ Mesh Model::processMesh(const aiMesh *mesh, const aiScene *scene) {
     vector<GLuint> indices;
     for (int i = 0; i < mesh->mNumFaces; ++i) {
         aiFace face = mesh->mFaces[i];
-        for (int j = 0; j < face.mNumIndices; ++j) {
-            indices.push_back(face.mIndices[j]);
-        }
+        indices.insert(indices.end(), face.mIndices, face.mIndices + face.mNumIndices);
     }
     
     // load textures
@@ -90,8 +88,7 @@ vector<Texture> Model::loadMaterialTextures(const aiMaterial *material,
     return textures;
 }
 
-Model::Model(const string& objPath,
-             const string& texPath):
+Model::Model(const string& objPath, const string& texPath):
 directory(texPath) {
     Assimp::Importer importer;
     // other useful options:
@@ -106,14 +103,19 @@ directory(texPath) {
     processNode(scene->mRootNode, scene);
 }
 
-void Model::draw(const Shader& shader, const GLuint texOffset, const bool loadTexture) const {
+void Model::draw(const Shader& shader,
+                 const GLuint texOffset,
+                 const bool loadTexture) const {
     shader.use();
-    for (int i = 0; i < meshes.size(); ++i)
-        meshes[i].draw(shader, texOffset, loadTexture);
+    std::for_each(meshes.begin(), meshes.end(), [&] (Mesh const& mesh)
+    { mesh.draw(shader, texOffset, loadTexture); });
 }
 
-void Model::drawInstanced(const Shader& shader, const GLuint amount, const GLuint texOffset, const bool loadTexture) const {
+void Model::drawInstanced(const Shader& shader,
+                          const GLuint amount,
+                          const GLuint texOffset,
+                          const bool loadTexture) const {
     shader.use();
-    for (int i = 0; i < meshes.size(); ++i)
-        meshes[i].drawInstanced(shader, amount, texOffset, loadTexture);
+    std::for_each(meshes.begin(), meshes.end(), [&] (Mesh const& mesh)
+    { mesh.drawInstanced(shader, amount, texOffset, loadTexture); });
 }
