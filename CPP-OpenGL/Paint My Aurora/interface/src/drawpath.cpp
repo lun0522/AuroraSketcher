@@ -29,12 +29,14 @@ using glm::vec3;
 using glm::vec4;
 using glm::mat4;
 
-const float EARTH_RADIUS = 6378.1f;
-const float AURORA_HEIGHT = 100.0f;
-const float AURORA_RELA_HEIGHT = (EARTH_RADIUS + AURORA_HEIGHT) / EARTH_RADIUS;
-const int SCREEN_WIDTH = 800;
-const int SCREEN_HEIGHT = 600;
-const float INERTIAL_COEFF = 1.5f;
+static const float EARTH_RADIUS = 6378.1f;
+static const float AURORA_HEIGHT = 100.0f;
+static const float AURORA_RELA_HEIGHT = (EARTH_RADIUS + AURORA_HEIGHT) / EARTH_RADIUS;
+static const int SCREEN_WIDTH = 800;
+static const int SCREEN_HEIGHT = 600;
+static const float CTRL_POINT_SIDE_LENGTH = 20.0f;
+static const float CLICK_CTRL_POINT_TOLERANCE = 5.0f;
+static const float INERTIAL_COEFF = 1.5f;
 
 vec3 cameraPos(0.0f, 0.0f, 30.0f);
 Camera camera(cameraPos);
@@ -42,6 +44,7 @@ vec2 originalSize, currentSize, retinaRatio;
 vec2 mousePos, posOffset;
 bool isNight = true;
 bool isClicking = false;
+bool didClickRight = false;
 bool enableRotation = true;
 bool shouldUpdateCamera = false;
 
@@ -55,7 +58,12 @@ void framebufferSizeCallback(GLFWwindow *window, int width, int height) {
 }
 
 void mouseClickCallback(GLFWwindow *window, int button, int action, int mods) {
-    if (button == GLFW_MOUSE_BUTTON_LEFT) isClicking = action == GLFW_PRESS;
+    if (button == GLFW_MOUSE_BUTTON_LEFT) {
+        isClicking = action == GLFW_PRESS;
+    } else if (button == GLFW_MOUSE_BUTTON_RIGHT) {
+        if (action == GLFW_PRESS) isClicking = didClickRight = true;
+        // do nothing when the right mouse key is released
+    }
 }
 
 void mouseScrollCallback(GLFWwindow *window, double xPos, double yPos) {
@@ -207,10 +215,15 @@ void DrawPath::mainLoop() {
                        directory + "interface/shaders/spline.fs",
                        directory + "interface/shaders/spline.gs");
     pointShader.use();
-    pointShader.setFloat("ratio", currentSize.x / currentSize.y);
+    pointShader.setFloat("height", AURORA_RELA_HEIGHT);
+    vec2 sideLengthNDC = vec2(CTRL_POINT_SIDE_LENGTH) / originalSize * 2.0f;
+    pointShader.setVec2("sideLength", sideLengthNDC);
+    sideLengthNDC *= (CTRL_POINT_SIDE_LENGTH + CLICK_CTRL_POINT_TOLERANCE) / CTRL_POINT_SIDE_LENGTH;
     
     Shader curveShader(directory + "interface/shaders/spline.vs",
                        directory + "interface/shaders/spline.fs");
+    curveShader.use();
+    curveShader.setFloat("height", AURORA_RELA_HEIGHT);
     
     
     // ------------------------------------
@@ -222,7 +235,8 @@ void DrawPath::mainLoop() {
     int frameCount = 0;
     float rotAngle = 0.0f, scrollStartTime = 0.0f, lastTime = glfwGetTime();
     mat4 worldToNDC, ndcToWorld, ndcToEarth, worldToEarth = glm::inverse(earthModel);
-    vec3 lastIntersect, rotAxis, cameraEarth = worldToEarth * vec4(cameraPos, 1.0);;
+    vec3 lastIntersect, rotAxis, cameraEarth = worldToEarth * vec4(cameraPos, 1.0);
+    vec2 clickNDC;
     bool shouldRotate = false, shouldScroll = false;
     
     auto updateCamera = [&] () {
@@ -236,6 +250,22 @@ void DrawPath::mainLoop() {
         glBindBuffer(GL_UNIFORM_BUFFER, 0);
     };
     updateCamera(); // initialize matrices declared above
+    
+    auto renderScene = [&] () {
+        earthShader.use();
+        earthShader.setInt("texture0", isNight? 1 : 0);
+        earth.draw(earthShader);
+        
+        pointShader.use();
+        spline.drawControlPoints();
+        
+        curveShader.use();
+        spline.drawSplineCurve();
+        
+        glDepthFunc(GL_LEQUAL);
+        universe.draw(universeShader);
+        glDepthFunc(GL_LESS);
+    };
     
     auto rotateScene = [&] (const float angle, const vec3& axis) {
         earthModel = glm::rotate(earthModel, angle, axis);
@@ -252,27 +282,56 @@ void DrawPath::mainLoop() {
         universeShader.setMat4("model", universeModel);
     };
     
+    auto getIntersection = [&] (vec3& position, vec3& normal, const float radius = 1.0f) -> bool {
+        vec2 clickScreen = (mousePos * retinaRatio + posOffset) / originalSize; // [0.0, 1.0]
+        clickNDC = clickScreen * 2.0f - 1.0f; // [-1.0, 1.0]
+        clickNDC.y *= -1.0f; // flip y coordinate
+        vec4 clickEarth = ndcToEarth * vec4(clickNDC, 1.0f, 1.0f);
+        clickEarth /= clickEarth.w; // important! perpective matrix may not be normalized
+        return glm::intersectRaySphere(cameraEarth, glm::normalize(vec3(clickEarth) - cameraEarth),
+                                       vec3(0.0f), radius, position, normal);
+    };
+    
+    auto didClickEarth = [&] (vec3& position) {
+        if (shouldRotate) {
+            float angle = glm::angle(lastIntersect, position);
+            if (angle > 3E-3) {
+                rotAngle = angle;
+                rotAxis = glm::cross(lastIntersect, position);
+                rotateScene(rotAngle, rotAxis);
+            } else {
+                rotAngle = 0.0f;
+            }
+        } else {
+            // update lastIntersect only at the first intersection
+            // the intersection point on the earth should not change
+            // until the click stops
+            lastIntersect = position;
+            shouldRotate = true;
+            rotAngle = 0.0f; // important when a click happens during inertial scrolling
+        }
+    };
+    
     auto scrollOnCondition = [&] () {
-        if (!shouldScroll) {
-            // start scrolling if rotated at the last frame, and:
+        if (shouldScroll) {
+            float elapsedTime = glfwGetTime() - scrollStartTime;
+            if (rotAngle == 0.0f || elapsedTime > INERTIAL_COEFF) {
+                shouldScroll = false;
+            } else {
+                elapsedTime /= INERTIAL_COEFF;
+                float frac = (1.0f - elapsedTime * elapsedTime);
+                rotateScene(rotAngle * frac, rotAxis);
+            }
+        } else {
+            // start scrolling if did rotate at the last frame, and:
             // (1) the click point is out of the earth at this frame, or
-            // (2) the mouse key is released in this frame
+            // (2) the mouse key is released at this frame
             if (shouldRotate) {
                 shouldScroll = true;
                 scrollStartTime = glfwGetTime();
             }
             shouldRotate = false;
         }
-    };
-    
-    auto getIntersection = [&] (vec3& pos, vec3& norm) -> bool {
-        vec2 clickScreen = (mousePos * retinaRatio + posOffset) / originalSize; // [0.0, 1.0]
-        clickScreen = clickScreen * 2.0f - 1.0f; // [-1.0, 1.0]
-        clickScreen.y *= -1.0f; // flip y coordinate
-        vec4 clickEarth = ndcToEarth * vec4(clickScreen, 1.0f, 1.0f);
-        clickEarth /= clickEarth.w; // important! perpective matrix may not be normalized
-        return glm::intersectRaySphere(cameraEarth, glm::normalize(vec3(clickEarth) - cameraEarth),
-                                       vec3(0.0f), 1.0f, pos, norm);
     };
     
     while (!glfwWindowShouldClose(window)) {
@@ -284,65 +343,33 @@ void DrawPath::mainLoop() {
             updateCamera();
         }
         
-        if (!isClicking) {
-            scrollOnCondition();
-        } else {
+        bool mayScroll = true, mayOnCurve = false;
+        if (isClicking) {
             updateMousePos();
-            vec3 intersectPos, intersectNorm;
-            bool didIntersect = getIntersection(intersectPos, intersectNorm);
+            vec3 position, normal;
+            bool didIntersect = getIntersection(position, normal);
             
-            if (!enableRotation) {
-                spline.processMouseClick(intersectPos);
-                scrollOnCondition();
-            } else {
-                if (!didIntersect) {
-                    scrollOnCondition();
-                } else {
-                    if (shouldRotate) {
-                        float angle = glm::angle(lastIntersect, intersectPos);
-                        if (angle > 3E-3) {
-                            rotAngle = angle;
-                            rotAxis = glm::cross(lastIntersect, intersectPos);
-                            rotateScene(rotAngle, rotAxis);
-                        }
-                    } else {
-                        // update lastIntersect only at the first intersection
-                        // the intersection point on the earth should not change
-                        // until the click stops
-                        lastIntersect = intersectPos;
-                        shouldRotate = true;
-                        rotAngle = 0.0f; // important when a click happens during inertial scrolling
-                    }
-                    shouldScroll = false; // stop inertial scrolling
-                }
+            if (!enableRotation) { // editing mode
+                // need the intersection point on the atmosphere instead
+                getIntersection(position, normal, AURORA_RELA_HEIGHT);
+                spline.processMouseClick(!didClickRight, position, clickNDC, sideLengthNDC, glm::inverse(ndcToEarth));
+                mayOnCurve = true;
+            } else if (didIntersect) {
+                didClickEarth(position);
+                mayScroll = false;
             }
         }
         
-        if (shouldScroll) {
-            float elapsedTime = glfwGetTime() - scrollStartTime;
-            if (rotAngle == 0.0f || elapsedTime > INERTIAL_COEFF) {
-                shouldScroll = false;
-            } else {
-                elapsedTime /= INERTIAL_COEFF;
-                float frac = (1.0f - elapsedTime * elapsedTime);
-                rotateScene(rotAngle * frac, rotAxis);
-            }
-        }
+        if (didClickRight) isClicking = didClickRight = false;
         
-        earthShader.use();
-        earthShader.setInt("texture0", isNight? 1 : 0);
-        earth.draw(earthShader);
+        if (!mayOnCurve) spline.deselectControlPoint();
         
-        pointShader.use();
-        spline.drawControlPoints();
+        // not consider inertial scrolling only when
+        // rotation is enabled and intersection is detected
+        if (mayScroll) scrollOnCondition();
+        else shouldScroll = false; // stop inertial scrolling
         
-        curveShader.use();
-        spline.drawSplineCurve();
-        
-        glDepthFunc(GL_LEQUAL);
-        universe.draw(universeShader);
-        glDepthFunc(GL_LESS);
-        
+        renderScene();
         glfwSwapBuffers(window); // use color buffer to draw
         glfwPollEvents(); // check events (keyboard, mouse, ...)
         

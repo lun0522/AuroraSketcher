@@ -24,6 +24,7 @@ public:
     GLuint getUniform(const std::string &name) const;
     void setInt(const std::string &name, const int value) const;
     void setFloat(const std::string &name, const float value) const;
+    void setVec2(const std::string &name, const glm::vec2& value) const;
     void setVec3(const std::string &name, const GLfloat v0, const GLfloat v1, const GLfloat v2) const;
     void setVec3(const std::string &name, const glm::vec3& value) const;
     void setMat3(const std::string &name, const glm::mat3& value) const;

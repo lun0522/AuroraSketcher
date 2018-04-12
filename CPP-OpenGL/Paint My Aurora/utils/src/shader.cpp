@@ -124,6 +124,10 @@ void Shader::setFloat(const string &name, const float value) const {
     glUniform1f(getUniform(name), value);
 }
 
+void Shader::setVec2(const std::string &name, const glm::vec2& value) const {
+    glUniform2fv(getUniform(name), 1, glm::value_ptr(value));
+}
+
 void Shader::setVec3(const std::string &name, const GLfloat v0, const GLfloat v1, const GLfloat v2) const {
     glUniform3f(getUniform(name), v0, v1, v2);
 }

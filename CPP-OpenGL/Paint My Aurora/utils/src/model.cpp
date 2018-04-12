@@ -108,7 +108,7 @@ void Model::draw(const Shader& shader,
                  const bool loadTexture) const {
     shader.use();
     std::for_each(meshes.begin(), meshes.end(), [&] (Mesh const& mesh)
-    { mesh.draw(shader, texOffset, loadTexture); });
+                  { mesh.draw(shader, texOffset, loadTexture); });
 }
 
 void Model::drawInstanced(const Shader& shader,
@@ -117,5 +117,5 @@ void Model::drawInstanced(const Shader& shader,
                           const bool loadTexture) const {
     shader.use();
     std::for_each(meshes.begin(), meshes.end(), [&] (Mesh const& mesh)
-    { mesh.drawInstanced(shader, amount, texOffset, loadTexture); });
+                  { mesh.drawInstanced(shader, amount, texOffset, loadTexture); });
 }

@@ -14,6 +14,7 @@
 #include <glad/glad.h>
 
 class CRSpline {
+    int selected;
     float height, epsilon;
     GLuint pointVAO, pointVBO, curveVAO, curveVBO;
     std::vector<glm::vec3> controlPoints, curvePoints;
@@ -31,7 +32,12 @@ public:
     CRSpline(const std::vector<glm::vec3>& ctrlPoints,
              const float height = 1.0f,
              const float epsilon = 1E-2);
-    void processMouseClick(glm::vec3& pos);
+    void deselectControlPoint();
+    void processMouseClick(const bool isLeft,
+                           const glm::vec3& posObject,
+                           const glm::vec2& posNDC,
+                           const glm::vec2& sideLengthNDC,
+                           const glm::mat4& objectToNDC);
     void drawControlPoints() const;
     void drawSplineCurve() const;
 };
