@@ -14,20 +14,13 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
+#include "loader.hpp"
 #include "shader.hpp"
-
-enum TextureType { DIFFUSE, SPECULAR, REFLECTION };
 
 struct Vertex {
     glm::vec3 position;
     glm::vec3 normal;
     glm::vec2 texCoord;
-};
-
-struct Texture {
-    GLuint id;
-    TextureType type;
-    std::string path;
 };
 
 class Mesh {

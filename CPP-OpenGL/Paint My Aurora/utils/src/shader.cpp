@@ -116,6 +116,10 @@ GLuint Shader::getUniform(const string &name) const {
     else throw runtime_error("Cannot find uniform " + name);
 }
 
+void Shader::setBool(const std::string &name, const bool value) const {
+    setInt(name, value);
+}
+
 void Shader::setInt(const string &name, const int value) const {
     glUniform1i(getUniform(name), value);
 }

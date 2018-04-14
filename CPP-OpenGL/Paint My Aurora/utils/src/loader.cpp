@@ -7,13 +7,18 @@
 //
 
 #include <stdexcept>
+#include <unordered_map>
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
 #include "loader.hpp"
 
 using std::vector;
 using std::string;
+
+static std::unordered_map<string, GLuint> loadedTexture;
 
 GLuint loadImage(const string& path,
                  const GLenum target,
@@ -55,16 +60,22 @@ GLuint loadImage(const string& path,
 }
 
 GLuint Loader::loadTexture(const string& path, const bool gammaCorrection) {
-    GLuint texture = loadImage(path, GL_TEXTURE_2D, true, gammaCorrection);
-    
-    glGenerateMipmap(GL_TEXTURE_2D); // automatically generate all required minmaps
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    
-    glBindTexture(GL_TEXTURE_2D, 0);
-    return texture;
+    auto loaded = loadedTexture.find(path);
+    if (loaded == loadedTexture.end()) {
+        GLuint texture = loadImage(path, GL_TEXTURE_2D, true, gammaCorrection);
+        
+        glGenerateMipmap(GL_TEXTURE_2D); // automatically generate all required minmaps
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        
+        loadedTexture.insert({ path, texture });
+        return texture;
+    } else {
+        return loaded->second;
+    }
 }
 
 GLuint Loader::loadCubemap(const string& path,
@@ -84,8 +95,8 @@ GLuint Loader::loadCubemap(const string& path,
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+    
     return texture;
 }
 

@@ -19,6 +19,7 @@
 #include "camera.hpp"
 #include "loader.hpp"
 #include "model.hpp"
+#include "button.hpp"
 #include "crspline.hpp"
 #include "drawpath.hpp"
 
@@ -35,7 +36,7 @@ static const float AURORA_RELA_HEIGHT = (EARTH_RADIUS + AURORA_HEIGHT) / EARTH_R
 static const int SCREEN_WIDTH = 800;
 static const int SCREEN_HEIGHT = 600;
 static const float CTRL_POINT_SIDE_LENGTH = 20.0f;
-static const float CLICK_CTRL_POINT_TOLERANCE = 5.0f;
+static const float CLICK_CTRL_POINT_TOLERANCE = 10.0f;
 static const float INERTIAL_COEFF = 1.5f;
 
 vec3 cameraPos(0.0f, 0.0f, 30.0f);
@@ -63,6 +64,7 @@ void mouseClickCallback(GLFWwindow *window, int button, int action, int mods) {
     } else if (button == GLFW_MOUSE_BUTTON_RIGHT) {
         if (action == GLFW_PRESS) isClicking = didClickRight = true;
         // do nothing when the right mouse key is released
+        // these two boolean states will be reset after intersection detection
     }
 }
 
@@ -141,6 +143,22 @@ void DrawPath::mainLoop() {
     
     
     // ------------------------------------
+    // buttons
+    
+    Button lockButton("Lock Earth",
+                      directory + "texture/button/quad.obj",
+                      directory + "texture/button/rect_rounded.jpg",
+                      directory + "interface/shaders/button.vs",
+                      directory + "interface/shaders/button.fs",
+                      vec2(0.1f, 0.06f), vec2(0.16f, 0.08f),
+                      vec3(0.0f, 0.0f, 1.0f), vec3(0.0f, 0.0f, 1.0f) * 0.3f);
+    
+    std::vector<Button> buttons = {
+        lockButton,
+    };
+    
+    
+    // ------------------------------------
     // earth
     
     Model earth(directory + "texture/earth/earth.obj");
@@ -160,11 +178,6 @@ void DrawPath::mainLoop() {
     mat4 earthModel(1.0f);
     earthModel = glm::scale(earthModel, vec3(10.0f)); // scaling at last is okay for sphere
     initialRotation(earthModel);
-    
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, earthDayTex);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, earthNightTex);
     
     // earth model is shared with the spline
     glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
@@ -195,10 +208,6 @@ void DrawPath::mainLoop() {
     initialRotation(universeModel);
     universeShader.setMat4("model", universeModel);
     
-    glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, universeTex);
-    universeShader.setInt("cubemap0", 2);
-    
     
     // ------------------------------------
     // aurora path
@@ -215,15 +224,12 @@ void DrawPath::mainLoop() {
                        directory + "interface/shaders/spline.fs",
                        directory + "interface/shaders/spline.gs");
     pointShader.use();
-    pointShader.setFloat("height", AURORA_RELA_HEIGHT);
     vec2 sideLengthNDC = vec2(CTRL_POINT_SIDE_LENGTH) / originalSize * 2.0f;
     pointShader.setVec2("sideLength", sideLengthNDC);
     sideLengthNDC *= (CTRL_POINT_SIDE_LENGTH + CLICK_CTRL_POINT_TOLERANCE) / CTRL_POINT_SIDE_LENGTH;
     
     Shader curveShader(directory + "interface/shaders/spline.vs",
                        directory + "interface/shaders/spline.fs");
-    curveShader.use();
-    curveShader.setFloat("height", AURORA_RELA_HEIGHT);
     
     
     // ------------------------------------
@@ -231,6 +237,8 @@ void DrawPath::mainLoop() {
     
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
     int frameCount = 0;
     float rotAngle = 0.0f, scrollStartTime = 0.0f, lastTime = glfwGetTime();
@@ -253,7 +261,9 @@ void DrawPath::mainLoop() {
     
     auto renderScene = [&] () {
         earthShader.use();
-        earthShader.setInt("texture0", isNight? 1 : 0);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, isNight ? earthNightTex : earthDayTex);
+        earthShader.setInt("texture0", 0);
         earth.draw(earthShader);
         
         pointShader.use();
@@ -262,7 +272,14 @@ void DrawPath::mainLoop() {
         curveShader.use();
         spline.drawSplineCurve();
         
+        std::for_each(buttons.begin(), buttons.end(),
+                      [] (Button& button) { button.draw(); });
+        
         glDepthFunc(GL_LEQUAL);
+        universeShader.use();
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, universeTex);
+        universeShader.setInt("cubemap", 0);
         universe.draw(universeShader);
         glDepthFunc(GL_LESS);
     };
@@ -292,7 +309,7 @@ void DrawPath::mainLoop() {
                                        vec3(0.0f), radius, position, normal);
     };
     
-    auto didClickEarth = [&] (vec3& position) {
+    auto didClickEarth = [&] (const vec3& position) {
         if (shouldRotate) {
             float angle = glm::angle(lastIntersect, position);
             if (angle > 3E-3) {

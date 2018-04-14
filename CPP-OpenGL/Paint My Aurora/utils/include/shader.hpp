@@ -22,6 +22,7 @@ public:
            const std::string& geometryPath = "");
     void use() const;
     GLuint getUniform(const std::string &name) const;
+    void setBool(const std::string &name, const bool value) const;
     void setInt(const std::string &name, const int value) const;
     void setFloat(const std::string &name, const float value) const;
     void setVec2(const std::string &name, const glm::vec2& value) const;

@@ -13,6 +13,14 @@
 #include <string>
 #include <glad/glad.h>
 
+enum TextureType { DIFFUSE, SPECULAR, REFLECTION };
+
+struct Texture {
+    GLuint id;
+    TextureType type;
+    std::string path;
+};
+
 class Loader {
 public:
     static GLuint loadTexture(const std::string& path, const bool gammaCorrection);

@@ -18,15 +18,12 @@ class CRSpline {
     float height, epsilon;
     GLuint pointVAO, pointVBO, curveVAO, curveVBO;
     std::vector<glm::vec3> controlPoints, curvePoints;
+    std::vector<glm::vec2> controlPointsNDC;
     void tessellate(const glm::vec3& p0,
                     const glm::vec3& p1,
                     const glm::vec3& p2,
                     const glm::vec3& p3,
                     int depth);
-    void toBezierSpline(const glm::vec3& p0,
-                        const glm::vec3& p1,
-                        const glm::vec3& p2,
-                        const glm::vec3& p3);
     void constructSpline();
 public:
     CRSpline(const std::vector<glm::vec3>& ctrlPoints,

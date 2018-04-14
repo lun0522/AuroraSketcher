@@ -50,7 +50,8 @@ void CRSpline::tessellate(const vec3& p0,
     };
     
     if (++depth == MAX_RECURSSION_DEPTH || glm::distance(p0, p3) < 1E-2 || isSmooth(p0, p1, p2, p3)) {
-        curvePoints.push_back(glm::normalize(p0));
+        // enforce points to be on the atmosphere
+        curvePoints.push_back(glm::normalize(p0) * height);
     } else {
         // modified from glm::slerp
         auto middlePoint = [] (const vec3& l0, const vec3& l1) -> vec3 {
@@ -71,16 +72,13 @@ void CRSpline::tessellate(const vec3& p0,
     }
 }
 
-void CRSpline::toBezierSpline(const vec3& p0,
-                              const vec3& p1,
-                              const vec3& p2,
-                              const vec3& p3) {
-    mat4 catmulRomPoints(vec4(p0, 0.0f), vec4(p1, 0.0f), vec4(p2, 0.0f), vec4(p3, 0.0f));
-    mat4 bezierPoints = catmulRomPoints * CATMULL_ROM_TO_BEZIER_T;
-    tessellate(bezierPoints[0], bezierPoints[1], bezierPoints[2], bezierPoints[3], 0);
-}
-
 void CRSpline::constructSpline() {
+    auto toBezierSpline = [&] (const vec3& p0, const vec3& p1, const vec3& p2, const vec3& p3) {
+        mat4 catmulRomPoints(vec4(p0, 0.0f), vec4(p1, 0.0f), vec4(p2, 0.0f), vec4(p3, 0.0f));
+        mat4 bezierPoints = catmulRomPoints * CATMULL_ROM_TO_BEZIER_T;
+        tessellate(bezierPoints[0], bezierPoints[1], bezierPoints[2], bezierPoints[3], 0);
+    };
+    
     for (int i = 0; i < controlPoints.size() - MIN_NUM_CONTROL_POINTS; ++i)
         toBezierSpline(controlPoints[i], controlPoints[i+1], controlPoints[i+2], controlPoints[i+3]);
     for (int i = (int)controlPoints.size() - MIN_NUM_CONTROL_POINTS; i < controlPoints.size(); ++i)
@@ -98,7 +96,7 @@ controlPoints(ctrlPoints), height(height), epsilon(epsilon), selected(CONTROL_PO
     if (controlPoints.size() < MIN_NUM_CONTROL_POINTS)
         throw runtime_error("No enough control points");
     
-    auto configure = [] (GLuint& VAO, GLuint& VBO, vector<vec3>& dataSource, size_t maxLength) {
+    auto configure = [] (GLuint& VAO, GLuint& VBO, vector<vec3>& dataSource, const size_t maxLength) {
         dataSource.reserve(maxLength);
         glGenVertexArrays(1, &VAO);
         glBindVertexArray(VAO);
@@ -110,6 +108,10 @@ controlPoints(ctrlPoints), height(height), epsilon(epsilon), selected(CONTROL_PO
     };
     
     constructSpline();
+    std::for_each(controlPoints.begin(), controlPoints.end(), [=] (vec3& point)
+                  { point *= height; }); // enforce points to be on the atmosphere
+    
+    controlPointsNDC.reserve(MAX_NUM_CONTROL_POINTS + 1);
     configure(pointVAO, pointVBO, controlPoints, MAX_NUM_CONTROL_POINTS);
     configure(curveVAO, curveVBO, curvePoints, MAX_NUM_CONTROL_POINTS * MAX_NUM_CURVE_POINTS);
 }
@@ -123,11 +125,16 @@ void CRSpline::processMouseClick(const bool isLeft,
                                  const vec2& posNDC,
                                  const vec2& sideLengthNDC,
                                  const mat4& objectToNDC) {
-    // note that the height of control points should be considered in all cases
-    // the click is on the atmosphere, rather than the surface of earth
-    auto getCoordInNDC = [&] (vec3& point) -> vec2 {
-        vec4 coordInNDC = objectToNDC * vec4(point * height, 1.0f);
+    auto getCoordInNDC = [&] (const vec3& point) -> vec2 {
+        vec4 coordInNDC = objectToNDC * vec4(point, 1.0f);
         return vec2(coordInNDC) / coordInNDC.w;
+    };
+    
+    auto distPointToLine = [] (const vec2& v0, const vec2& v1, const vec2& v2) {
+        // https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
+        // additional condition: the point should be "between" two ends of the line
+        if (glm::dot(v0 - v1, v2 - v1) < 0 || glm::dot(v0 - v2, v1 - v2) < 0) return FLT_MAX;
+        else return abs((v2.y - v1.y) * v0.x - (v2.x - v1.x) * v0.y + v2.x * v1.y - v2.y * v1.x) / glm::distance(v2, v1);
     };
     
     auto findClosestControlPoint = [&] (int& candidate) -> int {
@@ -135,17 +142,35 @@ void CRSpline::processMouseClick(const bool isLeft,
         candidate = CONTROL_POINT_NOT_SELECTED;
         float minDist = FLT_MAX;
         for (int i = 0; i < controlPoints.size(); ++i) {
-            float dist = glm::distance(posObject, controlPoints[i] * height);
+            float dist = glm::distance(posObject, controlPoints[i]);
             if (dist < minDist) {
                 minDist = dist;
                 candidate = i;
             }
         }
-        
         // step 2: check whether they are close enough in NDC
         vec2 diff = posNDC - getCoordInNDC(controlPoints[candidate]);
         bvec2 isClose = glm::lessThanEqual(glm::abs(diff), sideLengthNDC * 0.5f);
         return glm::all(isClose) ? candidate : CONTROL_POINT_NOT_SELECTED;
+    };
+    
+    auto findClosestLine = [&] () -> int {
+        int candidate = CONTROL_POINT_NOT_SELECTED;
+        float minDist = FLT_MAX;
+        // step 1: calculate coordinates of control points in NDC
+        for (int i = 0; i < controlPoints.size(); ++i)
+            controlPointsNDC[i] = getCoordInNDC(controlPoints[i]);
+        controlPointsNDC[controlPoints.size()] = controlPointsNDC[0];
+        // step 2: connect adjacent control points with straight lines in NDC,
+        //         and calculate the distance between it and the click point
+        for (int i = 1; i <= controlPoints.size(); ++i) {
+            float dist = distPointToLine(posNDC, controlPointsNDC[i-1], controlPointsNDC[i]);
+            if (dist < minDist) {
+                minDist = dist;
+                candidate = i;
+            }
+        }
+        return candidate;
     };
     
     auto recalculatePoints = [&] () {
@@ -165,24 +190,25 @@ void CRSpline::processMouseClick(const bool isLeft,
             int candidate;
             selected = findClosestControlPoint(candidate);
         } else {
-            controlPoints[selected] = posObject / height;
+            controlPoints[selected] = posObject;
             recalculatePoints();
         }
     } else {
+        selected = CONTROL_POINT_NOT_SELECTED;
         int candidate;
         int closestPoint = findClosestControlPoint(candidate);
         if (closestPoint != CONTROL_POINT_NOT_SELECTED) { // delete the closest control point
-            controlPoints.erase(controlPoints.begin() + closestPoint);
-        } else { // add a point between the closest and the second closest control point
-            int prevPoint = (candidate - 1) % controlPoints.size();
-            int nextPoint = (candidate + 1) % controlPoints.size();
-            float prevDist = glm::distance(posNDC, getCoordInNDC(controlPoints[prevPoint]));
-            float nextDist = glm::distance(posNDC, getCoordInNDC(controlPoints[nextPoint]));
-            int insertIndex = prevDist < nextDist ? candidate : nextPoint;
-            controlPoints.insert(controlPoints.begin() + insertIndex, posObject / height);
+            if (controlPoints.size() - 1 >= MIN_NUM_CONTROL_POINTS) {
+                controlPoints.erase(controlPoints.begin() + closestPoint);
+                recalculatePoints();
+            }
+        } else { // add a control point on the closest line
+            int insertIndex = findClosestLine();
+            if (insertIndex != CONTROL_POINT_NOT_SELECTED) {
+                controlPoints.insert(controlPoints.begin() + insertIndex, posObject);
+                recalculatePoints();
+            }
         }
-        recalculatePoints();
-        selected = CONTROL_POINT_NOT_SELECTED;
     }
 }
 
