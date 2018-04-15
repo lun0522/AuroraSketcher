@@ -16,12 +16,6 @@ using glm::vec2;
 using glm::vec3;
 using glm::mat4;
 
-void Button::setColor() {
-    shader.use();
-    shader.setFloat("alpha", selected ? 1.0f : 0.5f);
-    shader.setVec3("color", selected ? selectedColor : unselectedColor);
-}
-
 Button::Button(const string& text,
                const string& modelPath,
                const string& alphaMapPath,
@@ -46,14 +40,19 @@ selectedColor(selectedColor), unselectedColor(unselectedColor) {
     setColor();
 }
 
-void Button::setSelected(const bool value) {
-    if (value ^ selected) {
-        selected = value;
-        setColor();
-    }
+void Button::setColor() {
+    shader.use();
+    shader.setFloat("alpha", selected ? 1.0f : 0.5f);
+    shader.setVec3("color", selected ? selectedColor : unselectedColor);
 }
 
-bool Button::isHit(glm::vec2& position) {
+bool Button::changeState() {
+    selected = !selected;
+    setColor();
+    return selected;
+}
+
+bool Button::isHit(const glm::vec2& position) {
     vec2 toCenter = glm::abs(position - center);
     return glm::all(glm::lessThanEqual(toCenter, halfSize));
 }

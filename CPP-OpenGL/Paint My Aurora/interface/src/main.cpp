@@ -12,8 +12,8 @@
 
 int main(int argc, const char * argv[]) {
     try {
-        DrawPath drawPath("/Users/lun/Desktop/Code/Aurora/CPP-OpenGL/Paint My Aurora/");
-        drawPath.mainLoop();
+        DrawPath pathEditor("/Users/lun/Desktop/Code/Aurora/CPP-OpenGL/Paint My Aurora/");
+        pathEditor.mainLoop();
         glfwTerminate();
         return 0;
     } catch (std::exception& e) {

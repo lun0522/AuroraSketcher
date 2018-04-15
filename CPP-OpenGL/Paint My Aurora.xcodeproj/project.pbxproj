@@ -24,6 +24,7 @@
 		BD91558E20786CE500D7C7DF /* libassimp.4.1.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BD91558D20786CE500D7C7DF /* libassimp.4.1.0.dylib */; };
 		BD915595207871ED00D7C7DF /* drawpath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD915593207871ED00D7C7DF /* drawpath.cpp */; };
 		BDA97B01207BABA20054AAB3 /* crspline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BDA97AFF207BABA20054AAB3 /* crspline.cpp */; };
+		BDE2FA4020839AFE008B61E2 /* window.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BDE2FA3E20839AFE008B61E2 /* window.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -88,6 +89,8 @@
 		BDB57A4720791B3400C1DFC6 /* skybox.obj */ = {isa = PBXFileReference; lastKnownFileType = text; path = skybox.obj; sourceTree = "<group>"; };
 		BDC69E58207A47A60005232C /* spline.gs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = spline.gs; sourceTree = "<group>"; };
 		BDC69E59207A47B00005232C /* spline.fs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = spline.fs; sourceTree = "<group>"; };
+		BDE2FA3E20839AFE008B61E2 /* window.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = window.cpp; sourceTree = "<group>"; };
+		BDE2FA412083C542008B61E2 /* window.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = window.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -286,6 +289,7 @@
 		BD915591207871C500D7C7DF /* include */ = {
 			isa = PBXGroup;
 			children = (
+				BDE2FA412083C542008B61E2 /* window.hpp */,
 				BD915594207871ED00D7C7DF /* drawpath.hpp */,
 				BDA97B00207BABA20054AAB3 /* crspline.hpp */,
 				BD50D04520824535004F2734 /* button.hpp */,
@@ -297,6 +301,7 @@
 			isa = PBXGroup;
 			children = (
 				BD91521320785B7A00D7C7DF /* main.cpp */,
+				BDE2FA3E20839AFE008B61E2 /* window.cpp */,
 				BD915593207871ED00D7C7DF /* drawpath.cpp */,
 				BDA97AFF207BABA20054AAB3 /* crspline.cpp */,
 				BD50D04420824535004F2734 /* button.cpp */,
@@ -379,6 +384,7 @@
 				BD91558C20786C3A00D7C7DF /* loader.cpp in Sources */,
 				BD9155732078681D00D7C7DF /* shader.cpp in Sources */,
 				BD91521420785B7A00D7C7DF /* main.cpp in Sources */,
+				BDE2FA4020839AFE008B61E2 /* window.cpp in Sources */,
 				BD91533F2078622700D7C7DF /* camera.cpp in Sources */,
 				BD91558A20786C3A00D7C7DF /* mesh.cpp in Sources */,
 				BD91557C207868BC00D7C7DF /* glad.c in Sources */,

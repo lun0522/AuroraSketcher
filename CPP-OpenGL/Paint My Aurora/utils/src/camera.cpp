@@ -12,6 +12,7 @@
 #include "camera.hpp"
 
 using std::runtime_error;
+using glm::vec2;
 using glm::vec3;
 using glm::mat4;
 
@@ -31,30 +32,25 @@ sensitivity(sensitivity), firstFrame(true) {
     updateViewMatrix();
 }
 
-void Camera::setScreenSize(const int screenWidth, const int screenHeight) {
-    width = screenWidth;
-    height = screenHeight;
-    lastX = width / 2.0f;
-    lastY = height / 2.0f;
+void Camera::setScreenSize(const glm::vec2& size) {
+    screenSize = size;
     updateProjectionMatrix();
 }
 
-void Camera::processMouseMove(const double xPos, const double yPos) {
+void Camera::processMouseMove(const glm::vec2& position) {
     if (firstFrame) {
-        lastX = xPos;
-        lastY = yPos;
+        lastPos = position;
         firstFrame = false;
+        return;
     }
     
-    float xOffset = (xPos - lastX) * sensitivity;
-    float yOffset = (lastY - yPos) * sensitivity;
-    lastX = xPos;
-    lastY = yPos;
+    vec2 offset = (position - lastPos) * sensitivity;
+    lastPos = position;
     
-    yaw += xOffset;
+    yaw += offset.x;
     if (yaw >= 360.0f) yaw -= 360.0f;
     
-    pitch += yOffset;
+    pitch -= offset.y;
     if (pitch > 89.0f) pitch = 89.0f;
     else if (pitch < -89.0f) pitch = -89.0f;
     
@@ -105,7 +101,7 @@ const mat4& Camera::getViewMatrix() const {
 }
 
 const mat4& Camera::getProjectionMatrix() const {
-    if (width == 0.0f || height == 0.0f) throw runtime_error("Screen size not set");
+    if (glm::any(glm::equal(screenSize, vec2(0.0f)))) throw runtime_error("Screen size not set");
     return projection;
 }
 
@@ -114,8 +110,8 @@ void Camera::updateRight() {
 }
 
 void Camera::updateProjectionMatrix() {
-    if (width == 0.0f || height == 0.0f) throw runtime_error("Screen size not set");
-    projection = glm::perspective(glm::radians(fov), width / height, near, far);
+    if (glm::any(glm::equal(screenSize, vec2(0.0f)))) throw runtime_error("Screen size not set");
+    projection = glm::perspective(glm::radians(fov), screenSize.x / screenSize.y, near, far);
 }
 
 void Camera::updateViewMatrix() {

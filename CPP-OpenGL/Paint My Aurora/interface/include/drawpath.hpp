@@ -10,16 +10,23 @@
 #define drawpath_hpp
 
 #include <string>
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+
+#include "window.hpp"
+#include "camera.hpp"
 
 class DrawPath {
     std::string directory;
-    GLFWwindow *window;
-    void updateMousePos();
-    void processKeyboardInput();
+    Window window;
+    Camera camera;
+    bool isDay, isEditing, shouldUpdateCamera;
+    bool wasClicking, didClickLeft, didClickRight;
 public:
     DrawPath(const char *directory);
+    void didClickMouse(const bool isLeft, const bool isPress);
+    void didScrollMouse(const float yPos);
+    void didPressUpOrDown(const bool isUp);
+    void didPressNumber(const int number);
     void mainLoop();
 };
 

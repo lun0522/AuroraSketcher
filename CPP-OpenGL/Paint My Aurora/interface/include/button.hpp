@@ -34,8 +34,8 @@ public:
            const glm::vec3& selectedColor,
            const glm::vec3& unselectedColor,
            const bool selected = false);
-    void setSelected(const bool value);
-    bool isHit(glm::vec2& position);
+    bool changeState();
+    bool isHit(const glm::vec2& position);
     void draw();
 };
 

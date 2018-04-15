@@ -14,9 +14,10 @@
 enum CameraMoveDirection { UP, DOWN, LEFT, RIGHT };
 
 class Camera {
+    glm::vec2 lastPos, screenSize;
     glm::vec3 position, front, up, right;
     glm::mat4 view, projection;
-    float fov, near, far, yaw, pitch, width, height, lastX, lastY, sensitivity;
+    float fov, near, far, yaw, pitch, sensitivity;
     bool firstFrame;
     void updateRight();
     void updateViewMatrix();
@@ -31,8 +32,8 @@ public:
            const float yaw = -90.0f,
            const float pitch = 0.0f,
            const float sensitivity = 0.05f);
-    void setScreenSize(const int screenWidth, const int screenHeight);
-    void processMouseMove(const double xPos, const double yPos);
+    void setScreenSize(const glm::vec2& size);
+    void processMouseMove(const glm::vec2& position);
     void processMouseScroll(const double yOffset, const double minVal, const double maxVal);
     void processKeyboardInput(const CameraMoveDirection direction, const float distance);
     const glm::vec3& getPosition() const;

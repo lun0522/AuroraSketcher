@@ -8,7 +8,6 @@
 
 #include <iostream>
 #include <stdexcept>
-#include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
@@ -16,7 +15,6 @@
 #include <glm/gtx/vector_angle.hpp>
 
 #include "shader.hpp"
-#include "camera.hpp"
 #include "loader.hpp"
 #include "model.hpp"
 #include "button.hpp"
@@ -24,6 +22,7 @@
 #include "drawpath.hpp"
 
 using std::string;
+using std::vector;
 using std::runtime_error;
 using glm::vec2;
 using glm::vec3;
@@ -33,101 +32,37 @@ using glm::mat4;
 static const float EARTH_RADIUS = 6378.1f;
 static const float AURORA_HEIGHT = 100.0f;
 static const float AURORA_RELA_HEIGHT = (EARTH_RADIUS + AURORA_HEIGHT) / EARTH_RADIUS;
-static const int SCREEN_WIDTH = 800;
-static const int SCREEN_HEIGHT = 600;
 static const float CTRL_POINT_SIDE_LENGTH = 20.0f;
 static const float CLICK_CTRL_POINT_TOLERANCE = 10.0f;
 static const float INERTIAL_COEFF = 1.5f;
+static const int BUTTON_NOT_HIT = -1;
+static const vec3 CAMERA_POS(0.0f, 0.0f, 30.0f);
 
-vec3 cameraPos(0.0f, 0.0f, 30.0f);
-Camera camera(cameraPos);
-vec2 originalSize, currentSize, retinaRatio;
-vec2 mousePos, posOffset;
-bool isNight = true;
-bool isClicking = false;
-bool didClickRight = false;
-bool enableRotation = true;
-bool shouldUpdateCamera = false;
-
-void framebufferSizeCallback(GLFWwindow *window, int width, int height) {
-    currentSize = vec2(width, height);
-    // keep earth in center after resizing window
-    glViewport((currentSize.x - originalSize.x) * 0.5f,
-               (currentSize.y - originalSize.y) * 0.5f,
-               originalSize.x, originalSize.y);
-    posOffset = (originalSize - currentSize) * 0.5f;
-}
-
-void mouseClickCallback(GLFWwindow *window, int button, int action, int mods) {
-    if (button == GLFW_MOUSE_BUTTON_LEFT) {
-        isClicking = action == GLFW_PRESS;
-    } else if (button == GLFW_MOUSE_BUTTON_RIGHT) {
-        if (action == GLFW_PRESS) isClicking = didClickRight = true;
-        // do nothing when the right mouse key is released
-        // these two boolean states will be reset after intersection detection
+void DrawPath::didClickMouse(const bool isLeft, const bool isPress) {
+    if (isLeft) {
+        if (isPress) didClickLeft = true;
+        wasClicking = isPress;
+    } else {
+        if (isPress) didClickRight = true;
     }
 }
 
-void mouseScrollCallback(GLFWwindow *window, double xPos, double yPos) {
+void DrawPath::didScrollMouse(const float yPos) {
     camera.processMouseScroll(yPos, 15.0f, 45.0f);
     shouldUpdateCamera = true;
 }
 
-void DrawPath::updateMousePos() {
-    double xPos, yPos;
-    glfwGetCursorPos(window, &xPos, &yPos);
-    mousePos = vec2(xPos, yPos);
+void DrawPath::didPressUpOrDown(const bool isUp) {
+    isDay = isUp;
 }
 
-void DrawPath::processKeyboardInput() {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
-    else {
-        if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) isNight = false;
-        else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) isNight = true;
-        
-        if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS) enableRotation = false;
-        else if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) enableRotation = true;
-    }
+void DrawPath::didPressNumber(const int number) {
+    isEditing = number == 0;
 }
 
 DrawPath::DrawPath(const char *directory):
-directory(directory) {
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    
-#ifdef __APPLE__
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
-    
-    // ------------------------------------
-    // window
-    
-    window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Paint My Aurora", NULL, NULL);
-    if (window == NULL) throw runtime_error("Failed to create window");
-    
-    glfwMakeContextCurrent(window);
-    // called when window is resized by the user
-    glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
-    glfwSetMouseButtonCallback(window, mouseClickCallback);
-    glfwSetScrollCallback(window, mouseScrollCallback);
-    
-    // ------------------------------------
-    // GLAD (function pointer loader)
-    // do this after context is created, and before calling any OpenGL function!
-    
-    if (!gladLoadGL()) throw runtime_error("Failed to init GLAD");
-    
-    // screen size is different from the input width and height on retina screen
-    int width, height;
-    glfwGetFramebufferSize(window, &width, &height);
-    glViewport(0, 0, width, height); // specify render area
-    camera.setScreenSize(width, height);
-    currentSize = vec2(width, height);
-    originalSize = currentSize;
-    retinaRatio = originalSize / vec2(SCREEN_WIDTH, SCREEN_HEIGHT);
+directory(directory), window(this), camera(CAMERA_POS) {
+    camera.setScreenSize(window.getOriginalSize());
 }
 
 void DrawPath::mainLoop() {
@@ -145,17 +80,35 @@ void DrawPath::mainLoop() {
     // ------------------------------------
     // buttons
     
-    Button lockButton("Lock Earth",
+    vector<string> buttonText {
+        "Lock Earth",
+        "Path 1",
+        "Path 2",
+        "Path 3",
+        "Watch Aurora",
+    };
+    
+    vector<vec3> colors {
+        vec3(241, 196,  15), vec3(243, 156,  18),
+        vec3(230, 126,  34), vec3(211,  84,   0),
+        vec3(231,  76,  60), vec3(192,  57,  43),
+        vec3( 52, 152, 219), vec3( 41, 128, 185),
+        vec3(155,  89, 182), vec3(142,  68, 173),
+    };
+    
+    auto createButton = [&] (int index, float centerX) -> Button {
+        return Button(buttonText[index],
                       directory + "texture/button/quad.obj",
                       directory + "texture/button/rect_rounded.jpg",
                       directory + "interface/shaders/button.vs",
                       directory + "interface/shaders/button.fs",
-                      vec2(0.1f, 0.06f), vec2(0.16f, 0.08f),
-                      vec3(0.0f, 0.0f, 1.0f), vec3(0.0f, 0.0f, 1.0f) * 0.3f);
-    
-    std::vector<Button> buttons = {
-        lockButton,
+                      vec2(centerX, 0.06f), vec2(0.18f, 0.08f),
+                      colors[index * 2] / 255.0f, colors[index * 2 + 1] * 0.5f / 255.0f);
     };
+    
+    vector<Button> buttons;
+    for (int i = 0; i < 5; ++i)
+        buttons.push_back(createButton(i, 0.5f - 0.197f * (i - 2)));
     
     
     // ------------------------------------
@@ -189,7 +142,7 @@ void DrawPath::mainLoop() {
     // universe
     
     Model universe(directory + "texture/universe/skybox.obj");
-    std::vector<string> boxfaces {
+    vector<string> boxfaces {
         "PositiveX.jpg",
         "NegativeX.jpg",
         "PositiveY.jpg",
@@ -212,7 +165,7 @@ void DrawPath::mainLoop() {
     // ------------------------------------
     // aurora path
     
-    std::vector<vec3> controlPoints;
+    vector<vec3> controlPoints;
     float latitude = glm::radians(66.7f);
     float sinLat = sin(latitude), cosLat = cos(latitude);
     for (float angle = 0.0f; angle < 360.0f; angle += 45.0f)
@@ -224,7 +177,7 @@ void DrawPath::mainLoop() {
                        directory + "interface/shaders/spline.fs",
                        directory + "interface/shaders/spline.gs");
     pointShader.use();
-    vec2 sideLengthNDC = vec2(CTRL_POINT_SIDE_LENGTH) / originalSize * 2.0f;
+    vec2 sideLengthNDC = vec2(CTRL_POINT_SIDE_LENGTH) / window.getOriginalSize() * 2.0f;
     pointShader.setVec2("sideLength", sideLengthNDC);
     sideLengthNDC *= (CTRL_POINT_SIDE_LENGTH + CLICK_CTRL_POINT_TOLERANCE) / CTRL_POINT_SIDE_LENGTH;
     
@@ -243,8 +196,7 @@ void DrawPath::mainLoop() {
     int frameCount = 0;
     float rotAngle = 0.0f, scrollStartTime = 0.0f, lastTime = glfwGetTime();
     mat4 worldToNDC, ndcToWorld, ndcToEarth, worldToEarth = glm::inverse(earthModel);
-    vec3 lastIntersect, rotAxis, cameraEarth = worldToEarth * vec4(cameraPos, 1.0);
-    vec2 clickNDC;
+    vec3 lastIntersect, rotAxis, cameraEarth = worldToEarth * vec4(CAMERA_POS, 1.0);
     bool shouldRotate = false, shouldScroll = false;
     
     auto updateCamera = [&] () {
@@ -262,7 +214,7 @@ void DrawPath::mainLoop() {
     auto renderScene = [&] () {
         earthShader.use();
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, isNight ? earthNightTex : earthDayTex);
+        glBindTexture(GL_TEXTURE_2D, isDay ? earthDayTex : earthNightTex);
         earthShader.setInt("texture0", 0);
         earth.draw(earthShader);
         
@@ -288,7 +240,7 @@ void DrawPath::mainLoop() {
         earthModel = glm::rotate(earthModel, angle, axis);
         worldToEarth = glm::inverse(earthModel);
         ndcToEarth = worldToEarth * ndcToWorld;
-        cameraEarth = worldToEarth * vec4(cameraPos, 1.0);
+        cameraEarth = worldToEarth * vec4(CAMERA_POS, 1.0);
         
         glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
         glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(mat4), glm::value_ptr(earthModel));
@@ -299,11 +251,19 @@ void DrawPath::mainLoop() {
         universeShader.setMat4("model", universeModel);
     };
     
+    auto didHitButton = [&] () -> int {
+        int hitButton = BUTTON_NOT_HIT;
+        for (int i = 0; i < buttons.size(); ++i) {
+            if (buttons[i].isHit(window.getClickNDC())) {
+                hitButton = i;
+                break;
+            }
+        }
+        return hitButton;
+    };
+    
     auto getIntersection = [&] (vec3& position, vec3& normal, const float radius = 1.0f) -> bool {
-        vec2 clickScreen = (mousePos * retinaRatio + posOffset) / originalSize; // [0.0, 1.0]
-        clickNDC = clickScreen * 2.0f - 1.0f; // [-1.0, 1.0]
-        clickNDC.y *= -1.0f; // flip y coordinate
-        vec4 clickEarth = ndcToEarth * vec4(clickNDC, 1.0f, 1.0f);
+        vec4 clickEarth = ndcToEarth * vec4(window.getClickNDC(), 1.0f, 1.0f);
         clickEarth /= clickEarth.w; // important! perpective matrix may not be normalized
         return glm::intersectRaySphere(cameraEarth, glm::normalize(vec3(clickEarth) - cameraEarth),
                                        vec3(0.0f), radius, position, normal);
@@ -351,8 +311,8 @@ void DrawPath::mainLoop() {
         }
     };
     
-    while (!glfwWindowShouldClose(window)) {
-        processKeyboardInput();
+    while (!window.shouldClose()) {
+        window.processKeyboardInput();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         if (shouldUpdateCamera) {
@@ -360,26 +320,54 @@ void DrawPath::mainLoop() {
             updateCamera();
         }
         
-        bool mayScroll = true, mayOnCurve = false;
-        if (isClicking) {
-            updateMousePos();
-            vec3 position, normal;
-            bool didIntersect = getIntersection(position, normal);
-            
-            if (!enableRotation) { // editing mode
-                // need the intersection point on the atmosphere instead
-                getIntersection(position, normal, AURORA_RELA_HEIGHT);
-                spline.processMouseClick(!didClickRight, position, clickNDC, sideLengthNDC, glm::inverse(ndcToEarth));
-                mayOnCurve = true;
-            } else if (didIntersect) {
-                didClickEarth(position);
-                mayScroll = false;
+        if (wasClicking || didClickLeft || didClickRight)
+            window.updateMousePos();
+        
+        bool mayScroll = true, mayOnSpline = false, stillClicking = false;
+        if (didClickRight) {
+            // right click is valid only in edit mode, and the click point is on the atmosphere
+            // button hit test is done before intersection detection, to save some computation
+            if (isEditing) {
+                int hitButton = didHitButton();
+                if (hitButton == BUTTON_NOT_HIT) {
+                    vec3 position, normal;
+                    if (getIntersection(position, normal, AURORA_RELA_HEIGHT)) {
+                        spline.processMouseClick(false, position, window.getClickNDC(), sideLengthNDC, glm::inverse(ndcToEarth));
+                        mayOnSpline = true;
+                    }
+                }
+            }
+        } else if (wasClicking || didClickLeft) {
+            // left click on buttons is always valid
+            int hitButton = didHitButton();
+            if (hitButton != BUTTON_NOT_HIT) {
+                buttons[hitButton].changeState();
+            } else {
+                // in edit mode, right click is valid if the click point is on the atmosphere
+                // while in rotate mode, click point should be on the surface of earth
+                vec3 position, normal;
+                if (isEditing) {
+                    if (getIntersection(position, normal, AURORA_RELA_HEIGHT)) {
+                        spline.processMouseClick(true, position, window.getClickNDC(), sideLengthNDC, glm::inverse(ndcToEarth));
+                        // do not simply assign true to stillClicking!
+                        // left mouse key may have already been released
+                        stillClicking = wasClicking;
+                        mayOnSpline = true;
+                    }
+                } else {
+                    if (getIntersection(position, normal)) {
+                        didClickEarth(position);
+                        stillClicking = wasClicking;
+                        mayScroll = false;
+                    }
+                }
             }
         }
         
-        if (didClickRight) isClicking = didClickRight = false;
+        didClickLeft = didClickRight = false;
+        wasClicking = stillClicking; // reserve the state of left clicking for the next frame
         
-        if (!mayOnCurve) spline.deselectControlPoint();
+        if (!mayOnSpline) spline.deselectControlPoint();
         
         // not consider inertial scrolling only when
         // rotation is enabled and intersection is detected
@@ -387,8 +375,7 @@ void DrawPath::mainLoop() {
         else shouldScroll = false; // stop inertial scrolling
         
         renderScene();
-        glfwSwapBuffers(window); // use color buffer to draw
-        glfwPollEvents(); // check events (keyboard, mouse, ...)
+        window.renderFrame();
         
         ++frameCount;
         float currentTime = glfwGetTime();
