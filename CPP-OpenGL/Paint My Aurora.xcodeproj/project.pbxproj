@@ -43,15 +43,17 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		BD074873208247E90069DD87 /* quad.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = quad.obj; sourceTree = "<group>"; };
 		BD07487420824A1B0069DD87 /* button.vs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = button.vs; sourceTree = "<group>"; };
 		BD07487520824A2A0069DD87 /* button.fs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = button.fs; sourceTree = "<group>"; };
-		BD074876208284200069DD87 /* rect_rounded.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = rect_rounded.jpg; sourceTree = "<group>"; };
+		BD0A77D32085473200134DF7 /* character.vs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = character.vs; sourceTree = "<group>"; };
+		BD0A77D42085473D00134DF7 /* character.fs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = character.fs; sourceTree = "<group>"; };
+		BD0A77D5208547CA00134DF7 /* georgia.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = georgia.ttf; sourceTree = "<group>"; };
 		BD4278D8207ACC2600D6E174 /* earth_night.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = earth_night.jpg; sourceTree = "<group>"; };
 		BD4278D9207ACC2600D6E174 /* earth_day.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = earth_day.jpg; sourceTree = "<group>"; };
 		BD50D03C208242F9004F2734 /* libfreetype.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfreetype.6.dylib; path = ../../../../../../usr/local/Cellar/freetype/2.9/lib/libfreetype.6.dylib; sourceTree = "<group>"; };
 		BD50D04420824535004F2734 /* button.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = button.cpp; sourceTree = "<group>"; };
 		BD50D04520824535004F2734 /* button.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = button.hpp; sourceTree = "<group>"; };
+		BD60496E208463E300283BF3 /* rect_rounded.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = rect_rounded.jpg; sourceTree = "<group>"; };
 		BD73D785207E949A0001461B /* spline.vs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = spline.vs; sourceTree = "<group>"; };
 		BD91521020785B7A00D7C7DF /* Paint My Aurora */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Paint My Aurora"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BD91521320785B7A00D7C7DF /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
@@ -111,8 +113,8 @@
 		BD074872208246FD0069DD87 /* button */ = {
 			isa = PBXGroup;
 			children = (
-				BD074873208247E90069DD87 /* quad.obj */,
-				BD074876208284200069DD87 /* rect_rounded.jpg */,
+				BD60496E208463E300283BF3 /* rect_rounded.jpg */,
+				BD0A77D5208547CA00134DF7 /* georgia.ttf */,
 			);
 			path = button;
 			sourceTree = "<group>";
@@ -200,6 +202,8 @@
 				BDC69E59207A47B00005232C /* spline.fs */,
 				BD07487420824A1B0069DD87 /* button.vs */,
 				BD07487520824A2A0069DD87 /* button.fs */,
+				BD0A77D32085473200134DF7 /* character.vs */,
+				BD0A77D42085473D00134DF7 /* character.fs */,
 			);
 			path = shaders;
 			sourceTree = "<group>";

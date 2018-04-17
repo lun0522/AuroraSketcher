@@ -7,6 +7,7 @@
 //
 
 #include <iostream>
+#include <unordered_map>
 #include <stdexcept>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -35,6 +36,8 @@ static const float AURORA_RELA_HEIGHT = (EARTH_RADIUS + AURORA_HEIGHT) / EARTH_R
 static const float CTRL_POINT_SIDE_LENGTH = 20.0f;
 static const float CLICK_CTRL_POINT_TOLERANCE = 10.0f;
 static const float INERTIAL_COEFF = 1.5f;
+static const int NUM_BUTTON_TOTAL = 5;
+static const int NUM_BUTTON_BOTTOM = 2;
 static const int BUTTON_NOT_HIT = -1;
 static const vec3 CAMERA_POS(0.0f, 0.0f, 30.0f);
 
@@ -81,34 +84,43 @@ void DrawPath::mainLoop() {
     // buttons
     
     vector<string> buttonText {
-        "Lock Earth",
         "Path 1",
         "Path 2",
         "Path 3",
+        "Edit Mode",
         "Watch Aurora",
     };
+    std::unordered_map<char, vec2> buttonChars;
+    GLuint textTex = Loader::loadCharacter(directory + "texture/button/georgia.ttf",
+                                           directory + "interface/shaders/character.vs",
+                                           directory + "interface/shaders/character.fs",
+                                           buttonText,
+                                           buttonChars,
+                                           0,
+                                           window.getViewPort());
     
     vector<vec3> colors {
+        vec3( 52, 152, 219), vec3( 41, 128, 185),
+        vec3( 46, 204, 113), vec3( 39, 174,  96),
         vec3(241, 196,  15), vec3(243, 156,  18),
         vec3(230, 126,  34), vec3(211,  84,   0),
         vec3(231,  76,  60), vec3(192,  57,  43),
-        vec3( 52, 152, 219), vec3( 41, 128, 185),
-        vec3(155,  89, 182), vec3(142,  68, 173),
     };
     
-    auto createButton = [&] (int index, float centerX) -> Button {
+    auto createButton = [&] (const int index, const vec2& center, const vec2& size) -> Button {
         return Button(buttonText[index],
-                      directory + "texture/button/quad.obj",
                       directory + "texture/button/rect_rounded.jpg",
                       directory + "interface/shaders/button.vs",
                       directory + "interface/shaders/button.fs",
-                      vec2(centerX, 0.06f), vec2(0.18f, 0.08f),
+                      center, size,
                       colors[index * 2] / 255.0f, colors[index * 2 + 1] * 0.5f / 255.0f);
     };
     
     vector<Button> buttons;
-    for (int i = 0; i < 5; ++i)
-        buttons.push_back(createButton(i, 0.5f - 0.197f * (i - 2)));
+    for (int i = 0; i < NUM_BUTTON_BOTTOM; ++i)
+        buttons.push_back(createButton(i, vec2(0.5f + 0.45f * (i - 0.5f), 0.06f), vec2(0.25f, 0.08f)));
+    for (int i = NUM_BUTTON_BOTTOM; i < NUM_BUTTON_TOTAL; ++i)
+        buttons.push_back(createButton(i, vec2(0.5f + 0.31f * (i - 3.0f), 0.94f), vec2(0.25f, 0.08f)));
     
     
     // ------------------------------------
@@ -215,18 +227,15 @@ void DrawPath::mainLoop() {
         earthShader.use();
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, isDay ? earthDayTex : earthNightTex);
-        earthShader.setInt("texture0", 0);
+        earthShader.setInt("earthMap", 0);
         earth.draw(earthShader);
-        
+
         pointShader.use();
         spline.drawControlPoints();
-        
+
         curveShader.use();
         spline.drawSplineCurve();
-        
-        std::for_each(buttons.begin(), buttons.end(),
-                      [] (Button& button) { button.draw(); });
-        
+
         glDepthFunc(GL_LEQUAL);
         universeShader.use();
         glActiveTexture(GL_TEXTURE0);
@@ -234,6 +243,11 @@ void DrawPath::mainLoop() {
         universeShader.setInt("cubemap", 0);
         universe.draw(universeShader);
         glDepthFunc(GL_LESS);
+        
+        // render buttons at last because of alpha blending
+        int numDisplay = isEditing ? NUM_BUTTON_TOTAL : NUM_BUTTON_BOTTOM;
+        std::for_each(buttons.begin(), buttons.begin() + numDisplay,
+                      [] (Button& button) { button.draw(); });
     };
     
     auto rotateScene = [&] (const float angle, const vec3& axis) {
@@ -253,7 +267,8 @@ void DrawPath::mainLoop() {
     
     auto didHitButton = [&] () -> int {
         int hitButton = BUTTON_NOT_HIT;
-        for (int i = 0; i < buttons.size(); ++i) {
+        int numTest = isEditing ? NUM_BUTTON_TOTAL : NUM_BUTTON_BOTTOM;
+        for (int i = 0; i < numTest; ++i) {
             if (buttons[i].isHit(window.getClickNDC())) {
                 hitButton = i;
                 break;

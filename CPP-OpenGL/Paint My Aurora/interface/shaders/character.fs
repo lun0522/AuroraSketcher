@@ -4,8 +4,8 @@ in vec2 texCoord;
 
 out vec4 fragColor;
 
-uniform sampler2D earthMap;
+uniform sampler2D glyph;
 
 void main() {
-    fragColor = texture(earthMap, texCoord);
+    fragColor = texture(glyph, texCoord);
 }

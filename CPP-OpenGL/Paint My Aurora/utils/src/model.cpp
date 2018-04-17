@@ -73,7 +73,7 @@ vector<Texture> Model::loadMaterialTextures(const aiMaterial *material,
         material->GetTexture(aiType, i, &path);
         string pathString = path.C_Str();
         GLuint texture = Loader::loadTexture(directory + '/' + pathString, type == DIFFUSE);
-        textures.push_back({ texture, type, pathString });
+        textures.push_back({ texture, type });
     }
     return textures;
 }

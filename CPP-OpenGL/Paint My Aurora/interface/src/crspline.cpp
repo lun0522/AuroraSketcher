@@ -105,6 +105,8 @@ controlPoints(ctrlPoints), height(height), epsilon(epsilon), selected(CONTROL_PO
         glBufferData(GL_ARRAY_BUFFER, maxLength * sizeof(vec3), dataSource.data(), GL_STATIC_DRAW);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), (void *)0);
         glEnableVertexAttribArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
     };
     
     constructSpline();

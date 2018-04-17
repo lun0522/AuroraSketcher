@@ -16,16 +16,15 @@
 #include "shader.hpp"
 
 class Button {
-    Model button;
     Shader shader;
-    GLuint alphaMap;
+    GLuint VAO, alphaMap;
     bool selected;
     glm::vec2 center, halfSize;
     glm::vec3 selectedColor, unselectedColor;
     void setColor();
+    void setVertexAttrib();
 public:
     Button(const std::string& text,
-           const std::string& modelPath,
            const std::string& alphaMapPath,
            const std::string& vertexPath,
            const std::string& fragmentPath,
@@ -35,8 +34,8 @@ public:
            const glm::vec3& unselectedColor,
            const bool selected = false);
     bool changeState();
-    bool isHit(const glm::vec2& position);
-    void draw();
+    bool isHit(const glm::vec2& position) const;
+    void draw() const;
 };
 
 #endif /* button_hpp */

@@ -18,6 +18,7 @@ class Window {
     GLFWwindow *window;
 public:
     Window(DrawPath *drawPath);
+    const glm::vec4& getViewPort();
     const glm::vec2& getOriginalSize();
     const glm::vec2& getClickNDC();
     void updateMousePos();

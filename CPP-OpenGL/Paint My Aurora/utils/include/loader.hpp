@@ -11,15 +11,9 @@
 
 #include <vector>
 #include <string>
+#include <unordered_map>
 #include <glad/glad.h>
-
-enum TextureType { DIFFUSE, SPECULAR, REFLECTION };
-
-struct Texture {
-    GLuint id;
-    TextureType type;
-    std::string path;
-};
+#include <glm/glm.hpp>
 
 class Loader {
 public:
@@ -27,6 +21,13 @@ public:
     static GLuint loadCubemap(const std::string& path,
                               const std::vector<std::string>& filename,
                               const bool gammaCorrection);
+    static GLuint loadCharacter(const std::string& fontPath,
+                                const std::string& vertPath,
+                                const std::string& fragPath,
+                                const std::vector<std::string>& texts,
+                                std::unordered_map<char, glm::vec2>& charOffsets,
+                                const GLuint prevFrameBuffer,
+                                const glm::vec4 prevViewPort);
 };
 
 #endif /* loader_hpp */

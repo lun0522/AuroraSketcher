@@ -14,8 +14,14 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
-#include "loader.hpp"
 #include "shader.hpp"
+
+enum TextureType { DIFFUSE, SPECULAR, REFLECTION };
+
+struct Texture {
+    GLuint id;
+    TextureType type;
+};
 
 struct Vertex {
     glm::vec3 position;

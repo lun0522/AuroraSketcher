@@ -15,22 +15,27 @@
 
 using std::runtime_error;
 using glm::vec2;
+using glm::vec4;
 
 static const int SCREEN_WIDTH = 800;
 static const int SCREEN_HEIGHT = 600;
 
-glm::vec2 originalSize, currentSize, retinaRatio;
-glm::vec2 posOffset, clickNDC;
+vec2 originalSize, currentSize, retinaRatio;
+vec2 posOffset, clickNDC;
+vec4 viewPort;
 
 DrawPath *pathEditor;
+
+inline void setViewPort() {
+    glViewport(viewPort.x, viewPort.y, viewPort.z, viewPort.w); // specify render area
+}
 
 void framebufferSizeCallback(GLFWwindow *window, int width, int height) {
     currentSize = vec2(width, height);
     // keep earth in center after resizing window
-    glViewport((currentSize.x - originalSize.x) * 0.5f,
-               (currentSize.y - originalSize.y) * 0.5f,
-               originalSize.x, originalSize.y);
     posOffset = (originalSize - currentSize) * 0.5f;
+    viewPort = vec4((currentSize - originalSize) * 0.5f, originalSize);
+    setViewPort();
 }
 
 void mouseClickCallback(GLFWwindow *window, int button, int action, int mods) {
@@ -42,11 +47,15 @@ void mouseScrollCallback(GLFWwindow *window, double xPos, double yPos) {
     pathEditor->didScrollMouse(yPos);
 }
 
-const glm::vec2& Window::getOriginalSize() {
+const vec4& Window::getViewPort() {
+    return viewPort;
+}
+
+const vec2& Window::getOriginalSize() {
     return originalSize;
 }
 
-const glm::vec2& Window::getClickNDC() {
+const vec2& Window::getClickNDC() {
     return clickNDC;
 }
 
@@ -107,9 +116,10 @@ Window::Window(DrawPath *drawPath) {
     // screen size is different from the input width and height on retina screen
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
-    glViewport(0, 0, width, height); // specify render area
     originalSize = currentSize = vec2(width, height);
     retinaRatio = originalSize / vec2(SCREEN_WIDTH, SCREEN_HEIGHT);
+    viewPort = vec4(0, 0, width, height);
+    setViewPort();
 }
 
 void Window::renderFrame() {
