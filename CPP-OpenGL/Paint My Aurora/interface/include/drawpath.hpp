@@ -10,15 +10,21 @@
 #define drawpath_hpp
 
 #include <string>
+#include <vector>
 #include <glm/glm.hpp>
 
 #include "window.hpp"
 #include "camera.hpp"
+#include "button.hpp"
+#include "crspline.hpp"
 
 class DrawPath {
     std::string directory;
     Window window;
     Camera camera;
+    std::vector<Button> buttons;
+    std::vector<CRSpline> splines;
+    int editingPath;
     bool isDay, isEditing, shouldUpdateCamera;
     bool wasClicking, didClickLeft, didClickRight;
 public:
@@ -26,7 +32,7 @@ public:
     void didClickMouse(const bool isLeft, const bool isPress);
     void didScrollMouse(const float yPos);
     void didPressUpOrDown(const bool isUp);
-    void didPressNumber(const int number);
+    void didPressButton(const int index);
     void mainLoop();
 };
 

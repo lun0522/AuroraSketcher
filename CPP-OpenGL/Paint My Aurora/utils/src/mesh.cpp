@@ -58,16 +58,16 @@ void Mesh::bindTexture(const Shader& shader, const GLuint texOffset) const {
         std::string name;
         switch (textures[i].type) {
             case DIFFUSE:
-            name = "material.diffuse" + std::to_string(diffIdx++);
-            break;
+                name = "material.diffuse" + std::to_string(diffIdx++);
+                break;
             case SPECULAR:
-            name = "material.specular" + std::to_string(specIdx++);
-            break;
+                name = "material.specular" + std::to_string(specIdx++);
+                break;
             case REFLECTION:
-            name = "material.reflection" + std::to_string(reflIdx++);
-            break;
+                name = "material.reflection" + std::to_string(reflIdx++);
+                break;
             default:
-            throw std::runtime_error("Unknown texture type");
+                throw std::runtime_error("Unknown texture type");
         }
         GLuint texIndex = texOffset + i;
         glActiveTexture(GL_TEXTURE0 + texIndex);

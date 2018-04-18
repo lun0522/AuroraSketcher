@@ -13,12 +13,16 @@
 #include <glm/glm.hpp>
 #include <glad/glad.h>
 
+#include "shader.hpp"
+
 class CRSpline {
     int selected;
     float height, epsilon;
+    glm::vec3 color;
     GLuint pointVAO, pointVBO, curveVAO, curveVBO;
     std::vector<glm::vec3> controlPoints, curvePoints;
     std::vector<glm::vec2> controlPointsNDC;
+    const Shader &pointShader, &curveShader;
     void tessellate(const glm::vec3& p0,
                     const glm::vec3& p1,
                     const glm::vec3& p2,
@@ -26,7 +30,10 @@ class CRSpline {
                     int depth);
     void constructSpline();
 public:
-    CRSpline(const std::vector<glm::vec3>& ctrlPoints,
+    CRSpline(const Shader& pointShader,
+             const Shader& curveShader,
+             const glm::vec3& color,
+             const std::vector<glm::vec3>& ctrlPoints,
              const float height = 1.0f,
              const float epsilon = 1E-2);
     void deselectControlPoint();
@@ -35,8 +42,7 @@ public:
                            const glm::vec2& posNDC,
                            const glm::vec2& sideLengthNDC,
                            const glm::mat4& objectToNDC);
-    void drawControlPoints() const;
-    void drawSplineCurve() const;
+    void draw() const;
 };
 
 #endif /* crspline_hpp */

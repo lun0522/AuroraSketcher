@@ -25,11 +25,11 @@ using glm::ivec2;
 using glm::vec2;
 using glm::vec4;
 
-struct Character {
+struct CharGlyph {
     GLuint texture;
-    glm::ivec2 size;
-    glm::ivec2 bearing;
-    GLuint advance;
+    ivec2 size;
+    ivec2 bearing;
+    int advance;
 };
 
 static const int CHAR_HEIGHT = 64;
@@ -116,7 +116,7 @@ GLuint Loader::loadCubemap(const string& path,
 
 void loadAllChars(const string& path,
                   const vector<char>& chars,
-                  vector<Character>& loadedChars) {
+                  vector<CharGlyph>& loadedChars) {
     FT_Library lib;
     if (FT_Init_FreeType(&lib))
         throw runtime_error("Failed to init FreeType library");
@@ -144,7 +144,7 @@ void loadAllChars(const string& path,
             texture,
             ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
             ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-            (GLuint) face->glyph->advance.x >> 6, // advance is number of 1/64 pixels
+            (int) face->glyph->advance.x >> 6, // advance is number of 1/64 pixels
         });
     }
     
@@ -157,9 +157,9 @@ GLuint Loader::loadCharacter(const string& fontPath,
                              const string& vertPath,
                              const string& fragPath,
                              const vector<string>& texts,
-                             unordered_map<char, vec2>& charOffsets,
+                             unordered_map<char, Character>& charFrame,
                              const GLuint prevFrameBuffer,
-                             const glm::vec4 prevViewPort) {
+                             const vec4 prevViewPort) {
     // ------------------------------------
     // extract all unique chars from the input text
     // and load corresponding texture from the library
@@ -170,7 +170,7 @@ GLuint Loader::loadCharacter(const string& fontPath,
             charsSet.insert(c);
     
     vector<char> uniqueChars(charsSet.begin(), charsSet.end());
-    vector<Character> loadedChars;
+    vector<CharGlyph> loadedChars;
     loadAllChars(fontPath, uniqueChars, loadedChars);
     
     
@@ -206,7 +206,7 @@ GLuint Loader::loadCharacter(const string& fontPath,
     glBindVertexArray(VAO);
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, 6 * (2 + 2) * sizeof(float), NULL, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, 6 * 4 * sizeof(float), NULL, GL_DYNAMIC_DRAW);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)0);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)(2 * sizeof(float)));
     glEnableVertexAttribArray(0);
@@ -219,27 +219,28 @@ GLuint Loader::loadCharacter(const string& fontPath,
     shader.setInt("glyph", 0);
     glActiveTexture(GL_TEXTURE0);
     
-    float xOffset = 0.0f;
-    // help map coordinates to [0, 1] (previously measured in pixels)
+    // offsetX tracks where we are on the big texture
+    // it will rise to totalWidth at last
+    float offsetX = 0.0f;
+    // ratio helps map coordinates to [0, 1] (previously measured in pixels)
     // coordinates will be converted to NDC ([-1, 1]) in vertex shader
     vec2 ratio = 1.0f / vec2(totalWidth, CHAR_HEIGHT);
     for (int i = 0; i < uniqueChars.size(); ++i) {
-        Character& ch = loadedChars[i];
-        vec2 bearing = vec2(ch.bearing) * ratio;
+        CharGlyph& ch = loadedChars[i];
         vec2 size = vec2(ch.size) * ratio;
-        float xPos = xOffset + bearing.x;
+        // bearing is considered so that characters won't be too close
+        float originX = (offsetX + ch.bearing.x) / totalWidth;
         float vertexAttrib[6][4] = {
-            { xPos,          size.y,  0.0, 0.0 },
-            { xPos,          0.0f,    0.0, 1.0 },
-            { xPos + size.x, 0.0f,    1.0, 1.0 },
+            { originX,          size.y,  0.0, 0.0 },
+            { originX,          0.0f,    0.0, 1.0 },
+            { originX + size.x, 0.0f,    1.0, 1.0 },
             
-            { xPos,          size.y,  0.0, 0.0 },
-            { xPos + size.x, 0.0f,    1.0, 1.0 },
-            { xPos + size.x, size.y,  1.0, 0.0 },
+            { originX,          size.y,  0.0, 0.0 },
+            { originX + size.x, 0.0f,    1.0, 1.0 },
+            { originX + size.x, size.y,  1.0, 0.0 },
         };
-        xOffset += ch.advance * ratio.x;
-        float yOffset = -(size.y - bearing.y);
-        charOffsets.insert({ uniqueChars[i], vec2(xOffset, yOffset) });
+        charFrame.insert({ uniqueChars[i], { originX, size, ch.size, ch.bearing, ch.advance } });
+        offsetX += ch.advance;
         
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertexAttrib), vertexAttrib);
         glBindTexture(GL_TEXTURE_2D, ch.texture);

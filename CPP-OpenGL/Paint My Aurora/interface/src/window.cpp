@@ -75,11 +75,6 @@ void Window::processKeyboardInput() {
             pathEditor->didPressUpOrDown(true);
         else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
             pathEditor->didPressUpOrDown(false);
-        
-        if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS)
-            pathEditor->didPressNumber(0);
-        else if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
-            pathEditor->didPressNumber(1);
     }
 }
 

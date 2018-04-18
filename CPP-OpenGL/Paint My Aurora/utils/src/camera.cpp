@@ -32,12 +32,12 @@ sensitivity(sensitivity), firstFrame(true) {
     updateViewMatrix();
 }
 
-void Camera::setScreenSize(const glm::vec2& size) {
+void Camera::setScreenSize(const vec2& size) {
     screenSize = size;
     updateProjectionMatrix();
 }
 
-void Camera::processMouseMove(const glm::vec2& position) {
+void Camera::processMouseMove(const vec2& position) {
     if (firstFrame) {
         lastPos = position;
         firstFrame = false;
@@ -88,11 +88,11 @@ void Camera::processKeyboardInput(const CameraMoveDirection direction, const flo
     updateViewMatrix();
 }
 
-const glm::vec3& Camera::getPosition() const {
+const vec3& Camera::getPosition() const {
     return position;
 }
 
-const glm::vec3& Camera::getDirection() const {
+const vec3& Camera::getDirection() const {
     return front;
 }
 

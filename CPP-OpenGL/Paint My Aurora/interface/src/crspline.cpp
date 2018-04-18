@@ -89,9 +89,13 @@ void CRSpline::constructSpline() {
     curvePoints.push_back(curvePoints[0]); // close the curve
 }
 
-CRSpline::CRSpline(const std::vector<vec3>& ctrlPoints,
+CRSpline::CRSpline(const Shader& pointShader,
+                   const Shader& curveShader,
+                   const vec3& color,
+                   const std::vector<vec3>& ctrlPoints,
                    const float height,
                    const float epsilon):
+pointShader(pointShader), curveShader(curveShader), color(color),
 controlPoints(ctrlPoints), height(height), epsilon(epsilon), selected(CONTROL_POINT_NOT_SELECTED) {
     if (controlPoints.size() < MIN_NUM_CONTROL_POINTS)
         throw runtime_error("No enough control points");
@@ -214,12 +218,14 @@ void CRSpline::processMouseClick(const bool isLeft,
     }
 }
 
-void CRSpline::drawControlPoints() const {
+void CRSpline::draw() const {
+    pointShader.use();
+    pointShader.setVec3("color", color);
     glBindVertexArray(pointVAO);
     glDrawArrays(GL_POINTS, 0, controlPoints.size());
-}
-
-void CRSpline::drawSplineCurve() const {
+    
+    curveShader.use();
+    curveShader.setVec3("color", color);
     glBindVertexArray(curveVAO);
     glDrawArrays(GL_LINE_STRIP, 0, curvePoints.size());
 }

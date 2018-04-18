@@ -18,8 +18,6 @@
 #include "shader.hpp"
 #include "loader.hpp"
 #include "model.hpp"
-#include "button.hpp"
-#include "crspline.hpp"
 #include "drawpath.hpp"
 
 using std::string;
@@ -36,8 +34,9 @@ static const float AURORA_RELA_HEIGHT = (EARTH_RADIUS + AURORA_HEIGHT) / EARTH_R
 static const float CTRL_POINT_SIDE_LENGTH = 20.0f;
 static const float CLICK_CTRL_POINT_TOLERANCE = 10.0f;
 static const float INERTIAL_COEFF = 1.5f;
-static const int NUM_BUTTON_TOTAL = 5;
-static const int NUM_BUTTON_BOTTOM = 2;
+static const int NUM_AURORA_PATH = 3;
+static const int NUM_BUTTON_BOTTOM = 3;
+static const int NUM_BUTTON_TOTAL = NUM_AURORA_PATH + NUM_BUTTON_BOTTOM;
 static const int BUTTON_NOT_HIT = -1;
 static const vec3 CAMERA_POS(0.0f, 0.0f, 30.0f);
 
@@ -59,8 +58,29 @@ void DrawPath::didPressUpOrDown(const bool isUp) {
     isDay = isUp;
 }
 
-void DrawPath::didPressNumber(const int number) {
-    isEditing = number == 0;
+void DrawPath::didPressButton(const int index) {
+    switch (index) {
+        case 0: // editing
+            buttons[0].changeState();
+            isEditing = !isEditing;
+            break;
+        case 1: // daylight
+            buttons[1].changeState();
+            isDay = !isDay;
+            break;
+        case 2: // aurora
+            // temporarily empty
+            break;
+        default: // path
+            int pathIndex = index - NUM_BUTTON_BOTTOM;
+            if (pathIndex != editingPath) {
+                buttons[editingPath + NUM_BUTTON_BOTTOM].changeState();
+                buttons[index].changeState();
+                splines[editingPath].deselectControlPoint();
+                editingPath = pathIndex;
+            }
+            break;
+    }
 }
 
 DrawPath::DrawPath(const char *directory):
@@ -83,44 +103,48 @@ void DrawPath::mainLoop() {
     // ------------------------------------
     // buttons
     
-    vector<string> buttonText {
-        "Path 1",
-        "Path 2",
-        "Path 3",
-        "Edit Mode",
-        "Watch Aurora",
-    };
-    std::unordered_map<char, vec2> buttonChars;
-    GLuint textTex = Loader::loadCharacter(directory + "texture/button/georgia.ttf",
-                                           directory + "interface/shaders/character.vs",
-                                           directory + "interface/shaders/character.fs",
-                                           buttonText,
-                                           buttonChars,
-                                           0,
-                                           window.getViewPort());
-    
-    vector<vec3> colors {
+    Shader buttonShader(directory + "interface/shaders/button.vs",
+                        directory + "interface/shaders/button.fs");
+    vector<vec3> buttonColor {
         vec3( 52, 152, 219), vec3( 41, 128, 185),
+        vec3(155,  89, 182), vec3(142,  68, 173),
         vec3( 46, 204, 113), vec3( 39, 174,  96),
         vec3(241, 196,  15), vec3(243, 156,  18),
         vec3(230, 126,  34), vec3(211,  84,   0),
         vec3(231,  76,  60), vec3(192,  57,  43),
     };
+    std::for_each(buttonColor.begin(), buttonColor.end(),
+                  [] (vec3& color) { color /= 255.0f; });
+    vector<string> buttonText {
+        "Editing",
+        "Daylight",
+        "Aurora",
+        "Path 1",
+        "Path 2",
+        "Path 3",
+    };
+    std::unordered_map<char, Character> charFrame;
+    GLuint textTex = Loader::loadCharacter(directory + "texture/button/ostrich.ttf",
+                                           directory + "interface/shaders/character.vs",
+                                           directory + "interface/shaders/character.fs",
+                                           buttonText,
+                                           charFrame,
+                                           0,
+                                           window.getViewPort());
     
     auto createButton = [&] (const int index, const vec2& center, const vec2& size) -> Button {
-        return Button(buttonText[index],
+        Button button(buttonShader,
                       directory + "texture/button/rect_rounded.jpg",
-                      directory + "interface/shaders/button.vs",
-                      directory + "interface/shaders/button.fs",
                       center, size,
-                      colors[index * 2] / 255.0f, colors[index * 2 + 1] * 0.5f / 255.0f);
+                      buttonColor[index * 2], buttonColor[index * 2 + 1]);
+        button.setText(buttonText[index], vec2(0.0015f), -0.03f, textTex, vec3(1.0f), charFrame);
+        return button;
     };
-    
-    vector<Button> buttons;
-    for (int i = 0; i < NUM_BUTTON_BOTTOM; ++i)
-        buttons.push_back(createButton(i, vec2(0.5f + 0.45f * (i - 0.5f), 0.06f), vec2(0.25f, 0.08f)));
-    for (int i = NUM_BUTTON_BOTTOM; i < NUM_BUTTON_TOTAL; ++i)
-        buttons.push_back(createButton(i, vec2(0.5f + 0.31f * (i - 3.0f), 0.94f), vec2(0.25f, 0.08f)));
+    for (int i = 0; i < NUM_BUTTON_TOTAL; ++i) {
+        float centerX = 0.5f + 0.31f * (i % 3 - 1.0f);
+        float centerY = i < NUM_BUTTON_BOTTOM ? 0.06f : 0.94f;
+        buttons.push_back(createButton(i, vec2(centerX, centerY), vec2(0.2f, 0.06f)));
+    }
     
     
     // ------------------------------------
@@ -177,14 +201,6 @@ void DrawPath::mainLoop() {
     // ------------------------------------
     // aurora path
     
-    vector<vec3> controlPoints;
-    float latitude = glm::radians(66.7f);
-    float sinLat = sin(latitude), cosLat = cos(latitude);
-    for (float angle = 0.0f; angle < 360.0f; angle += 45.0f)
-        controlPoints.push_back(vec3(cos(glm::radians(angle)) * cosLat, sinLat, sin(glm::radians(angle)) * cosLat));
-    
-    CRSpline spline(controlPoints, AURORA_RELA_HEIGHT);
-    
     Shader pointShader(directory + "interface/shaders/spline.vs",
                        directory + "interface/shaders/spline.fs",
                        directory + "interface/shaders/spline.gs");
@@ -195,6 +211,23 @@ void DrawPath::mainLoop() {
     
     Shader curveShader(directory + "interface/shaders/spline.vs",
                        directory + "interface/shaders/spline.fs");
+    
+    vector<float> latitude = { 60.0f, 70.0f, 80.0f };
+    for (int i = 0; i < NUM_AURORA_PATH; ++i) {
+        vector<vec3> controlPoints;
+        float lat = glm::radians(latitude[i]);
+        float sinLat = sin(lat), cosLat = cos(lat);
+        for (float angle = 0.0f; angle < 360.0f; angle += 45.0f)
+            controlPoints.push_back(vec3(cos(glm::radians(angle)) * cosLat, sinLat, sin(glm::radians(angle)) * cosLat));
+        
+        splines.push_back(CRSpline(pointShader, curveShader,
+                                   buttonColor[(i + NUM_BUTTON_BOTTOM) * 2],
+                                   controlPoints, AURORA_RELA_HEIGHT));
+    }
+    
+    // the first path is chosen by default
+    editingPath = 0;
+    buttons[NUM_BUTTON_BOTTOM + 0].changeState();
     
     
     // ------------------------------------
@@ -230,11 +263,8 @@ void DrawPath::mainLoop() {
         earthShader.setInt("earthMap", 0);
         earth.draw(earthShader);
 
-        pointShader.use();
-        spline.drawControlPoints();
-
-        curveShader.use();
-        spline.drawSplineCurve();
+        std::for_each(splines.begin(), splines.end(),
+                      [] (CRSpline& spline) { spline.draw(); });
 
         glDepthFunc(GL_LEQUAL);
         universeShader.use();
@@ -347,7 +377,7 @@ void DrawPath::mainLoop() {
                 if (hitButton == BUTTON_NOT_HIT) {
                     vec3 position, normal;
                     if (getIntersection(position, normal, AURORA_RELA_HEIGHT)) {
-                        spline.processMouseClick(false, position, window.getClickNDC(), sideLengthNDC, glm::inverse(ndcToEarth));
+                        splines[editingPath].processMouseClick(false, position, window.getClickNDC(), sideLengthNDC, glm::inverse(ndcToEarth));
                         mayOnSpline = true;
                     }
                 }
@@ -356,14 +386,14 @@ void DrawPath::mainLoop() {
             // left click on buttons is always valid
             int hitButton = didHitButton();
             if (hitButton != BUTTON_NOT_HIT) {
-                buttons[hitButton].changeState();
+                didPressButton(hitButton);
             } else {
                 // in edit mode, right click is valid if the click point is on the atmosphere
                 // while in rotate mode, click point should be on the surface of earth
                 vec3 position, normal;
                 if (isEditing) {
                     if (getIntersection(position, normal, AURORA_RELA_HEIGHT)) {
-                        spline.processMouseClick(true, position, window.getClickNDC(), sideLengthNDC, glm::inverse(ndcToEarth));
+                        splines[editingPath].processMouseClick(true, position, window.getClickNDC(), sideLengthNDC, glm::inverse(ndcToEarth));
                         // do not simply assign true to stillClicking!
                         // left mouse key may have already been released
                         stillClicking = wasClicking;
@@ -382,7 +412,7 @@ void DrawPath::mainLoop() {
         didClickLeft = didClickRight = false;
         wasClicking = stillClicking; // reserve the state of left clicking for the next frame
         
-        if (!mayOnSpline) spline.deselectControlPoint();
+        if (!mayOnSpline) splines[editingPath].deselectControlPoint();
         
         // not consider inertial scrolling only when
         // rotation is enabled and intersection is detected
