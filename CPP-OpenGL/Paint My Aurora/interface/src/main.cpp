@@ -8,11 +8,21 @@
 
 #include <iostream>
 
+#include "object.hpp"
 #include "drawpath.hpp"
 
 int main(int argc, const char * argv[]) {
+//    try {
+//        Object obj("skybox.obj");
+//        return 0;
+//    } catch (std::exception& e) {
+//        std::cerr << e.what() << std::endl;
+//        return -1;
+//    }
+    
+    
     try {
-        DrawPath pathEditor("/Users/lun/Desktop/Code/Aurora/CPP-OpenGL/Paint My Aurora/");
+        DrawPath pathEditor;
         pathEditor.mainLoop();
         glfwTerminate();
         return 0;

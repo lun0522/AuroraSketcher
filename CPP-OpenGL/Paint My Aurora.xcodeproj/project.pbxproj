@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		BD50D03D208242F9004F2734 /* libfreetype.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BD50D03C208242F9004F2734 /* libfreetype.6.dylib */; };
 		BD50D03E20824309004F2734 /* libfreetype.6.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD50D03C208242F9004F2734 /* libfreetype.6.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		BD50D03F20824309004F2734 /* libassimp.4.1.0.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD91558D20786CE500D7C7DF /* libassimp.4.1.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		BD50D04620824535004F2734 /* button.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD50D04420824535004F2734 /* button.cpp */; };
 		BD91521420785B7A00D7C7DF /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD91521320785B7A00D7C7DF /* main.cpp */; };
 		BD91521C20785C5400D7C7DF /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD91521B20785C5400D7C7DF /* OpenGL.framework */; };
@@ -18,27 +17,70 @@
 		BD91533F2078622700D7C7DF /* camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD91533E2078622700D7C7DF /* camera.cpp */; };
 		BD9155732078681D00D7C7DF /* shader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD9155722078681D00D7C7DF /* shader.cpp */; };
 		BD91557C207868BC00D7C7DF /* glad.c in Sources */ = {isa = PBXBuildFile; fileRef = BD91557B207868BC00D7C7DF /* glad.c */; };
-		BD91558A20786C3A00D7C7DF /* mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD91558720786C3A00D7C7DF /* mesh.cpp */; };
-		BD91558B20786C3A00D7C7DF /* model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD91558820786C3A00D7C7DF /* model.cpp */; };
 		BD91558C20786C3A00D7C7DF /* loader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD91558920786C3A00D7C7DF /* loader.cpp */; };
-		BD91558E20786CE500D7C7DF /* libassimp.4.1.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BD91558D20786CE500D7C7DF /* libassimp.4.1.0.dylib */; };
 		BD915595207871ED00D7C7DF /* drawpath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD915593207871ED00D7C7DF /* drawpath.cpp */; };
 		BDA97B01207BABA20054AAB3 /* crspline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BDA97AFF207BABA20054AAB3 /* crspline.cpp */; };
+		BDCBC8A92087B8BF00F5C91D /* object.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BDCBC8A72087B8BF00F5C91D /* object.cpp */; };
 		BDE2FA4020839AFE008B61E2 /* window.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BDE2FA3E20839AFE008B61E2 /* window.cpp */; };
+		BDFC865920870D1000F16877 /* skybox.obj in CopyFiles */ = {isa = PBXBuildFile; fileRef = BDB57A4720791B3400C1DFC6 /* skybox.obj */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		BDFC865A20870D1000F16877 /* PositiveX.jpg in CopyFiles */ = {isa = PBXBuildFile; fileRef = BDB57A4220790FB500C1DFC6 /* PositiveX.jpg */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		BDFC865B20870D1000F16877 /* NegativeX.jpg in CopyFiles */ = {isa = PBXBuildFile; fileRef = BDB57A3E20790FB400C1DFC6 /* NegativeX.jpg */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		BDFC865C20870D1000F16877 /* PositiveY.jpg in CopyFiles */ = {isa = PBXBuildFile; fileRef = BDB57A4020790FB500C1DFC6 /* PositiveY.jpg */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		BDFC865D20870D1000F16877 /* NegativeY.jpg in CopyFiles */ = {isa = PBXBuildFile; fileRef = BDB57A4320790FB500C1DFC6 /* NegativeY.jpg */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		BDFC865E20870D1000F16877 /* PositiveZ.jpg in CopyFiles */ = {isa = PBXBuildFile; fileRef = BDB57A3F20790FB500C1DFC6 /* PositiveZ.jpg */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		BDFC865F20870D1000F16877 /* NegativeZ.jpg in CopyFiles */ = {isa = PBXBuildFile; fileRef = BDB57A4120790FB500C1DFC6 /* NegativeZ.jpg */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		BDFC866020870D1000F16877 /* earth.obj in CopyFiles */ = {isa = PBXBuildFile; fileRef = BDFC865720870B0200F16877 /* earth.obj */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		BDFC866120870D1000F16877 /* earth_day.jpg in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD4278D9207ACC2600D6E174 /* earth_day.jpg */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		BDFC866220870D1000F16877 /* earth_night.jpg in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD4278D8207ACC2600D6E174 /* earth_night.jpg */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		BDFC866320870D1000F16877 /* rect_rounded.jpg in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD60496E208463E300283BF3 /* rect_rounded.jpg */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		BDFC866420870D1000F16877 /* ostrich.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD69663C2086C74600C0901D /* ostrich.ttf */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		BDFC866620870D2300F16877 /* earth.fs in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD9155982078764100D7C7DF /* earth.fs */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		BDFC866720870D2300F16877 /* universe.vs in CopyFiles */ = {isa = PBXBuildFile; fileRef = BDB57A442079131B00C1DFC6 /* universe.vs */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		BDFC866820870D2300F16877 /* universe.fs in CopyFiles */ = {isa = PBXBuildFile; fileRef = BDB57A452079131C00C1DFC6 /* universe.fs */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		BDFC866920870D2300F16877 /* spline.vs in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD73D785207E949A0001461B /* spline.vs */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		BDFC866A20870D2300F16877 /* spline.gs in CopyFiles */ = {isa = PBXBuildFile; fileRef = BDC69E58207A47A60005232C /* spline.gs */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		BDFC866B20870D2300F16877 /* spline.fs in CopyFiles */ = {isa = PBXBuildFile; fileRef = BDC69E59207A47B00005232C /* spline.fs */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		BDFC866C20870D2300F16877 /* button.vs in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD07487420824A1B0069DD87 /* button.vs */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		BDFC866D20870D2300F16877 /* button.fs in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD07487520824A2A0069DD87 /* button.fs */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		BDFC866E20870D2300F16877 /* character.vs in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD0A77D32085473200134DF7 /* character.vs */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		BDFC866F20870D2300F16877 /* character.fs in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD0A77D42085473D00134DF7 /* character.fs */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		BDFC86712087124900F16877 /* earth.vs in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD9155972078762900D7C7DF /* earth.vs */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		BD91520E20785B7A00D7C7DF /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 12;
 			dstPath = "";
-			dstSubfolderSpec = 10;
+			dstSubfolderSpec = 7;
 			files = (
+				BDFC86712087124900F16877 /* earth.vs in CopyFiles */,
+				BDFC866620870D2300F16877 /* earth.fs in CopyFiles */,
+				BDFC866720870D2300F16877 /* universe.vs in CopyFiles */,
+				BDFC866820870D2300F16877 /* universe.fs in CopyFiles */,
+				BDFC866920870D2300F16877 /* spline.vs in CopyFiles */,
+				BDFC866A20870D2300F16877 /* spline.gs in CopyFiles */,
+				BDFC866B20870D2300F16877 /* spline.fs in CopyFiles */,
+				BDFC866C20870D2300F16877 /* button.vs in CopyFiles */,
+				BDFC866D20870D2300F16877 /* button.fs in CopyFiles */,
+				BDFC866E20870D2300F16877 /* character.vs in CopyFiles */,
+				BDFC866F20870D2300F16877 /* character.fs in CopyFiles */,
+				BDFC865920870D1000F16877 /* skybox.obj in CopyFiles */,
+				BDFC865A20870D1000F16877 /* PositiveX.jpg in CopyFiles */,
+				BDFC865B20870D1000F16877 /* NegativeX.jpg in CopyFiles */,
+				BDFC865C20870D1000F16877 /* PositiveY.jpg in CopyFiles */,
+				BDFC865D20870D1000F16877 /* NegativeY.jpg in CopyFiles */,
+				BDFC865E20870D1000F16877 /* PositiveZ.jpg in CopyFiles */,
+				BDFC865F20870D1000F16877 /* NegativeZ.jpg in CopyFiles */,
+				BDFC866020870D1000F16877 /* earth.obj in CopyFiles */,
+				BDFC866120870D1000F16877 /* earth_day.jpg in CopyFiles */,
+				BDFC866220870D1000F16877 /* earth_night.jpg in CopyFiles */,
+				BDFC866320870D1000F16877 /* rect_rounded.jpg in CopyFiles */,
+				BDFC866420870D1000F16877 /* ostrich.ttf in CopyFiles */,
 				BD50D03E20824309004F2734 /* libfreetype.6.dylib in CopyFiles */,
-				BD50D03F20824309004F2734 /* libassimp.4.1.0.dylib in CopyFiles */,
 				BD91521F20785C9800D7C7DF /* libglfw.3.2.dylib in CopyFiles */,
 			);
-			runOnlyForDeploymentPostprocessing = 1;
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
@@ -66,18 +108,12 @@
 		BD915577207868BC00D7C7DF /* khrplatform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = khrplatform.h; sourceTree = "<group>"; };
 		BD915579207868BC00D7C7DF /* glad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glad.h; sourceTree = "<group>"; };
 		BD91557B207868BC00D7C7DF /* glad.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = glad.c; sourceTree = "<group>"; };
-		BD91558220786BB400D7C7DF /* model.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = model.hpp; sourceTree = "<group>"; };
 		BD91558320786BB400D7C7DF /* loader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = loader.hpp; sourceTree = "<group>"; };
-		BD91558420786BB400D7C7DF /* mesh.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = mesh.hpp; sourceTree = "<group>"; };
-		BD91558720786C3A00D7C7DF /* mesh.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mesh.cpp; sourceTree = "<group>"; };
-		BD91558820786C3A00D7C7DF /* model.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = model.cpp; sourceTree = "<group>"; };
 		BD91558920786C3A00D7C7DF /* loader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = loader.cpp; sourceTree = "<group>"; };
-		BD91558D20786CE500D7C7DF /* libassimp.4.1.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libassimp.4.1.0.dylib; path = ../../../../../../usr/local/Cellar/assimp/4.1.0/lib/libassimp.4.1.0.dylib; sourceTree = "<group>"; };
 		BD915593207871ED00D7C7DF /* drawpath.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = drawpath.cpp; sourceTree = "<group>"; };
 		BD915594207871ED00D7C7DF /* drawpath.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = drawpath.hpp; sourceTree = "<group>"; };
 		BD9155972078762900D7C7DF /* earth.vs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = earth.vs; sourceTree = "<group>"; };
 		BD9155982078764100D7C7DF /* earth.fs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = earth.fs; sourceTree = "<group>"; };
-		BD91559920787E9900D7C7DF /* earth.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = earth.obj; sourceTree = "<group>"; };
 		BDA97AFF207BABA20054AAB3 /* crspline.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = crspline.cpp; sourceTree = "<group>"; };
 		BDA97B00207BABA20054AAB3 /* crspline.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = crspline.hpp; sourceTree = "<group>"; };
 		BDB57A3E20790FB400C1DFC6 /* NegativeX.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = NegativeX.jpg; sourceTree = "<group>"; };
@@ -91,8 +127,11 @@
 		BDB57A4720791B3400C1DFC6 /* skybox.obj */ = {isa = PBXFileReference; lastKnownFileType = text; path = skybox.obj; sourceTree = "<group>"; };
 		BDC69E58207A47A60005232C /* spline.gs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = spline.gs; sourceTree = "<group>"; };
 		BDC69E59207A47B00005232C /* spline.fs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = spline.fs; sourceTree = "<group>"; };
+		BDCBC8A72087B8BF00F5C91D /* object.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = object.cpp; sourceTree = "<group>"; };
+		BDCBC8A82087B8BF00F5C91D /* object.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = object.hpp; sourceTree = "<group>"; };
 		BDE2FA3E20839AFE008B61E2 /* window.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = window.cpp; sourceTree = "<group>"; };
 		BDE2FA412083C542008B61E2 /* window.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = window.hpp; sourceTree = "<group>"; };
+		BDFC865720870B0200F16877 /* earth.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = earth.obj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,7 +140,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				BD50D03D208242F9004F2734 /* libfreetype.6.dylib in Frameworks */,
-				BD91558E20786CE500D7C7DF /* libassimp.4.1.0.dylib in Frameworks */,
 				BD91521E20785C7D00D7C7DF /* libglfw.3.2.dylib in Frameworks */,
 				BD91521C20785C5400D7C7DF /* OpenGL.framework in Frameworks */,
 			);
@@ -151,7 +189,6 @@
 			isa = PBXGroup;
 			children = (
 				BD50D03C208242F9004F2734 /* libfreetype.6.dylib */,
-				BD91558D20786CE500D7C7DF /* libassimp.4.1.0.dylib */,
 				BD91521D20785C7D00D7C7DF /* libglfw.3.2.dylib */,
 				BD91521B20785C5400D7C7DF /* OpenGL.framework */,
 			);
@@ -172,8 +209,7 @@
 				BD9155722078681D00D7C7DF /* shader.cpp */,
 				BD91533E2078622700D7C7DF /* camera.cpp */,
 				BD91558920786C3A00D7C7DF /* loader.cpp */,
-				BD91558720786C3A00D7C7DF /* mesh.cpp */,
-				BD91558820786C3A00D7C7DF /* model.cpp */,
+				BDCBC8A72087B8BF00F5C91D /* object.cpp */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -184,8 +220,7 @@
 				BD9155712078680F00D7C7DF /* shader.hpp */,
 				BD91533D2078621F00D7C7DF /* camera.hpp */,
 				BD91558320786BB400D7C7DF /* loader.hpp */,
-				BD91558420786BB400D7C7DF /* mesh.hpp */,
-				BD91558220786BB400D7C7DF /* model.hpp */,
+				BDCBC8A82087B8BF00F5C91D /* object.hpp */,
 			);
 			path = include;
 			sourceTree = "<group>";
@@ -264,7 +299,7 @@
 		BD91557F20786AB100D7C7DF /* earth */ = {
 			isa = PBXGroup;
 			children = (
-				BD91559920787E9900D7C7DF /* earth.obj */,
+				BDFC865720870B0200F16877 /* earth.obj */,
 				BD4278D9207ACC2600D6E174 /* earth_day.jpg */,
 				BD4278D8207ACC2600D6E174 /* earth_night.jpg */,
 			);
@@ -390,10 +425,9 @@
 				BD91521420785B7A00D7C7DF /* main.cpp in Sources */,
 				BDE2FA4020839AFE008B61E2 /* window.cpp in Sources */,
 				BD91533F2078622700D7C7DF /* camera.cpp in Sources */,
-				BD91558A20786C3A00D7C7DF /* mesh.cpp in Sources */,
 				BD91557C207868BC00D7C7DF /* glad.c in Sources */,
 				BDA97B01207BABA20054AAB3 /* crspline.cpp in Sources */,
-				BD91558B20786C3A00D7C7DF /* model.cpp in Sources */,
+				BDCBC8A92087B8BF00F5C91D /* object.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -514,11 +548,11 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = DXJ7AC4744;
+				GCC_PREFIX_HEADER = "";
 				HEADER_SEARCH_PATHS = /usr/local/include;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/Cellar/glfw/3.2.1/lib,
-					/usr/local/Cellar/assimp/4.1.0/lib,
 					/usr/local/Cellar/freetype/2.9/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -535,11 +569,11 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = DXJ7AC4744;
+				GCC_PREFIX_HEADER = "";
 				HEADER_SEARCH_PATHS = /usr/local/include;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/Cellar/glfw/3.2.1/lib,
-					/usr/local/Cellar/assimp/4.1.0/lib,
 					/usr/local/Cellar/freetype/2.9/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";

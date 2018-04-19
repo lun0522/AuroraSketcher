@@ -19,7 +19,6 @@
 #include "crspline.hpp"
 
 class DrawPath {
-    std::string directory;
     Window window;
     Camera camera;
     std::vector<Button> buttons;
@@ -28,10 +27,9 @@ class DrawPath {
     bool isDay, isEditing, shouldUpdateCamera;
     bool wasClicking, didClickLeft, didClickRight;
 public:
-    DrawPath(const char *directory);
+    DrawPath();
     void didClickMouse(const bool isLeft, const bool isPress);
     void didScrollMouse(const float yPos);
-    void didPressUpOrDown(const bool isUp);
     void didPressButton(const int index);
     void mainLoop();
 };

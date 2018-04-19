@@ -15,7 +15,6 @@
 #include <glad/glad.h>
 
 #include "loader.hpp"
-#include "model.hpp"
 #include "shader.hpp"
 
 class Button {

@@ -70,12 +70,6 @@ void Window::updateMousePos() {
 void Window::processKeyboardInput() {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
-    else {
-        if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-            pathEditor->didPressUpOrDown(true);
-        else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-            pathEditor->didPressUpOrDown(false);
-    }
 }
 
 Window::Window(DrawPath *drawPath) {

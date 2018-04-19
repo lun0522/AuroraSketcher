@@ -17,7 +17,7 @@
 
 #include "shader.hpp"
 #include "loader.hpp"
-#include "model.hpp"
+#include "object.hpp"
 #include "drawpath.hpp"
 
 using std::string;
@@ -54,10 +54,6 @@ void DrawPath::didScrollMouse(const float yPos) {
     shouldUpdateCamera = true;
 }
 
-void DrawPath::didPressUpOrDown(const bool isUp) {
-    isDay = isUp;
-}
-
 void DrawPath::didPressButton(const int index) {
     switch (index) {
         case 0: // editing
@@ -83,8 +79,8 @@ void DrawPath::didPressButton(const int index) {
     }
 }
 
-DrawPath::DrawPath(const char *directory):
-directory(directory), window(this), camera(CAMERA_POS) {
+DrawPath::DrawPath():
+window(this), camera(CAMERA_POS) {
     camera.setScreenSize(window.getOriginalSize());
 }
 
@@ -103,8 +99,7 @@ void DrawPath::mainLoop() {
     // ------------------------------------
     // buttons
     
-    Shader buttonShader(directory + "interface/shaders/button.vs",
-                        directory + "interface/shaders/button.fs");
+    Shader buttonShader("button.vs", "button.fs");
     vector<vec3> buttonColor {
         vec3( 52, 152, 219), vec3( 41, 128, 185),
         vec3(155,  89, 182), vec3(142,  68, 173),
@@ -124,18 +119,11 @@ void DrawPath::mainLoop() {
         "Path 3",
     };
     std::unordered_map<char, Character> charFrame;
-    GLuint textTex = Loader::loadCharacter(directory + "texture/button/ostrich.ttf",
-                                           directory + "interface/shaders/character.vs",
-                                           directory + "interface/shaders/character.fs",
-                                           buttonText,
-                                           charFrame,
-                                           0,
-                                           window.getViewPort());
+    GLuint textTex = Loader::loadCharacter("ostrich.ttf", "character.vs", "character.fs",
+                                           buttonText, charFrame, 0, window.getViewPort());
     
     auto createButton = [&] (const int index, const vec2& center, const vec2& size) -> Button {
-        Button button(buttonShader,
-                      directory + "texture/button/rect_rounded.jpg",
-                      center, size,
+        Button button(buttonShader, "rect_rounded.jpg", center, size,
                       buttonColor[index * 2], buttonColor[index * 2 + 1]);
         button.setText(buttonText[index], vec2(0.0015f), -0.03f, textTex, vec3(1.0f), charFrame);
         return button;
@@ -150,11 +138,10 @@ void DrawPath::mainLoop() {
     // ------------------------------------
     // earth
     
-    Model earth(directory + "texture/earth/earth.obj");
-    GLuint earthDayTex = Loader::loadTexture(directory + "texture/earth/earth_day.jpg", false);
-    GLuint earthNightTex = Loader::loadTexture(directory + "texture/earth/earth_night.jpg", false);
-    Shader earthShader(directory + "interface/shaders/earth.vs",
-                       directory + "interface/shaders/earth.fs");
+    Object earth("earth.obj");
+    GLuint earthDayTex = Loader::loadTexture("earth_day.jpg", false);
+    GLuint earthNightTex = Loader::loadTexture("earth_night.jpg", false);
+    Shader earthShader("earth.vs", "earth.fs");
     
     auto initialRotation = [] (mat4& model) {
         // north pole will be in the center of the frame
@@ -177,7 +164,7 @@ void DrawPath::mainLoop() {
     // ------------------------------------
     // universe
     
-    Model universe(directory + "texture/universe/skybox.obj");
+    Object universe("skybox.obj");
     vector<string> boxfaces {
         "PositiveX.jpg",
         "NegativeX.jpg",
@@ -186,9 +173,8 @@ void DrawPath::mainLoop() {
         "PositiveZ.jpg",
         "NegativeZ.jpg",
     };
-    GLuint universeTex = Loader::loadCubemap(directory + "texture/universe", boxfaces, false);
-    Shader universeShader(directory + "interface/shaders/universe.vs",
-                          directory + "interface/shaders/universe.fs");
+    GLuint universeTex = Loader::loadCubemap(".", boxfaces, false);
+    Shader universeShader("universe.vs", "universe.fs");
     
     universeShader.use();
     
@@ -201,16 +187,13 @@ void DrawPath::mainLoop() {
     // ------------------------------------
     // aurora path
     
-    Shader pointShader(directory + "interface/shaders/spline.vs",
-                       directory + "interface/shaders/spline.fs",
-                       directory + "interface/shaders/spline.gs");
+    Shader pointShader("spline.vs", "spline.fs", "spline.gs");
     pointShader.use();
     vec2 sideLengthNDC = vec2(CTRL_POINT_SIDE_LENGTH) / window.getOriginalSize() * 2.0f;
     pointShader.setVec2("sideLength", sideLengthNDC);
     sideLengthNDC *= (CTRL_POINT_SIDE_LENGTH + CLICK_CTRL_POINT_TOLERANCE) / CTRL_POINT_SIDE_LENGTH;
     
-    Shader curveShader(directory + "interface/shaders/spline.vs",
-                       directory + "interface/shaders/spline.fs");
+    Shader curveShader("spline.vs", "spline.fs");
     
     vector<float> latitude = { 60.0f, 70.0f, 80.0f };
     for (int i = 0; i < NUM_AURORA_PATH; ++i) {
@@ -295,7 +278,7 @@ void DrawPath::mainLoop() {
         universeShader.setMat4("model", universeModel);
     };
     
-    auto didHitButton = [&] () -> int {
+    auto buttonHitTest = [&] () -> int {
         int hitButton = BUTTON_NOT_HIT;
         int numTest = isEditing ? NUM_BUTTON_TOTAL : NUM_BUTTON_BOTTOM;
         for (int i = 0; i < numTest; ++i) {
@@ -373,8 +356,7 @@ void DrawPath::mainLoop() {
             // right click is valid only in edit mode, and the click point is on the atmosphere
             // button hit test is done before intersection detection, to save some computation
             if (isEditing) {
-                int hitButton = didHitButton();
-                if (hitButton == BUTTON_NOT_HIT) {
+                if (buttonHitTest() == BUTTON_NOT_HIT) {
                     vec3 position, normal;
                     if (getIntersection(position, normal, AURORA_RELA_HEIGHT)) {
                         splines[editingPath].processMouseClick(false, position, window.getClickNDC(), sideLengthNDC, glm::inverse(ndcToEarth));
@@ -384,7 +366,7 @@ void DrawPath::mainLoop() {
             }
         } else if (wasClicking || didClickLeft) {
             // left click on buttons is always valid
-            int hitButton = didHitButton();
+            int hitButton = buttonHitTest();
             if (hitButton != BUTTON_NOT_HIT) {
                 didPressButton(hitButton);
             } else {

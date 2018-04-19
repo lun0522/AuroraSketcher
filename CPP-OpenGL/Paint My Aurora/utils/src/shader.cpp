@@ -15,26 +15,25 @@
 #include "shader.hpp"
 
 using std::string;
+using std::ifstream;
+using std::ostringstream;
 using std::runtime_error;
 
 static std::unordered_map<string, string> loadedCode;
 
-string Shader::readCode(string path) {
+const string& Shader::readCode(const string& path) {
     auto loaded = loadedCode.find(path);
     if (loaded == loadedCode.end()) {
-        using std::stringstream;
-        using std::ifstream;
-        
-        stringstream stream;
         ifstream file(path);
         file.exceptions(ifstream::failbit | ifstream::badbit);
         if (!file.is_open()) throw runtime_error("Cannot open file: " + path);
         
         try {
+            ostringstream stream;
             stream << file.rdbuf();
             string code = stream.str();
-            loadedCode.insert({ path, code });
-            return code;
+            auto inserted = loadedCode.insert({ path, code });
+            return inserted.first->second;
         } catch (ifstream::failure e) {
             throw runtime_error("Failed in reading file: " + e.code().message());
         }
@@ -110,42 +109,42 @@ void Shader::use() const {
     glUseProgram(programId);
 }
 
-GLuint Shader::getUniform(const string &name) const {
+GLuint Shader::getUniform(const string& name) const {
     GLint location = glGetUniformLocation(programId, name.c_str());
     if (location != GL_INVALID_INDEX) return location;
     else throw runtime_error("Cannot find uniform " + name);
 }
 
-void Shader::setBool(const std::string &name, const bool value) const {
+void Shader::setBool(const std::string& name, const bool value) const {
     setInt(name, value);
 }
 
-void Shader::setInt(const string &name, const int value) const {
+void Shader::setInt(const string& name, const int value) const {
     glUniform1i(getUniform(name), value);
 }
 
-void Shader::setFloat(const string &name, const float value) const {
+void Shader::setFloat(const string& name, const float value) const {
     glUniform1f(getUniform(name), value);
 }
 
-void Shader::setVec2(const std::string &name, const glm::vec2& value) const {
+void Shader::setVec2(const std::string& name, const glm::vec2& value) const {
     glUniform2fv(getUniform(name), 1, glm::value_ptr(value));
 }
 
-void Shader::setVec3(const std::string &name, const GLfloat v0, const GLfloat v1, const GLfloat v2) const {
+void Shader::setVec3(const std::string& name, const GLfloat v0, const GLfloat v1, const GLfloat v2) const {
     glUniform3f(getUniform(name), v0, v1, v2);
 }
 
-void Shader::setVec3(const std::string &name, const glm::vec3& value) const {
+void Shader::setVec3(const std::string& name, const glm::vec3& value) const {
     glUniform3fv(getUniform(name), 1, glm::value_ptr(value));
 }
 
-void Shader::setMat3(const std::string &name, const glm::mat3& value) const {
+void Shader::setMat3(const std::string& name, const glm::mat3& value) const {
     // how many matrices to send, transpose or not (GLM is already in coloumn order, so no)
     glUniformMatrix3fv(getUniform(name), 1, GL_FALSE, glm::value_ptr(value));
 }
 
-void Shader::setMat4(const std::string &name, const glm::mat4& value) const {
+void Shader::setMat4(const std::string& name, const glm::mat4& value) const {
     glUniformMatrix4fv(getUniform(name), 1, GL_FALSE, glm::value_ptr(value));
 }
 
