@@ -31,6 +31,7 @@ struct Character {
 
 class Loader {
 public:
+    static void setFlipVertically(const bool shouldFlip);
     static GLuint loadTexture(const std::string& path, const bool gammaCorrection);
     static GLuint loadCubemap(const std::string& path,
                               const std::vector<std::string>& filename,

@@ -1,6 +1,6 @@
 //
 //  window.cpp
-//  Paint My Aurora
+//  Draw My Aurora
 //
 //  Created by Pujun Lun on 4/15/18.
 //  Copyright © 2018 Pujun Lun. All rights reserved.
@@ -87,7 +87,7 @@ Window::Window(DrawPath *drawPath) {
     // ------------------------------------
     // window
     
-    window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Paint My Aurora", NULL, NULL);
+    window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Draw My Aurora", NULL, NULL);
     if (window == NULL) throw runtime_error("Failed to create window");
     
     glfwMakeContextCurrent(window);

@@ -1,6 +1,6 @@
 //
 //  drawpath.cpp
-//  Paint My Aurora
+//  Draw My Aurora
 //
 //  Created by Pujun Lun on 4/6/18.
 //  Copyright © 2018 Pujun Lun. All rights reserved.
@@ -81,6 +81,7 @@ void DrawPath::didPressButton(const int index) {
 
 DrawPath::DrawPath():
 window(this), camera(CAMERA_POS) {
+    Loader::setFlipVertically(true);
     camera.setScreenSize(window.getOriginalSize());
 }
 

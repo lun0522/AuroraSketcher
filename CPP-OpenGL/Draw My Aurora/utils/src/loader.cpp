@@ -35,6 +35,10 @@ struct CharGlyph {
 static const int CHAR_HEIGHT = 64;
 static unordered_map<string, GLuint> loadedTexture;
 
+void Loader::setFlipVertically(const bool shouldFlip) {
+    stbi_set_flip_vertically_on_load(shouldFlip);
+}
+
 GLuint loadImage(const string& path,
                  const GLenum target,
                  const bool shouldBind,

@@ -1,6 +1,6 @@
 //
 //  object.cpp
-//  Paint My Aurora
+//  Draw My Aurora
 //
 //  Created by Pujun Lun on 4/18/18.
 //  Copyright © 2018 Pujun Lun. All rights reserved.
@@ -35,7 +35,7 @@ struct Vertex {
     vec2 texCoord;
 };
 
-const int OBJ_FILE_INDEX_BASE = 1;
+static const int OBJ_FILE_INDEX_BASE = 1;
 
 Object::Object(const string& path) {
     ifstream file(path);

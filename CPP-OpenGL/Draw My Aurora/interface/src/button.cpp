@@ -1,6 +1,6 @@
 //
 //  button.cpp
-//  Paint My Aurora
+//  Draw My Aurora
 //
 //  Created by Pujun Lun on 4/14/18.
 //  Copyright © 2018 Pujun Lun. All rights reserved.

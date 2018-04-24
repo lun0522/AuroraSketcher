@@ -10,6 +10,14 @@
 		BD50D03D208242F9004F2734 /* libfreetype.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BD50D03C208242F9004F2734 /* libfreetype.6.dylib */; };
 		BD50D03E20824309004F2734 /* libfreetype.6.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD50D03C208242F9004F2734 /* libfreetype.6.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		BD50D04620824535004F2734 /* button.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD50D04420824535004F2734 /* button.cpp */; };
+		BD5380B2208ECADF009A63FD /* Draw My Aurora in Sources */ = {isa = PBXBuildFile; fileRef = BD91521020785B7A00D7C7DF /* Draw My Aurora */; };
+		BD5380E9208ED3BC009A63FD /* NegativeX.jpg in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD5380E7208ED3B5009A63FD /* NegativeX.jpg */; };
+		BD5380EA208ED3BC009A63FD /* NegativeY.jpg in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD5380E6208ED3B5009A63FD /* NegativeY.jpg */; };
+		BD5380EB208ED3BC009A63FD /* NegativeZ.jpg in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD5380E8208ED3B6009A63FD /* NegativeZ.jpg */; };
+		BD5380EC208ED3BC009A63FD /* PositiveX.jpg in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD5380E4208ED3B5009A63FD /* PositiveX.jpg */; };
+		BD5380ED208ED3BC009A63FD /* PositiveY.jpg in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD5380E3208ED3B4009A63FD /* PositiveY.jpg */; };
+		BD5380EE208ED3BC009A63FD /* PositiveZ.jpg in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD5380E5208ED3B5009A63FD /* PositiveZ.jpg */; };
+		BD5380F1208ED855009A63FD /* distfield.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD5380EF208ED855009A63FD /* distfield.cpp */; };
 		BD91521420785B7A00D7C7DF /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD91521320785B7A00D7C7DF /* main.cpp */; };
 		BD91521C20785C5400D7C7DF /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD91521B20785C5400D7C7DF /* OpenGL.framework */; };
 		BD91521E20785C7D00D7C7DF /* libglfw.3.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BD91521D20785C7D00D7C7DF /* libglfw.3.2.dylib */; };
@@ -23,12 +31,6 @@
 		BDCBC8A92087B8BF00F5C91D /* object.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BDCBC8A72087B8BF00F5C91D /* object.cpp */; };
 		BDE2FA4020839AFE008B61E2 /* window.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BDE2FA3E20839AFE008B61E2 /* window.cpp */; };
 		BDFC865920870D1000F16877 /* skybox.obj in CopyFiles */ = {isa = PBXBuildFile; fileRef = BDB57A4720791B3400C1DFC6 /* skybox.obj */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		BDFC865A20870D1000F16877 /* PositiveX.jpg in CopyFiles */ = {isa = PBXBuildFile; fileRef = BDB57A4220790FB500C1DFC6 /* PositiveX.jpg */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		BDFC865B20870D1000F16877 /* NegativeX.jpg in CopyFiles */ = {isa = PBXBuildFile; fileRef = BDB57A3E20790FB400C1DFC6 /* NegativeX.jpg */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		BDFC865C20870D1000F16877 /* PositiveY.jpg in CopyFiles */ = {isa = PBXBuildFile; fileRef = BDB57A4020790FB500C1DFC6 /* PositiveY.jpg */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		BDFC865D20870D1000F16877 /* NegativeY.jpg in CopyFiles */ = {isa = PBXBuildFile; fileRef = BDB57A4320790FB500C1DFC6 /* NegativeY.jpg */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		BDFC865E20870D1000F16877 /* PositiveZ.jpg in CopyFiles */ = {isa = PBXBuildFile; fileRef = BDB57A3F20790FB500C1DFC6 /* PositiveZ.jpg */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		BDFC865F20870D1000F16877 /* NegativeZ.jpg in CopyFiles */ = {isa = PBXBuildFile; fileRef = BDB57A4120790FB500C1DFC6 /* NegativeZ.jpg */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		BDFC866020870D1000F16877 /* earth.obj in CopyFiles */ = {isa = PBXBuildFile; fileRef = BDFC865720870B0200F16877 /* earth.obj */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		BDFC866120870D1000F16877 /* earth_day.jpg in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD4278D9207ACC2600D6E174 /* earth_day.jpg */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		BDFC866220870D1000F16877 /* earth_night.jpg in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD4278D8207ACC2600D6E174 /* earth_night.jpg */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -54,6 +56,12 @@
 			dstPath = "";
 			dstSubfolderSpec = 7;
 			files = (
+				BD5380E9208ED3BC009A63FD /* NegativeX.jpg in CopyFiles */,
+				BD5380EA208ED3BC009A63FD /* NegativeY.jpg in CopyFiles */,
+				BD5380EB208ED3BC009A63FD /* NegativeZ.jpg in CopyFiles */,
+				BD5380EC208ED3BC009A63FD /* PositiveX.jpg in CopyFiles */,
+				BD5380ED208ED3BC009A63FD /* PositiveY.jpg in CopyFiles */,
+				BD5380EE208ED3BC009A63FD /* PositiveZ.jpg in CopyFiles */,
 				BDFC86712087124900F16877 /* earth.vs in CopyFiles */,
 				BDFC866620870D2300F16877 /* earth.fs in CopyFiles */,
 				BDFC866720870D2300F16877 /* universe.vs in CopyFiles */,
@@ -66,12 +74,6 @@
 				BDFC866E20870D2300F16877 /* character.vs in CopyFiles */,
 				BDFC866F20870D2300F16877 /* character.fs in CopyFiles */,
 				BDFC865920870D1000F16877 /* skybox.obj in CopyFiles */,
-				BDFC865A20870D1000F16877 /* PositiveX.jpg in CopyFiles */,
-				BDFC865B20870D1000F16877 /* NegativeX.jpg in CopyFiles */,
-				BDFC865C20870D1000F16877 /* PositiveY.jpg in CopyFiles */,
-				BDFC865D20870D1000F16877 /* NegativeY.jpg in CopyFiles */,
-				BDFC865E20870D1000F16877 /* PositiveZ.jpg in CopyFiles */,
-				BDFC865F20870D1000F16877 /* NegativeZ.jpg in CopyFiles */,
 				BDFC866020870D1000F16877 /* earth.obj in CopyFiles */,
 				BDFC866120870D1000F16877 /* earth_day.jpg in CopyFiles */,
 				BDFC866220870D1000F16877 /* earth_night.jpg in CopyFiles */,
@@ -94,10 +96,18 @@
 		BD50D03C208242F9004F2734 /* libfreetype.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfreetype.6.dylib; path = ../../../../../../usr/local/Cellar/freetype/2.9/lib/libfreetype.6.dylib; sourceTree = "<group>"; };
 		BD50D04420824535004F2734 /* button.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = button.cpp; sourceTree = "<group>"; };
 		BD50D04520824535004F2734 /* button.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = button.hpp; sourceTree = "<group>"; };
+		BD5380E3208ED3B4009A63FD /* PositiveY.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = PositiveY.jpg; sourceTree = "<group>"; };
+		BD5380E4208ED3B5009A63FD /* PositiveX.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = PositiveX.jpg; sourceTree = "<group>"; };
+		BD5380E5208ED3B5009A63FD /* PositiveZ.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = PositiveZ.jpg; sourceTree = "<group>"; };
+		BD5380E6208ED3B5009A63FD /* NegativeY.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = NegativeY.jpg; sourceTree = "<group>"; };
+		BD5380E7208ED3B5009A63FD /* NegativeX.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = NegativeX.jpg; sourceTree = "<group>"; };
+		BD5380E8208ED3B6009A63FD /* NegativeZ.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = NegativeZ.jpg; sourceTree = "<group>"; };
+		BD5380EF208ED855009A63FD /* distfield.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = distfield.cpp; sourceTree = "<group>"; };
+		BD5380F0208ED855009A63FD /* distfield.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = distfield.hpp; sourceTree = "<group>"; };
 		BD60496E208463E300283BF3 /* rect_rounded.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = rect_rounded.jpg; sourceTree = "<group>"; };
 		BD69663C2086C74600C0901D /* ostrich.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = ostrich.ttf; sourceTree = "<group>"; };
 		BD73D785207E949A0001461B /* spline.vs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = spline.vs; sourceTree = "<group>"; };
-		BD91521020785B7A00D7C7DF /* Paint My Aurora */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Paint My Aurora"; sourceTree = BUILT_PRODUCTS_DIR; };
+		BD91521020785B7A00D7C7DF /* Draw My Aurora */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Draw My Aurora"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BD91521320785B7A00D7C7DF /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		BD91521B20785C5400D7C7DF /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		BD91521D20785C7D00D7C7DF /* libglfw.3.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libglfw.3.2.dylib; path = ../../../../../../usr/local/Cellar/glfw/3.2.1/lib/libglfw.3.2.dylib; sourceTree = "<group>"; };
@@ -116,17 +126,12 @@
 		BD9155982078764100D7C7DF /* earth.fs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = earth.fs; sourceTree = "<group>"; };
 		BDA97AFF207BABA20054AAB3 /* crspline.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = crspline.cpp; sourceTree = "<group>"; };
 		BDA97B00207BABA20054AAB3 /* crspline.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = crspline.hpp; sourceTree = "<group>"; };
-		BDB57A3E20790FB400C1DFC6 /* NegativeX.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = NegativeX.jpg; sourceTree = "<group>"; };
-		BDB57A3F20790FB500C1DFC6 /* PositiveZ.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = PositiveZ.jpg; sourceTree = "<group>"; };
-		BDB57A4020790FB500C1DFC6 /* PositiveY.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = PositiveY.jpg; sourceTree = "<group>"; };
-		BDB57A4120790FB500C1DFC6 /* NegativeZ.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = NegativeZ.jpg; sourceTree = "<group>"; };
-		BDB57A4220790FB500C1DFC6 /* PositiveX.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = PositiveX.jpg; sourceTree = "<group>"; };
-		BDB57A4320790FB500C1DFC6 /* NegativeY.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = NegativeY.jpg; sourceTree = "<group>"; };
 		BDB57A442079131B00C1DFC6 /* universe.vs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = universe.vs; sourceTree = "<group>"; };
 		BDB57A452079131C00C1DFC6 /* universe.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = universe.fs; sourceTree = "<group>"; };
 		BDB57A4720791B3400C1DFC6 /* skybox.obj */ = {isa = PBXFileReference; lastKnownFileType = text; path = skybox.obj; sourceTree = "<group>"; };
 		BDC69E58207A47A60005232C /* spline.gs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = spline.gs; sourceTree = "<group>"; };
 		BDC69E59207A47B00005232C /* spline.fs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = spline.fs; sourceTree = "<group>"; };
+		BDCB511720886CA00072D588 /* libassimp.4.1.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libassimp.4.1.0.dylib; path = ../../../../../../usr/local/Cellar/assimp/4.1.0/lib/libassimp.4.1.0.dylib; sourceTree = "<group>"; };
 		BDCBC8A72087B8BF00F5C91D /* object.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = object.cpp; sourceTree = "<group>"; };
 		BDCBC8A82087B8BF00F5C91D /* object.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = object.hpp; sourceTree = "<group>"; };
 		BDE2FA3E20839AFE008B61E2 /* window.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = window.cpp; sourceTree = "<group>"; };
@@ -160,7 +165,7 @@
 		BD91520720785B7A00D7C7DF = {
 			isa = PBXGroup;
 			children = (
-				BD91521220785B7A00D7C7DF /* Paint My Aurora */,
+				BD91521220785B7A00D7C7DF /* Draw My Aurora */,
 				BD91521120785B7A00D7C7DF /* Products */,
 				BD91521A20785C5400D7C7DF /* Frameworks */,
 			);
@@ -169,25 +174,26 @@
 		BD91521120785B7A00D7C7DF /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				BD91521020785B7A00D7C7DF /* Paint My Aurora */,
+				BD91521020785B7A00D7C7DF /* Draw My Aurora */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		BD91521220785B7A00D7C7DF /* Paint My Aurora */ = {
+		BD91521220785B7A00D7C7DF /* Draw My Aurora */ = {
 			isa = PBXGroup;
 			children = (
 				BD91522020785CA900D7C7DF /* library */,
-				BD91557D20786A2500D7C7DF /* texture */,
 				BD915590207871B400D7C7DF /* interface */,
+				BD91557D20786A2500D7C7DF /* texture */,
 				BD91558F2078719900D7C7DF /* utils */,
 			);
-			path = "Paint My Aurora";
+			path = "Draw My Aurora";
 			sourceTree = "<group>";
 		};
 		BD91521A20785C5400D7C7DF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				BDCB511720886CA00072D588 /* libassimp.4.1.0.dylib */,
 				BD50D03C208242F9004F2734 /* libfreetype.6.dylib */,
 				BD91521D20785C7D00D7C7DF /* libglfw.3.2.dylib */,
 				BD91521B20785C5400D7C7DF /* OpenGL.framework */,
@@ -332,6 +338,7 @@
 				BD915594207871ED00D7C7DF /* drawpath.hpp */,
 				BDA97B00207BABA20054AAB3 /* crspline.hpp */,
 				BD50D04520824535004F2734 /* button.hpp */,
+				BD5380F0208ED855009A63FD /* distfield.hpp */,
 			);
 			path = include;
 			sourceTree = "<group>";
@@ -344,6 +351,7 @@
 				BD915593207871ED00D7C7DF /* drawpath.cpp */,
 				BDA97AFF207BABA20054AAB3 /* crspline.cpp */,
 				BD50D04420824535004F2734 /* button.cpp */,
+				BD5380EF208ED855009A63FD /* distfield.cpp */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -352,12 +360,12 @@
 			isa = PBXGroup;
 			children = (
 				BDB57A4720791B3400C1DFC6 /* skybox.obj */,
-				BDB57A4220790FB500C1DFC6 /* PositiveX.jpg */,
-				BDB57A3E20790FB400C1DFC6 /* NegativeX.jpg */,
-				BDB57A4020790FB500C1DFC6 /* PositiveY.jpg */,
-				BDB57A4320790FB500C1DFC6 /* NegativeY.jpg */,
-				BDB57A3F20790FB500C1DFC6 /* PositiveZ.jpg */,
-				BDB57A4120790FB500C1DFC6 /* NegativeZ.jpg */,
+				BD5380E4208ED3B5009A63FD /* PositiveX.jpg */,
+				BD5380E7208ED3B5009A63FD /* NegativeX.jpg */,
+				BD5380E3208ED3B4009A63FD /* PositiveY.jpg */,
+				BD5380E6208ED3B5009A63FD /* NegativeY.jpg */,
+				BD5380E5208ED3B5009A63FD /* PositiveZ.jpg */,
+				BD5380E8208ED3B6009A63FD /* NegativeZ.jpg */,
 			);
 			path = universe;
 			sourceTree = "<group>";
@@ -365,9 +373,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		BD91520F20785B7A00D7C7DF /* Paint My Aurora */ = {
+		BD91520F20785B7A00D7C7DF /* Draw My Aurora */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = BD91521720785B7A00D7C7DF /* Build configuration list for PBXNativeTarget "Paint My Aurora" */;
+			buildConfigurationList = BD91521720785B7A00D7C7DF /* Build configuration list for PBXNativeTarget "Draw My Aurora" */;
 			buildPhases = (
 				BD91520C20785B7A00D7C7DF /* Sources */,
 				BD91520D20785B7A00D7C7DF /* Frameworks */,
@@ -377,9 +385,9 @@
 			);
 			dependencies = (
 			);
-			name = "Paint My Aurora";
+			name = "Draw My Aurora";
 			productName = "Paint My Aurora";
-			productReference = BD91521020785B7A00D7C7DF /* Paint My Aurora */;
+			productReference = BD91521020785B7A00D7C7DF /* Draw My Aurora */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -396,7 +404,7 @@
 					};
 				};
 			};
-			buildConfigurationList = BD91520B20785B7A00D7C7DF /* Build configuration list for PBXProject "Paint My Aurora" */;
+			buildConfigurationList = BD91520B20785B7A00D7C7DF /* Build configuration list for PBXProject "Draw My Aurora" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -408,7 +416,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				BD91520F20785B7A00D7C7DF /* Paint My Aurora */,
+				BD91520F20785B7A00D7C7DF /* Draw My Aurora */,
 			);
 		};
 /* End PBXProject section */
@@ -425,8 +433,10 @@
 				BD91521420785B7A00D7C7DF /* main.cpp in Sources */,
 				BDE2FA4020839AFE008B61E2 /* window.cpp in Sources */,
 				BD91533F2078622700D7C7DF /* camera.cpp in Sources */,
+				BD5380B2208ECADF009A63FD /* Draw My Aurora in Sources */,
 				BD91557C207868BC00D7C7DF /* glad.c in Sources */,
 				BDA97B01207BABA20054AAB3 /* crspline.cpp in Sources */,
+				BD5380F1208ED855009A63FD /* distfield.cpp in Sources */,
 				BDCBC8A92087B8BF00F5C91D /* object.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -546,8 +556,10 @@
 		BD91521820785B7A00D7C7DF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_X86_VECTOR_INSTRUCTIONS = avx2;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = DXJ7AC4744;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
 				HEADER_SEARCH_PATHS = /usr/local/include;
 				LIBRARY_SEARCH_PATHS = (
@@ -567,8 +579,10 @@
 		BD91521920785B7A00D7C7DF /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_X86_VECTOR_INSTRUCTIONS = avx2;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = DXJ7AC4744;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
 				HEADER_SEARCH_PATHS = /usr/local/include;
 				LIBRARY_SEARCH_PATHS = (
@@ -588,7 +602,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		BD91520B20785B7A00D7C7DF /* Build configuration list for PBXProject "Paint My Aurora" */ = {
+		BD91520B20785B7A00D7C7DF /* Build configuration list for PBXProject "Draw My Aurora" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				BD91521520785B7A00D7C7DF /* Debug */,
@@ -597,7 +611,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		BD91521720785B7A00D7C7DF /* Build configuration list for PBXNativeTarget "Paint My Aurora" */ = {
+		BD91521720785B7A00D7C7DF /* Build configuration list for PBXNativeTarget "Draw My Aurora" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				BD91521820785B7A00D7C7DF /* Debug */,

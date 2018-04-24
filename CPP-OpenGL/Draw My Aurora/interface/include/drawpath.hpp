@@ -1,6 +1,6 @@
 //
 //  drawpath.hpp
-//  Paint My Aurora
+//  Draw My Aurora
 //
 //  Created by Pujun Lun on 4/6/18.
 //  Copyright © 2018 Pujun Lun. All rights reserved.
