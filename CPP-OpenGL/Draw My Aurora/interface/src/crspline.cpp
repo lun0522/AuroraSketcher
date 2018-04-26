@@ -228,4 +228,12 @@ void CRSpline::draw() const {
     curveShader.setVec3("color", color);
     glBindVertexArray(curveVAO);
     glDrawArrays(GL_LINE_STRIP, 0, curvePoints.size());
+    glBindVertexArray(0);
+}
+
+void CRSpline::drawLine(const Shader& shader) const {
+    shader.use();
+    glBindVertexArray(curveVAO);
+    glDrawArrays(GL_LINE_STRIP, 0, curvePoints.size());
+    glBindVertexArray(0);
 }

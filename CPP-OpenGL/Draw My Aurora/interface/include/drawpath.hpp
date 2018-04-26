@@ -16,11 +16,13 @@
 #include "window.hpp"
 #include "camera.hpp"
 #include "button.hpp"
+#include "aurora.hpp"
 #include "crspline.hpp"
 
 class DrawPath {
     Window window;
     Camera camera;
+    Aurora aurora;
     std::vector<Button> buttons;
     std::vector<CRSpline> splines;
     int editingPath;

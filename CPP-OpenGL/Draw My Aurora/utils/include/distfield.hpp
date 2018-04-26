@@ -12,6 +12,7 @@
 #include <immintrin.h>
 
 class DistanceField {
+public:
     struct Point {
         int dx, dy;
         int distSq() const { return dx * dx + dy * dy; }
@@ -19,19 +20,19 @@ class DistanceField {
     struct Grid {
         Point *points;
     };
+    DistanceField(const int width, const int height);
+    void generate(unsigned char* image);
+    ~DistanceField();
+private:
     int imageWidth, imageHeight;
     int gridWidth, gridHeight, numPoint;
-    Grid grid1, grid2;
-    Point inside = { 0, 0 };
-    Point empty = { 16384, 16384 };
-    Point get(Grid &g, int x, int y);
-    void put(Grid &g, int x, int y, const Point &p);
-    void groupCompare(Grid &g, int x, int y, const __m256i& offsets);
-    Point singleCompare(Grid &g, int x, int y, int offsetx, int offsety, Point other);
-    void generateSDF(Grid &g);
-public:
-    void loadImage(int width, int height, unsigned char* image);
-    ~DistanceField();
+    Grid grid;
+    Point get(const int x, const int y);
+    void put(const int x, const int y, const Point &p);
+    Point groupCompare(Point other, const int x, const int y, const __m256i& offsets);
+    Point singleCompare(Point other, const int x, const int y,
+                        const int offsetx, const int offsety);
+    void generateSDF();
 };
 
 #endif /* distfield_hpp */

@@ -65,7 +65,9 @@ void DrawPath::didPressButton(const int index) {
             isDay = !isDay;
             break;
         case 2: // aurora
-            // temporarily empty
+            buttons[2].changeState();
+            aurora.mainLoop(splines, 0, window.getViewPort());
+            buttons[2].changeState();
             break;
         default: // path
             int pathIndex = index - NUM_BUTTON_BOTTOM;
@@ -80,7 +82,7 @@ void DrawPath::didPressButton(const int index) {
 }
 
 DrawPath::DrawPath():
-window(this), camera(CAMERA_POS) {
+window(this), camera(CAMERA_POS), aurora(0) {
     Loader::setFlipVertically(true);
     camera.setScreenSize(window.getOriginalSize());
 }
@@ -186,7 +188,7 @@ void DrawPath::mainLoop() {
     
     
     // ------------------------------------
-    // aurora path
+    // aurora
     
     Shader pointShader("spline.vs", "spline.fs", "spline.gs");
     pointShader.use();
@@ -248,7 +250,7 @@ void DrawPath::mainLoop() {
         earth.draw(earthShader);
 
         std::for_each(splines.begin(), splines.end(),
-                      [] (CRSpline& spline) { spline.draw(); });
+                      [] (const CRSpline& spline) { spline.draw(); });
 
         glDepthFunc(GL_LEQUAL);
         universeShader.use();
@@ -261,7 +263,7 @@ void DrawPath::mainLoop() {
         // render buttons at last because of alpha blending
         int numDisplay = isEditing ? NUM_BUTTON_TOTAL : NUM_BUTTON_BOTTOM;
         std::for_each(buttons.begin(), buttons.begin() + numDisplay,
-                      [] (Button& button) { button.draw(); });
+                      [] (const Button& button) { button.draw(); });
     };
     
     auto rotateScene = [&] (const float angle, const vec3& axis) {
