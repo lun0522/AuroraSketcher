@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BD181A542092C5EB00A29A8C /* aurora.vs in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD181A522092706300A29A8C /* aurora.vs */; };
+		BD181A552092C5EB00A29A8C /* aurora.fs in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD181A53209270A500A29A8C /* aurora.fs */; };
+		BD181A582092CF3100A29A8C /* deposition.jpg in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD181A572092CF2300A29A8C /* deposition.jpg */; };
 		BD19718A20912FF40017DD4F /* aurora.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD19718820912FF40017DD4F /* aurora.cpp */; };
 		BD19718E20913F9B0017DD4F /* path.vs in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD19718C20913F7B0017DD4F /* path.vs */; };
 		BD19718F20913F9B0017DD4F /* path.fs in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD19718D20913F860017DD4F /* path.fs */; };
@@ -59,6 +62,9 @@
 			dstPath = "";
 			dstSubfolderSpec = 7;
 			files = (
+				BD181A582092CF3100A29A8C /* deposition.jpg in CopyFiles */,
+				BD181A542092C5EB00A29A8C /* aurora.vs in CopyFiles */,
+				BD181A552092C5EB00A29A8C /* aurora.fs in CopyFiles */,
 				BD19718E20913F9B0017DD4F /* path.vs in CopyFiles */,
 				BD19718F20913F9B0017DD4F /* path.fs in CopyFiles */,
 				BD5380E9208ED3BC009A63FD /* NegativeX.jpg in CopyFiles */,
@@ -96,6 +102,9 @@
 		BD07487520824A2A0069DD87 /* button.fs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = button.fs; sourceTree = "<group>"; };
 		BD0A77D32085473200134DF7 /* character.vs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = character.vs; sourceTree = "<group>"; };
 		BD0A77D42085473D00134DF7 /* character.fs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = character.fs; sourceTree = "<group>"; };
+		BD181A522092706300A29A8C /* aurora.vs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = aurora.vs; sourceTree = "<group>"; };
+		BD181A53209270A500A29A8C /* aurora.fs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = aurora.fs; sourceTree = "<group>"; };
+		BD181A572092CF2300A29A8C /* deposition.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = deposition.jpg; sourceTree = "<group>"; };
 		BD19718820912FF40017DD4F /* aurora.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = aurora.cpp; sourceTree = "<group>"; };
 		BD19718920912FF40017DD4F /* aurora.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = aurora.hpp; sourceTree = "<group>"; };
 		BD19718C20913F7B0017DD4F /* path.vs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = path.vs; sourceTree = "<group>"; };
@@ -168,6 +177,14 @@
 				BD69663C2086C74600C0901D /* ostrich.ttf */,
 			);
 			path = button;
+			sourceTree = "<group>";
+		};
+		BD181A562092CEF800A29A8C /* aurora */ = {
+			isa = PBXGroup;
+			children = (
+				BD181A572092CF2300A29A8C /* deposition.jpg */,
+			);
+			path = aurora;
 			sourceTree = "<group>";
 		};
 		BD19718B20913F1B0017DD4F /* shaders */ = {
@@ -263,6 +280,8 @@
 				BDC69E59207A47B00005232C /* spline.fs */,
 				BD07487420824A1B0069DD87 /* button.vs */,
 				BD07487520824A2A0069DD87 /* button.fs */,
+				BD181A522092706300A29A8C /* aurora.vs */,
+				BD181A53209270A500A29A8C /* aurora.fs */,
 			);
 			path = shaders;
 			sourceTree = "<group>";
@@ -316,6 +335,7 @@
 				BDB57A3D20790D8B00C1DFC6 /* universe */,
 				BD91557F20786AB100D7C7DF /* earth */,
 				BD074872208246FD0069DD87 /* button */,
+				BD181A562092CEF800A29A8C /* aurora */,
 			);
 			path = texture;
 			sourceTree = "<group>";

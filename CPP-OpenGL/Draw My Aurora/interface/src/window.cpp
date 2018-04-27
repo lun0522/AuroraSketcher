@@ -47,6 +47,10 @@ void mouseScrollCallback(GLFWwindow *window, double xPos, double yPos) {
     pathEditor->didScrollMouse(yPos);
 }
 
+void mouseMoveCallback(GLFWwindow *window, double xPos, double yPos) {
+    pathEditor->didMoveMouse(vec2(xPos, yPos));
+}
+
 const vec4& Window::getViewPort() {
     return viewPort;
 }

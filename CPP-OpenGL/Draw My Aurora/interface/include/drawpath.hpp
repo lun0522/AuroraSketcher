@@ -26,12 +26,13 @@ class DrawPath {
     std::vector<Button> buttons;
     std::vector<CRSpline> splines;
     int editingPath;
-    bool isDay, isEditing, shouldUpdateCamera;
+    bool isDay, isEditing, shouldUpdateCamera, shouldRenderAurora;
     bool wasClicking, didClickLeft, didClickRight;
 public:
     DrawPath();
     void didClickMouse(const bool isLeft, const bool isPress);
-    void didScrollMouse(const float yPos);
+    void didScrollMouse(const float yOffset);
+    void didMoveMouse(const glm::vec2& position);
     void didPressButton(const int index);
     void mainLoop();
 };

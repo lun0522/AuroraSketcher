@@ -34,6 +34,8 @@ static const float AURORA_RELA_HEIGHT = (EARTH_RADIUS + AURORA_HEIGHT) / EARTH_R
 static const float CTRL_POINT_SIDE_LENGTH = 20.0f;
 static const float CLICK_CTRL_POINT_TOLERANCE = 10.0f;
 static const float INERTIAL_COEFF = 1.5f;
+static const float MIN_FOV = 15.0f;
+static const float MAX_FOV = 45.0f;
 static const int NUM_AURORA_PATH = 3;
 static const int NUM_BUTTON_BOTTOM = 3;
 static const int NUM_BUTTON_TOTAL = NUM_AURORA_PATH + NUM_BUTTON_BOTTOM;
@@ -41,17 +43,30 @@ static const int BUTTON_NOT_HIT = -1;
 static const vec3 CAMERA_POS(0.0f, 0.0f, 30.0f);
 
 void DrawPath::didClickMouse(const bool isLeft, const bool isPress) {
-    if (isLeft) {
-        if (isPress) didClickLeft = true;
-        wasClicking = isPress;
-    } else {
-        if (isPress) didClickRight = true;
+    if (!shouldRenderAurora) {
+        if (isLeft) {
+            if (isPress) didClickLeft = true;
+            wasClicking = isPress;
+        } else {
+            if (isPress) didClickRight = true;
+        }
     }
 }
 
-void DrawPath::didScrollMouse(const float yPos) {
-    camera.processMouseScroll(yPos, 15.0f, 45.0f);
-    shouldUpdateCamera = true;
+void DrawPath::didScrollMouse(const float yOffset) {
+    if (shouldRenderAurora) {
+        aurora.didScrollMouse(yOffset);
+    } else {
+        camera.processMouseScroll(yOffset, MIN_FOV, MAX_FOV);
+        shouldUpdateCamera = true;
+    }
+}
+
+void DrawPath::didMoveMouse(const vec2& position) {
+    if (shouldRenderAurora) {
+        aurora.didMoveMouse(position);
+    }
+    
 }
 
 void DrawPath::didPressButton(const int index) {
@@ -65,9 +80,7 @@ void DrawPath::didPressButton(const int index) {
             isDay = !isDay;
             break;
         case 2: // aurora
-            buttons[2].changeState();
-            aurora.mainLoop(splines, 0, window.getViewPort());
-            buttons[2].changeState();
+            shouldRenderAurora = true;
             break;
         default: // path
             int pathIndex = index - NUM_BUTTON_BOTTOM;
@@ -136,6 +149,7 @@ void DrawPath::mainLoop() {
         float centerY = i < NUM_BUTTON_BOTTOM ? 0.06f : 0.94f;
         buttons.push_back(createButton(i, vec2(centerX, centerY), vec2(0.2f, 0.06f)));
     }
+    buttons[2].changeState(); // keep aurora button lighted
     
     
     // ------------------------------------
@@ -293,8 +307,10 @@ void DrawPath::mainLoop() {
         return hitButton;
     };
     
-    auto getIntersection = [&] (vec3& position, vec3& normal, const float radius = 1.0f) -> bool {
-        vec4 clickEarth = ndcToEarth * vec4(window.getClickNDC(), 1.0f, 1.0f);
+    auto getIntersection = [&] (const vec2& clickPos,
+                                vec3& position, vec3& normal,
+                                const float radius = 1.0f) -> bool {
+        vec4 clickEarth = ndcToEarth * vec4(clickPos, 1.0f, 1.0f);
         clickEarth /= clickEarth.w; // important! perpective matrix may not be normalized
         return glm::intersectRaySphere(cameraEarth, glm::normalize(vec3(clickEarth) - cameraEarth),
                                        vec3(0.0f), radius, position, normal);
@@ -346,6 +362,14 @@ void DrawPath::mainLoop() {
         window.processKeyboardInput();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
+        if (shouldRenderAurora) {
+            // shouldRenderAurora remains true until exit
+            vec3 position, normal;
+            getIntersection(vec3(0.0f), position, normal);
+            aurora.mainLoop(splines, position, 0, window.getViewPort());
+            shouldRenderAurora = false;
+        }
+        
         if (shouldUpdateCamera) {
             shouldUpdateCamera = false;
             updateCamera();
@@ -361,7 +385,7 @@ void DrawPath::mainLoop() {
             if (isEditing) {
                 if (buttonHitTest() == BUTTON_NOT_HIT) {
                     vec3 position, normal;
-                    if (getIntersection(position, normal, AURORA_RELA_HEIGHT)) {
+                    if (getIntersection(window.getClickNDC(), position, normal, AURORA_RELA_HEIGHT)) {
                         splines[editingPath].processMouseClick(false, position, window.getClickNDC(), sideLengthNDC, glm::inverse(ndcToEarth));
                         mayOnSpline = true;
                     }
@@ -377,7 +401,7 @@ void DrawPath::mainLoop() {
                 // while in rotate mode, click point should be on the surface of earth
                 vec3 position, normal;
                 if (isEditing) {
-                    if (getIntersection(position, normal, AURORA_RELA_HEIGHT)) {
+                    if (getIntersection(window.getClickNDC(), position, normal, AURORA_RELA_HEIGHT)) {
                         splines[editingPath].processMouseClick(true, position, window.getClickNDC(), sideLengthNDC, glm::inverse(ndcToEarth));
                         // do not simply assign true to stillClicking!
                         // left mouse key may have already been released
@@ -385,7 +409,7 @@ void DrawPath::mainLoop() {
                         mayOnSpline = true;
                     }
                 } else {
-                    if (getIntersection(position, normal)) {
+                    if (getIntersection(window.getClickNDC(), position, normal)) {
                         didClickEarth(position);
                         stillClicking = wasClicking;
                         mayScroll = false;

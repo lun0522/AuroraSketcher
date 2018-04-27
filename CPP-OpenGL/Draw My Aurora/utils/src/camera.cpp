@@ -48,15 +48,15 @@ void Camera::processMouseMove(const vec2& position) {
     lastPos = position;
     
     yaw += offset.x;
-    if (yaw >= 360.0f) yaw -= 360.0f;
+    yaw = glm::mod(yaw, 360.0f);
     
     pitch -= offset.y;
     if (pitch > 89.0f) pitch = 89.0f;
     else if (pitch < -89.0f) pitch = -89.0f;
     
     front = vec3(cos(glm::radians(pitch)) * cos(glm::radians(yaw)),
-                      sin(glm::radians(pitch)),
-                      cos(glm::radians(pitch)) * sin(glm::radians(yaw)));
+                 sin(glm::radians(pitch)),
+                 cos(glm::radians(pitch)) * sin(glm::radians(yaw)));
     updateRight();
     updateViewMatrix();
 }
