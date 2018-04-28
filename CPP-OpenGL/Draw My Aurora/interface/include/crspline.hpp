@@ -43,7 +43,7 @@ public:
                            const glm::vec2& sideLengthNDC,
                            const glm::mat4& objectToNDC);
     void draw() const;
-    void drawLine(const Shader& shader) const;
+    void draw(const Shader& shader, const GLenum mode) const;
 };
 
 #endif /* crspline_hpp */

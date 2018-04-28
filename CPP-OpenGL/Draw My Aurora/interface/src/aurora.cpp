@@ -6,6 +6,10 @@
 //  Copyright © 2018 Pujun Lun. All rights reserved.
 //
 
+#include <iostream>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtc/matrix_transform.hpp>
+
 #include "loader.hpp"
 #include "aurora.hpp"
 
@@ -13,22 +17,26 @@ using std::vector;
 using glm::vec2;
 using glm::vec3;
 using glm::vec4;
-using uchar = unsigned char;
+using glm::mat4;
 
-static const int DISTANCE_FIELD_SIZE = 800;
-static const float MIN_FOV = 15.0f;
-static const float MAX_FOV = 45.0f;
+static const int DISTANCE_FIELD_SIZE = 2048;
+static const int PATH_NUM_SAMPLE = 8;
+static const float AURORA_WIDTH = 4.0f;
+static const float MIN_FOV = 10.0f;
+static const float MAX_FOV = 60.0f;
 
 Aurora::Aurora(const GLuint prevFrameBuffer,
                const float fov,
                const float yaw,
                const float pitch,
                const float sensitivity):
-fov(fov), yaw(yaw), pitch(pitch), sensitivity(sensitivity),
-pathShader("path.vs", "path.fs"), auroraShader("aurora.vs", "aurora.fs"),
+originFov(fov), originYaw(yaw), originPitch(pitch), sensitivity(sensitivity),
+pathLineShader("path.vs", "path.fs", "path.gs"),
+pathPointsShader("path.vs", "path.fs"),
+auroraShader("aurora.vs", "aurora.fs"),
 field(DistanceField(DISTANCE_FIELD_SIZE, DISTANCE_FIELD_SIZE)) {
     // distance field will be stored in this image
-    image = (uchar *)malloc(DISTANCE_FIELD_SIZE * DISTANCE_FIELD_SIZE * sizeof(uchar));
+    image = (unsigned char *)malloc(DISTANCE_FIELD_SIZE * DISTANCE_FIELD_SIZE * sizeof(unsigned char));
     
     glGenTextures(1, &pathTex);
     glBindTexture(GL_TEXTURE_2D, pathTex);
@@ -42,7 +50,7 @@ field(DistanceField(DISTANCE_FIELD_SIZE, DISTANCE_FIELD_SIZE)) {
     glGenFramebuffers(1, &framebuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pathTex, 0);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, prevFrameBuffer);
     
     // vertices for ray tracer
     glGenVertexArrays(1, &VAO);
@@ -60,26 +68,50 @@ field(DistanceField(DISTANCE_FIELD_SIZE, DISTANCE_FIELD_SIZE)) {
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     
+    pathLineShader.use();
+    pathLineShader.setFloat("lineWidth", AURORA_WIDTH / DISTANCE_FIELD_SIZE);
+    
     auroraShader.use();
     auroraShader.setInt("auroraDeposition", 0);
     auroraShader.setInt("auroraTexture", 1);
     auroraShader.setInt("distanceField", 2);
-    deposition = Loader::loadTexture("deposition.jpg", false);
+    deposition = Loader::loadTexture("deposition.jpg", true);
 }
 
-void Aurora::mainLoop(const vector<CRSpline>& splines,
-                      const vec3& cameraPos,
-                      const GLuint prevFrameBuffer,
-                      const vec4& prevViewPort) {
-    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-    glViewport(0, 0, DISTANCE_FIELD_SIZE, DISTANCE_FIELD_SIZE);
-    glClear(GL_COLOR_BUFFER_BIT);
+void Aurora::generatePath(const std::vector<CRSpline> &splines,
+                          const GLuint prevFrameBuffer,
+                          const vec4& prevViewPort) {
+    // multisampling
+    GLuint pathMultiSample;
+    glGenTextures(1, &pathMultiSample);
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, pathMultiSample);
+    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, PATH_NUM_SAMPLE, GL_RED, DISTANCE_FIELD_SIZE, DISTANCE_FIELD_SIZE, GL_TRUE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     
-    // draw all paths to framebuffer
-    glLineWidth(10.0f);
-    std::for_each(splines.begin(), splines.end(),
-                  [&] (const CRSpline& spline) { spline.drawLine(pathShader); });
-    glLineWidth(1.0f);
+    GLuint framebufferMultiSample;
+    glGenFramebuffers(1, &framebufferMultiSample);
+    glBindFramebuffer(GL_FRAMEBUFFER, framebufferMultiSample);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, pathMultiSample, 0);
+    
+    // render all paths to multisample framebuffer
+    glViewport(0, 0, DISTANCE_FIELD_SIZE, DISTANCE_FIELD_SIZE);
+    glPointSize(AURORA_WIDTH / 2.0f);
+    std::for_each(splines.begin(), splines.end(), [&] (const CRSpline& spline) {
+        spline.draw(pathLineShader, GL_LINE_STRIP);
+        spline.draw(pathPointsShader, GL_POINTS);
+    });
+    
+    // down sampling
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, framebufferMultiSample);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer);
+    glBlitFramebuffer(0, 0, DISTANCE_FIELD_SIZE, DISTANCE_FIELD_SIZE,
+                      0, 0, DISTANCE_FIELD_SIZE, DISTANCE_FIELD_SIZE,
+                      GL_COLOR_BUFFER_BIT, GL_NEAREST);
+    glDeleteTextures(1, &pathMultiSample);
+    glDeleteFramebuffers(1, &framebufferMultiSample);
     
     // copy data to image
     glBindTexture(GL_TEXTURE_2D, pathTex);
@@ -88,7 +120,6 @@ void Aurora::mainLoop(const vector<CRSpline>& splines,
     
     // calculate distance field
     field.generate(image);
-    GLuint fieldTex;
     glGenTextures(1, &fieldTex);
     glBindTexture(GL_TEXTURE_2D, fieldTex);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, DISTANCE_FIELD_SIZE, DISTANCE_FIELD_SIZE, 0, GL_RED, GL_UNSIGNED_BYTE, image);
@@ -99,9 +130,20 @@ void Aurora::mainLoop(const vector<CRSpline>& splines,
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     
-    // render aurora
-    auroraShader.use();
-    auroraShader.setVec3("cameraPos", cameraPos);
+    glBindFramebuffer(GL_FRAMEBUFFER, prevFrameBuffer);
+    glViewport(prevViewPort.x, prevViewPort.y, prevViewPort.z, prevViewPort.w);
+}
+
+void Aurora::mainLoop(const Window& window,
+                      const vec3& cameraPos,
+                      const vec2& screenSize,
+                      const vector<CRSpline>& splines,
+                      const GLuint prevFrameBuffer,
+                      const vec4& prevViewPort) {
+    generatePath(splines, prevFrameBuffer, prevViewPort);
+    
+    window.setCaptureCursor(true);
+    glDisable(GL_DEPTH_TEST);
     glBindVertexArray(VAO);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, deposition);
@@ -110,43 +152,94 @@ void Aurora::mainLoop(const vector<CRSpline>& splines,
     glActiveTexture(GL_TEXTURE2);
     glBindTexture(GL_TEXTURE_2D, fieldTex);
     
+    float ratio = screenSize.x / screenSize.y;
+    fov = originFov;
+    yaw = originYaw;
+    pitch = originPitch;
+    vec3 cameraOrigin = glm::normalize(cameraPos);
+    vec3 normal = cameraOrigin;
+    // originally look at the north
+    vec3 originDir = glm::normalize(vec3(0.0f, 1.0f / cameraOrigin.y, 0.0f) - cameraPos);
+    // transfrom from orignial camera space to world space
+    mat4 toWorld = glm::inverse(glm::lookAt(cameraPos, cameraPos + originDir, normal));
+    auroraShader.use();
+    auroraShader.setVec3("cameraPos", cameraPos);
+    
+    firstFrame = true;
+    isRendering = true;
+    shouldUpdate = true;
     shouldQuit = false;
-    while (!shouldQuit) {
+    
+    int frameCount = 0;
+    float lastTime = glfwGetTime();
+    
+    while (!shouldQuit && !window.shouldClose()) {
+        glClear(GL_COLOR_BUFFER_BIT);
+        if (shouldUpdate) {
+            shouldUpdate = false;
+            // front and right are in world space
+            // rotate using pitch and yaw in original camera space at first,
+            // and then convert to world space
+            vec3 front = vec3(cos(glm::radians(pitch)) * cos(glm::radians(yaw)),
+                              sin(glm::radians(pitch)),
+                              cos(glm::radians(pitch)) * sin(glm::radians(yaw)));
+            front = vec3(toWorld * vec4(front, 0.0f));
+            vec3 right = glm::cross(front, normal);
+            float zoom = tan(glm::radians(fov / 2.0f));
+            auroraShader.setVec3("origin", cameraOrigin + front);
+            auroraShader.setVec3("xAxis", right * ratio * zoom);
+            auroraShader.setVec3("yAxis", glm::cross(right, front) * zoom);
+        }
         glDrawArrays(GL_TRIANGLES, 0, 6);
+        window.renderFrame();
+        window.processKeyboardInput();
+        
+        ++frameCount;
+        float currentTime = glfwGetTime();
+        if (currentTime - lastTime > 1.0) {
+            std::cout <<  "FPS: " << std::to_string(frameCount) << std::endl;
+            frameCount = 0;
+            lastTime = currentTime;
+        }
     }
     
+    isRendering = false;
+    shouldUpdate = false;
+    window.setCaptureCursor(false);
+    glEnable(GL_DEPTH_TEST);
     glBindVertexArray(0);
     glDeleteTextures(1, &fieldTex);
-    glBindFramebuffer(GL_FRAMEBUFFER, prevFrameBuffer);
-    glViewport(prevViewPort.x, prevViewPort.y, prevViewPort.z, prevViewPort.w);
 }
 
 void Aurora::didScrollMouse(const double yOffset) {
-    fov += yOffset;
-    if (fov < MIN_FOV) fov = MIN_FOV;
-    else if (fov > MAX_FOV) fov = MAX_FOV;
+    if (isRendering) {
+        fov += yOffset;
+        if (fov < MIN_FOV) fov = MIN_FOV;
+        else if (fov > MAX_FOV) fov = MAX_FOV;
+        shouldUpdate = true;
+    }
 }
 
 void Aurora::didMoveMouse(const vec2& position) {
-    if (firstFrame) {
+    if (isRendering) {
+        if (firstFrame) {
+            lastPos = position;
+            firstFrame = false;
+            return;
+        }
+        
+        vec2 offset = (position - lastPos) * sensitivity;
         lastPos = position;
-        firstFrame = false;
-        return;
+        
+        yaw += offset.x;
+        yaw = glm::mod(yaw, 360.0f);
+        
+        pitch -= offset.y;
+        if (pitch > 89.0f) pitch = 89.0f;
+        else if (pitch < -89.0f) pitch = -89.0f;
+        
+        shouldUpdate = true;
     }
-    
-    vec2 offset = (position - lastPos) * sensitivity;
-    lastPos = position;
-    
-    yaw += offset.x;
-    yaw = glm::mod(yaw, 360.0f);
-    
-    pitch -= offset.y;
-    if (pitch > 89.0f) pitch = 89.0f;
-    else if (pitch < -89.0f) pitch = -89.0f;
-    
-    front = vec3(cos(glm::radians(pitch)) * cos(glm::radians(yaw)),
-                 sin(glm::radians(pitch)),
-                 cos(glm::radians(pitch)) * sin(glm::radians(yaw)));
 }
 
 void Aurora::quit() {

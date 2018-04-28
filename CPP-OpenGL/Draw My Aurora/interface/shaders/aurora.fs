@@ -10,7 +10,7 @@
 
 #version 330 core
 
-in vec3 position;
+in vec3 fragPos;
 
 out vec4 fragColor;
 
@@ -20,12 +20,13 @@ uniform sampler2D auroraTexture; // actual curtains and color
 uniform sampler2D distanceField; // distance from curtains (0==far away, 1==close)
 
 const float M_PI = 3.1415926535;
-const float km = 1.0 / 6371.0; // convert kilometers to render units (planet radii)
+const float km = 1.0 / 6378.1; // convert kilometers to render units (planet radii)
 const float miss_t = 100.0; // t value for a miss
 const float min_t = 0.000001; // minimum acceptable t value
 const float dt = 2.0 * km; // sampling rate for aurora: fine sampling gets *SLOW*
-const float auroraScale = dt / (30.0 * km); // scale factor: samples at dt -> screen color
+const float auroraScale = dt / (120.0 * km); // scale factor: samples at dt -> screen color
 const vec3 airColor = 0.05 * vec3(0.4, 0.5, 0.7);
+const vec3 origin = vec3(0.0, -1.0, 0.0);
 
 /* A 3D ray shooting through space */
 struct ray {
@@ -42,17 +43,6 @@ struct sphere {
     vec3 center;
     float r;
 };
-
-/* Return t value at first intersection of ray and sphere */
-float intersect_sphere(sphere s, ray r) {
-    float b = 2.0 * dot(r.S - s.center, r.D);
-    float c = dot(r.S - s.center, r.S - s.center) - s.r * s.r;
-    float det = b * b - 4.0 * c;
-    if (det < 0.0) return miss_t; /* total miss */
-    float t = (-b - sqrt(det)) * 0.5;
-    if (t < min_t) return miss_t; /* behind head: miss! */
-    return t;
-}
 
 /* Return span of t values at intersection region of ray and sphere */
 span span_sphere(sphere s, ray r) {
@@ -71,8 +61,7 @@ span span_sphere(sphere s, ray r) {
 vec3 deposition_function(float height) {
     height -= 1.0; /* convert to altitude (subtract off planet's radius) */
     float maxHeight = 300.0 * km;
-    vec3 tex = vec3(texture(auroraDeposition, vec2(0.4, 1.0 - height / maxHeight)));
-    return tex * tex; // HDR storage
+    return vec3(texture(auroraDeposition, vec2(0.8, height / maxHeight)));
 }
 
 // Apply nonlinear tone mapping to final summed output color
@@ -83,9 +72,11 @@ vec3 tone_map(vec3 color) {
 
 /* Convert a 3D location to a 2D aurora map index (polar stereographic) */
 vec2 down_to_map(vec3 worldPos) {
-    vec3 onPlanet = normalize(worldPos);
-    vec2 mapCoords = vec2(onPlanet) * 0.5 + vec2(0.5); // on 2D polar stereo map
-    return mapCoords;
+    vec3 direction = worldPos - origin;
+    float t = (1.0 - origin.y) / direction.y;
+    vec2 samplePos = origin.xz + direction.xz * t;
+    samplePos = (samplePos + 2.0) / 4.0;
+    return samplePos;
 }
 
 /* Sample the aurora's color at this 3D point */
@@ -93,7 +84,7 @@ vec3 sample_aurora(vec3 loc) {
     /* project sample point to surface of planet, and look up in texture */
     float r = length(loc);
     vec3 deposition = deposition_function(r);
-    vec3 curtain = vec3(texture(auroraTexture, down_to_map(loc)).g);
+    vec3 curtain = vec3(texture(auroraTexture, down_to_map(loc)).r);
     return deposition * curtain;
 }
 
@@ -220,15 +211,17 @@ float atmosphere_thickness(vec3 start, vec3 dir, float tstart, float tend) {
 }
 
 void main(void) {
-    // Start with a camera ray
-    ray r = ray(cameraPos, normalize(vec3(position, 1.0) - cameraPos)); // points from camera toward proxy
-    
     // Compute intersection with planet itself
-    float planet_t = intersect_sphere(sphere(vec3(0.0), 1.0), r);
-    if (planet_t < miss_t) { // hit planet, simply return black
+    vec3 cameraDir = normalize(fragPos - cameraPos);
+    vec3 normal = normalize(cameraPos);
+    if (dot(cameraDir, normal) <= 0) {
+        // if hit planet, return black
         fragColor = vec4(vec3(0.0), 1.0);
         return;
     }
+    
+    // Start with a camera ray
+    ray r = ray(cameraPos, cameraDir);
     
     // All our geometry
     span auroraL = span_sphere(sphere(vec3(0.0), 85.0 * km + 1.0), r);
@@ -236,16 +229,17 @@ void main(void) {
     
     // Atmosphere
     span airSpan = span_sphere(sphere(vec3(0.0), 75.0 * km + 1.0), r);
-    float airMass = atmosphere_thickness(r.S, r.D, airSpan.l, airSpan.h);
+    float airMass = atmosphere_thickness(r.S, r.D, airSpan.h, auroraL.h);
     float airTransmit = exp(-airMass); // fraction of light penetrating atmosphere
     float airInscatter = 1.0 - airTransmit; // fraction added by atmosphere
     
-    // typical planet-hitting ray:
-    // H.l  (aurora)  L.l    (air+planet)
-    vec3 aurora = sample_aurora(r, span(auroraH.l, auroraL.l)); /* post atmosphere */
+    // typical planet-hitting ray
+    vec3 aurora = sample_aurora(r, span(auroraL.h, auroraH.h));
     
     vec3 total = airTransmit * aurora + airInscatter * airColor;
-    
+
     // Must delay tone mapping until the very end, so we can sum pre and post atmosphere parts...
     fragColor = vec4(tone_map(total), 1.0);
+    
+//    fragColor = vec4(tone_map(aurora), 1.0);
 }

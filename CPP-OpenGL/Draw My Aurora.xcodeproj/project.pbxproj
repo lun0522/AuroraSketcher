@@ -7,22 +7,23 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		BD181A542092C5EB00A29A8C /* aurora.vs in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD181A522092706300A29A8C /* aurora.vs */; };
-		BD181A552092C5EB00A29A8C /* aurora.fs in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD181A53209270A500A29A8C /* aurora.fs */; };
-		BD181A582092CF3100A29A8C /* deposition.jpg in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD181A572092CF2300A29A8C /* deposition.jpg */; };
+		BD067D112094E49700CF6BEC /* path.gs in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD067D102094E48B00CF6BEC /* path.gs */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		BD067D1320951AD300CF6BEC /* deposition.jpg in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD067D1220951AC800CF6BEC /* deposition.jpg */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		BD181A542092C5EB00A29A8C /* aurora.vs in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD181A522092706300A29A8C /* aurora.vs */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		BD181A552092C5EB00A29A8C /* aurora.fs in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD181A53209270A500A29A8C /* aurora.fs */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		BD19718A20912FF40017DD4F /* aurora.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD19718820912FF40017DD4F /* aurora.cpp */; };
-		BD19718E20913F9B0017DD4F /* path.vs in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD19718C20913F7B0017DD4F /* path.vs */; };
-		BD19718F20913F9B0017DD4F /* path.fs in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD19718D20913F860017DD4F /* path.fs */; };
+		BD19718E20913F9B0017DD4F /* path.vs in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD19718C20913F7B0017DD4F /* path.vs */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		BD19718F20913F9B0017DD4F /* path.fs in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD19718D20913F860017DD4F /* path.fs */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		BD50D03D208242F9004F2734 /* libfreetype.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BD50D03C208242F9004F2734 /* libfreetype.6.dylib */; };
 		BD50D03E20824309004F2734 /* libfreetype.6.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD50D03C208242F9004F2734 /* libfreetype.6.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		BD50D04620824535004F2734 /* button.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD50D04420824535004F2734 /* button.cpp */; };
 		BD5380B2208ECADF009A63FD /* Draw My Aurora in Sources */ = {isa = PBXBuildFile; fileRef = BD91521020785B7A00D7C7DF /* Draw My Aurora */; };
-		BD5380E9208ED3BC009A63FD /* NegativeX.jpg in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD5380E7208ED3B5009A63FD /* NegativeX.jpg */; };
-		BD5380EA208ED3BC009A63FD /* NegativeY.jpg in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD5380E6208ED3B5009A63FD /* NegativeY.jpg */; };
-		BD5380EB208ED3BC009A63FD /* NegativeZ.jpg in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD5380E8208ED3B6009A63FD /* NegativeZ.jpg */; };
-		BD5380EC208ED3BC009A63FD /* PositiveX.jpg in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD5380E4208ED3B5009A63FD /* PositiveX.jpg */; };
-		BD5380ED208ED3BC009A63FD /* PositiveY.jpg in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD5380E3208ED3B4009A63FD /* PositiveY.jpg */; };
-		BD5380EE208ED3BC009A63FD /* PositiveZ.jpg in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD5380E5208ED3B5009A63FD /* PositiveZ.jpg */; };
+		BD5380E9208ED3BC009A63FD /* NegativeX.jpg in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD5380E7208ED3B5009A63FD /* NegativeX.jpg */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		BD5380EA208ED3BC009A63FD /* NegativeY.jpg in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD5380E6208ED3B5009A63FD /* NegativeY.jpg */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		BD5380EB208ED3BC009A63FD /* NegativeZ.jpg in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD5380E8208ED3B6009A63FD /* NegativeZ.jpg */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		BD5380EC208ED3BC009A63FD /* PositiveX.jpg in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD5380E4208ED3B5009A63FD /* PositiveX.jpg */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		BD5380ED208ED3BC009A63FD /* PositiveY.jpg in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD5380E3208ED3B4009A63FD /* PositiveY.jpg */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		BD5380EE208ED3BC009A63FD /* PositiveZ.jpg in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD5380E5208ED3B5009A63FD /* PositiveZ.jpg */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		BD5380F1208ED855009A63FD /* distfield.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD5380EF208ED855009A63FD /* distfield.cpp */; };
 		BD91521420785B7A00D7C7DF /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD91521320785B7A00D7C7DF /* main.cpp */; };
 		BD91521C20785C5400D7C7DF /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD91521B20785C5400D7C7DF /* OpenGL.framework */; };
@@ -62,7 +63,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 7;
 			files = (
-				BD181A582092CF3100A29A8C /* deposition.jpg in CopyFiles */,
+				BD067D1320951AD300CF6BEC /* deposition.jpg in CopyFiles */,
+				BD067D112094E49700CF6BEC /* path.gs in CopyFiles */,
 				BD181A542092C5EB00A29A8C /* aurora.vs in CopyFiles */,
 				BD181A552092C5EB00A29A8C /* aurora.fs in CopyFiles */,
 				BD19718E20913F9B0017DD4F /* path.vs in CopyFiles */,
@@ -98,13 +100,14 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		BD067D102094E48B00CF6BEC /* path.gs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = path.gs; sourceTree = "<group>"; };
+		BD067D1220951AC800CF6BEC /* deposition.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = deposition.jpg; sourceTree = "<group>"; };
 		BD07487420824A1B0069DD87 /* button.vs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = button.vs; sourceTree = "<group>"; };
 		BD07487520824A2A0069DD87 /* button.fs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = button.fs; sourceTree = "<group>"; };
 		BD0A77D32085473200134DF7 /* character.vs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = character.vs; sourceTree = "<group>"; };
 		BD0A77D42085473D00134DF7 /* character.fs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = character.fs; sourceTree = "<group>"; };
 		BD181A522092706300A29A8C /* aurora.vs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = aurora.vs; sourceTree = "<group>"; };
 		BD181A53209270A500A29A8C /* aurora.fs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = aurora.fs; sourceTree = "<group>"; };
-		BD181A572092CF2300A29A8C /* deposition.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = deposition.jpg; sourceTree = "<group>"; };
 		BD19718820912FF40017DD4F /* aurora.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = aurora.cpp; sourceTree = "<group>"; };
 		BD19718920912FF40017DD4F /* aurora.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = aurora.hpp; sourceTree = "<group>"; };
 		BD19718C20913F7B0017DD4F /* path.vs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = path.vs; sourceTree = "<group>"; };
@@ -182,7 +185,7 @@
 		BD181A562092CEF800A29A8C /* aurora */ = {
 			isa = PBXGroup;
 			children = (
-				BD181A572092CF2300A29A8C /* deposition.jpg */,
+				BD067D1220951AC800CF6BEC /* deposition.jpg */,
 			);
 			path = aurora;
 			sourceTree = "<group>";
@@ -192,8 +195,6 @@
 			children = (
 				BD0A77D32085473200134DF7 /* character.vs */,
 				BD0A77D42085473D00134DF7 /* character.fs */,
-				BD19718C20913F7B0017DD4F /* path.vs */,
-				BD19718D20913F860017DD4F /* path.fs */,
 			);
 			path = shaders;
 			sourceTree = "<group>";
@@ -280,6 +281,9 @@
 				BDC69E59207A47B00005232C /* spline.fs */,
 				BD07487420824A1B0069DD87 /* button.vs */,
 				BD07487520824A2A0069DD87 /* button.fs */,
+				BD19718C20913F7B0017DD4F /* path.vs */,
+				BD067D102094E48B00CF6BEC /* path.gs */,
+				BD19718D20913F860017DD4F /* path.fs */,
 				BD181A522092706300A29A8C /* aurora.vs */,
 				BD181A53209270A500A29A8C /* aurora.fs */,
 			);

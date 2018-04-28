@@ -22,7 +22,7 @@ using glm::mat4;
 
 static const int MIN_NUM_CONTROL_POINTS = 3;
 static const int MAX_NUM_CONTROL_POINTS = 100;
-static const int MAX_RECURSSION_DEPTH = 10;
+static const int MAX_RECURSSION_DEPTH = 15;
 static const int MAX_NUM_CURVE_POINTS = pow(2, MAX_RECURSSION_DEPTH - 1);
 static const int CONTROL_POINT_NOT_SELECTED = -1;
 
@@ -231,9 +231,9 @@ void CRSpline::draw() const {
     glBindVertexArray(0);
 }
 
-void CRSpline::drawLine(const Shader& shader) const {
+void CRSpline::draw(const Shader& shader, const GLenum mode) const {
     shader.use();
     glBindVertexArray(curveVAO);
-    glDrawArrays(GL_LINE_STRIP, 0, curvePoints.size());
+    glDrawArrays(mode, 0, curvePoints.size());
     glBindVertexArray(0);
 }

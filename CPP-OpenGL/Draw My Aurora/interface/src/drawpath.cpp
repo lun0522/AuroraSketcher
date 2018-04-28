@@ -43,7 +43,11 @@ static const int BUTTON_NOT_HIT = -1;
 static const vec3 CAMERA_POS(0.0f, 0.0f, 30.0f);
 
 void DrawPath::didClickMouse(const bool isLeft, const bool isPress) {
-    if (!shouldRenderAurora) {
+    if (shouldRenderAurora) {
+        if (!isLeft && isPress) {
+            aurora.quit();
+        }
+    } else {
         if (isLeft) {
             if (isPress) didClickLeft = true;
             wasClicking = isPress;
@@ -162,8 +166,8 @@ void DrawPath::mainLoop() {
     
     auto initialRotation = [] (mat4& model) {
         // north pole will be in the center of the frame
-        model = glm::rotate(model, glm::radians( 90.0f), vec3( 1.0f,  0.0f, 0.0f));
-        model = glm::rotate(model, glm::radians(-90.0f), vec3( 0.0f, -1.0f, 0.0f));
+        model = glm::rotate(model, glm::radians( 90.0f), vec3(1.0f,  0.0f, 0.0f));
+        model = glm::rotate(model, glm::radians(-90.0f), vec3(0.0f, -1.0f, 0.0f));
     };
     
     earthShader.use();
@@ -359,14 +363,13 @@ void DrawPath::mainLoop() {
     };
     
     while (!window.shouldClose()) {
-        window.processKeyboardInput();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         if (shouldRenderAurora) {
             // shouldRenderAurora remains true until exit
             vec3 position, normal;
             getIntersection(vec3(0.0f), position, normal);
-            aurora.mainLoop(splines, position, 0, window.getViewPort());
+            aurora.mainLoop(window, position, window.getOriginalSize(), splines, 0, window.getViewPort());
             shouldRenderAurora = false;
         }
         
@@ -430,6 +433,7 @@ void DrawPath::mainLoop() {
         
         renderScene();
         window.renderFrame();
+        window.processKeyboardInput();
         
         ++frameCount;
         float currentTime = glfwGetTime();

@@ -51,15 +51,15 @@ void mouseMoveCallback(GLFWwindow *window, double xPos, double yPos) {
     pathEditor->didMoveMouse(vec2(xPos, yPos));
 }
 
-const vec4& Window::getViewPort() {
+const vec4& Window::getViewPort() const {
     return viewPort;
 }
 
-const vec2& Window::getOriginalSize() {
+const vec2& Window::getOriginalSize() const {
     return originalSize;
 }
 
-const vec2& Window::getClickNDC() {
+const vec2& Window::getClickNDC() const {
     return clickNDC;
 }
 
@@ -71,7 +71,11 @@ void Window::updateMousePos() {
     clickNDC.y *= -1.0f; // flip y coordinate
 }
 
-void Window::processKeyboardInput() {
+void Window::setCaptureCursor(const bool value) const {
+    glfwSetInputMode(window, GLFW_CURSOR, value ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+}
+
+void Window::processKeyboardInput() const {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 }
@@ -99,6 +103,7 @@ Window::Window(DrawPath *drawPath) {
     glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
     glfwSetMouseButtonCallback(window, mouseClickCallback);
     glfwSetScrollCallback(window, mouseScrollCallback);
+    glfwSetCursorPosCallback(window, mouseMoveCallback);
     
     // ------------------------------------
     // GLAD (function pointer loader)
@@ -115,11 +120,11 @@ Window::Window(DrawPath *drawPath) {
     setViewPort();
 }
 
-void Window::renderFrame() {
+void Window::renderFrame() const {
     glfwSwapBuffers(window); // use color buffer to draw
     glfwPollEvents(); // check events (keyboard, mouse, ...)
 }
 
-bool Window::shouldClose() {
+bool Window::shouldClose() const {
     return glfwWindowShouldClose(window);
 }

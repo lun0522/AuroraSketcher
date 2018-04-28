@@ -49,10 +49,10 @@ void DistanceField::generate(unsigned char* image) {
     for(int y = 0; y < imageHeight; ++y) {
         for (int x = 0 ; x < imageWidth; ++x) {
             int dist = (int)(sqrt((double)get(x, y).distSq()));
-            int c = dist * 3 + 128;
+            int c = dist;
             if (c < 0) c = 0;
             else if (c > 255) c = 255;
-            image[y * imageWidth + x] = c;
+            image[y * imageWidth + x] = 255 - c;
         }
     }
 }

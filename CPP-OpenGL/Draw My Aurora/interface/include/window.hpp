@@ -18,13 +18,14 @@ class Window {
     GLFWwindow *window;
 public:
     Window(DrawPath *drawPath);
-    const glm::vec4& getViewPort();
-    const glm::vec2& getOriginalSize();
-    const glm::vec2& getClickNDC();
+    const glm::vec4& getViewPort() const;
+    const glm::vec2& getOriginalSize() const;
+    const glm::vec2& getClickNDC() const;
     void updateMousePos();
-    void processKeyboardInput();
-    void renderFrame();
-    bool shouldClose();
+    void setCaptureCursor(const bool value) const;
+    void processKeyboardInput() const;
+    void renderFrame() const;
+    bool shouldClose() const;
 };
 
 #endif /* window_hpp */
