@@ -10,6 +10,7 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "airtrans.hpp"
 #include "loader.hpp"
 #include "aurora.hpp"
 
@@ -18,12 +19,14 @@ using glm::vec2;
 using glm::vec3;
 using glm::vec4;
 using glm::mat4;
+using uchar = unsigned char;
 
 static const int DISTANCE_FIELD_SIZE = 2048;
 static const int PATH_NUM_SAMPLE = 8;
 static const float AURORA_WIDTH = 4.0f;
 static const float MIN_FOV = 10.0f;
 static const float MAX_FOV = 60.0f;
+static const float AIR_SAMPLE_STEP = 0.01f;
 
 Aurora::Aurora(const GLuint prevFrameBuffer,
                const float fov,
@@ -35,16 +38,27 @@ pathLineShader("path.vs", "path.fs", "path.gs"),
 pathPointsShader("path.vs", "path.fs"),
 auroraShader("aurora.vs", "aurora.fs"),
 field(DistanceField(DISTANCE_FIELD_SIZE, DISTANCE_FIELD_SIZE)) {
+    // pre-compute air mass and store as texture lookup table
+    int numSample = (int)(1.0f / AIR_SAMPLE_STEP) + 1;
+    uchar *airImage = (uchar *)malloc(numSample * sizeof(uchar));
+    AirTrans::generate(airImage, AIR_SAMPLE_STEP);
+    
+    glGenTextures(1, &airTrans);
+    glBindTexture(GL_TEXTURE_2D, airTrans);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, numSample, 1, 0, GL_RED, GL_UNSIGNED_BYTE, airImage);
+    Loader::set2DTexParameter(GL_CLAMP_TO_EDGE, GL_LINEAR);
+    free(airImage);
+    
+    // aurora deposition is also stored as lookup table
+    deposition = Loader::loadTexture("deposition.jpg", true);
+    
     // distance field will be stored in this image
-    image = (unsigned char *)malloc(DISTANCE_FIELD_SIZE * DISTANCE_FIELD_SIZE * sizeof(unsigned char));
+    image = (uchar *)malloc(DISTANCE_FIELD_SIZE * DISTANCE_FIELD_SIZE * sizeof(uchar));
     
     glGenTextures(1, &pathTex);
     glBindTexture(GL_TEXTURE_2D, pathTex);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, DISTANCE_FIELD_SIZE, DISTANCE_FIELD_SIZE, 0, GL_RED, GL_UNSIGNED_BYTE, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    Loader::set2DTexParameter(GL_CLAMP_TO_EDGE, GL_LINEAR);
     glBindTexture(GL_TEXTURE_2D, 0);
     
     glGenFramebuffers(1, &framebuffer);
@@ -75,7 +89,8 @@ field(DistanceField(DISTANCE_FIELD_SIZE, DISTANCE_FIELD_SIZE)) {
     auroraShader.setInt("auroraDeposition", 0);
     auroraShader.setInt("auroraTexture", 1);
     auroraShader.setInt("distanceField", 2);
-    deposition = Loader::loadTexture("deposition.jpg", true);
+    auroraShader.setInt("airTransTable", 3);
+    auroraShader.setInt("skybox", 4);
 }
 
 void Aurora::generatePath(const std::vector<CRSpline> &splines,
@@ -86,10 +101,7 @@ void Aurora::generatePath(const std::vector<CRSpline> &splines,
     glGenTextures(1, &pathMultiSample);
     glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, pathMultiSample);
     glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, PATH_NUM_SAMPLE, GL_RED, DISTANCE_FIELD_SIZE, DISTANCE_FIELD_SIZE, GL_TRUE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    Loader::set2DTexParameter(GL_CLAMP_TO_EDGE, GL_LINEAR);
     
     GLuint framebufferMultiSample;
     glGenFramebuffers(1, &framebufferMultiSample);
@@ -99,6 +111,7 @@ void Aurora::generatePath(const std::vector<CRSpline> &splines,
     // render all paths to multisample framebuffer
     glViewport(0, 0, DISTANCE_FIELD_SIZE, DISTANCE_FIELD_SIZE);
     glPointSize(AURORA_WIDTH / 2.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
     std::for_each(splines.begin(), splines.end(), [&] (const CRSpline& spline) {
         spline.draw(pathLineShader, GL_LINE_STRIP);
         spline.draw(pathPointsShader, GL_POINTS);
@@ -123,12 +136,9 @@ void Aurora::generatePath(const std::vector<CRSpline> &splines,
     glGenTextures(1, &fieldTex);
     glBindTexture(GL_TEXTURE_2D, fieldTex);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, DISTANCE_FIELD_SIZE, DISTANCE_FIELD_SIZE, 0, GL_RED, GL_UNSIGNED_BYTE, image);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    Loader::set2DTexParameter(GL_CLAMP_TO_BORDER, GL_LINEAR);
     float borderColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
     glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     
     glBindFramebuffer(GL_FRAMEBUFFER, prevFrameBuffer);
     glViewport(prevViewPort.x, prevViewPort.y, prevViewPort.z, prevViewPort.w);
@@ -138,6 +148,7 @@ void Aurora::mainLoop(const Window& window,
                       const vec3& cameraPos,
                       const vec2& screenSize,
                       const vector<CRSpline>& splines,
+                      const GLuint skybox,
                       const GLuint prevFrameBuffer,
                       const vec4& prevViewPort) {
     generatePath(splines, prevFrameBuffer, prevViewPort);
@@ -151,6 +162,10 @@ void Aurora::mainLoop(const Window& window,
     glBindTexture(GL_TEXTURE_2D, pathTex);
     glActiveTexture(GL_TEXTURE2);
     glBindTexture(GL_TEXTURE_2D, fieldTex);
+    glActiveTexture(GL_TEXTURE3);
+    glBindTexture(GL_TEXTURE_2D, airTrans);
+    glActiveTexture(GL_TEXTURE4);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, skybox);
     
     float ratio = screenSize.x / screenSize.y;
     fov = originFov;
@@ -164,12 +179,15 @@ void Aurora::mainLoop(const Window& window,
     mat4 toWorld = glm::inverse(glm::lookAt(cameraPos, cameraPos + originDir, normal));
     auroraShader.use();
     auroraShader.setVec3("cameraPos", cameraPos);
+    auroraShader.setVec3("originX", glm::cross(originDir, normal));
+    auroraShader.setVec3("originY", normal);
+    auroraShader.setVec3("originZ", originDir);
     
     firstFrame = true;
     isRendering = true;
     shouldUpdate = true;
     shouldQuit = false;
-    
+
     int frameCount = 0;
     float lastTime = glfwGetTime();
     

@@ -138,7 +138,7 @@ void DrawPath::mainLoop() {
         "Path 2",
         "Path 3",
     };
-    std::unordered_map<char, Character> charFrame;
+    std::unordered_map<char, Loader::Character> charFrame;
     GLuint textTex = Loader::loadCharacter("ostrich.ttf", "character.vs", "character.fs",
                                            buttonText, charFrame, 0, window.getViewPort());
     
@@ -369,7 +369,7 @@ void DrawPath::mainLoop() {
             // shouldRenderAurora remains true until exit
             vec3 position, normal;
             getIntersection(vec3(0.0f), position, normal);
-            aurora.mainLoop(window, position, window.getOriginalSize(), splines, 0, window.getViewPort());
+            aurora.mainLoop(window, position, window.getOriginalSize(), splines, universeTex, 0, window.getViewPort());
             shouldRenderAurora = false;
         }
         

@@ -37,7 +37,7 @@ public:
                  const float yOffset,
                  const GLuint texture,
                  const glm::vec3& color,
-                 const std::unordered_map<char, Character>& charFrame);
+                 const std::unordered_map<char, Loader::Character>& charFrame);
     bool changeState();
     bool isHit(const glm::vec2& position) const;
     void draw() const;

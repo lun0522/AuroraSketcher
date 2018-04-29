@@ -22,7 +22,7 @@ class Aurora {
     Shader pathLineShader, pathPointsShader, auroraShader;
     DistanceField field;
     unsigned char* image;
-    GLuint VAO, pathTex, fieldTex, deposition, framebuffer;
+    GLuint VAO, airTrans, pathTex, fieldTex, deposition, framebuffer;
     bool firstFrame, isRendering, shouldUpdate, shouldQuit;
     const float originFov, originYaw, originPitch;
     float fov, yaw, pitch, sensitivity;
@@ -41,6 +41,7 @@ public:
                   const glm::vec3& cameraPos,
                   const glm::vec2& screenSize,
                   const std::vector<CRSpline>& splines,
+                  const GLuint skybox,
                   const GLuint prevFrameBuffer,
                   const glm::vec4& prevViewPort);
     void didScrollMouse(const double yOffset);

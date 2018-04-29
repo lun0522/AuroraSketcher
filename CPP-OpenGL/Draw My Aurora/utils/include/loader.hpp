@@ -15,34 +15,33 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
-/*
- originX: where the glyph of this character starts on the big texture
-          (bearing has been counted)
- extent: the size of character on the big texture
- size, bearing, advance: inherited from the original glyph
-*/
-struct Character {
-    float originX;
-    glm::vec2 extent;
-    glm::ivec2 size;
-    glm::ivec2 bearing;
-    int advance;
-};
-
-class Loader {
-public:
-    static void setFlipVertically(const bool shouldFlip);
-    static GLuint loadTexture(const std::string& path, const bool gammaCorrection);
-    static GLuint loadCubemap(const std::string& path,
-                              const std::vector<std::string>& filename,
-                              const bool gammaCorrection);
-    static GLuint loadCharacter(const std::string& fontPath,
-                                const std::string& vertPath,
-                                const std::string& fragPath,
-                                const std::vector<std::string>& texts,
-                                std::unordered_map<char, Character>& charFrame,
-                                const GLuint prevFrameBuffer,
-                                const glm::vec4 prevViewPort);
+namespace Loader {
+    /*
+     originX: where the glyph of this character starts on the big texture
+     (bearing has been counted)
+     extent: the size of character on the big texture
+     size, bearing, advance: inherited from the original glyph
+     */
+    struct Character {
+        float originX;
+        glm::vec2 extent;
+        glm::ivec2 size;
+        glm::ivec2 bearing;
+        int advance;
+    };
+    void setFlipVertically(const bool shouldFlip);
+    void set2DTexParameter(const GLenum wrapMode, const GLenum interpMode);
+    GLuint loadTexture(const std::string& path, const bool gammaCorrection);
+    GLuint loadCubemap(const std::string& path,
+                       const std::vector<std::string>& filename,
+                       const bool gammaCorrection);
+    GLuint loadCharacter(const std::string& fontPath,
+                         const std::string& vertPath,
+                         const std::string& fragPath,
+                         const std::vector<std::string>& texts,
+                         std::unordered_map<char, Character>& charFrame,
+                         const GLuint prevFrameBuffer,
+                         const glm::vec4 prevViewPort);
 };
 
 #endif /* loader_hpp */
