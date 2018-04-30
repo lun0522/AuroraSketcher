@@ -6,7 +6,6 @@
 //  Copyright © 2018 Pujun Lun. All rights reserved.
 //
 
-#include <iostream>
 #include <stdexcept>
 #include <glm/glm.hpp>
 
