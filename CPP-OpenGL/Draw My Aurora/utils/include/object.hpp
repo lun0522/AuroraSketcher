@@ -10,6 +10,7 @@
 #define object_hpp
 
 #include <string>
+
 #include <glad/glad.h>
 
 #include "shader.hpp"

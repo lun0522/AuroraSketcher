@@ -16,12 +16,13 @@
 //  Copyright © 2018 Pujun Lun. All rights reserved.
 //
 
-#include <math.h>
-#include <glm/glm.hpp>
-
 #include "airtrans.hpp"
 
-using glm::vec3;
+#include <math.h>
+
+#include <glm/glm.hpp>
+
+using namespace glm;
 
 namespace AirTrans {
     /* A 3D ray shooting through space */

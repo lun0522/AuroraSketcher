@@ -6,24 +6,20 @@
 //  Copyright © 2018 Pujun Lun. All rights reserved.
 //
 
-#include <stdexcept>
-#include <unordered_set>
-#define STB_IMAGE_IMPLEMENTATION
-#include <image/stb_image.h>
-#include <ft2build.h>
-#include FT_FREETYPE_H
-
-#include "shader.hpp"
 #include "loader.hpp"
 
-using std::vector;
-using std::string;
-using std::runtime_error;
-using std::unordered_map;
-using std::unordered_set;
-using glm::ivec2;
-using glm::vec2;
-using glm::vec4;
+#include <stdexcept>
+#include <unordered_set>
+
+#include <ft2build.h>
+#include FT_FREETYPE_H
+#define STB_IMAGE_IMPLEMENTATION
+#include <image/stb_image.h>
+
+#include "shader.hpp"
+
+using namespace std;
+using namespace glm;
 
 namespace Loader {
     struct CharGlyph {
@@ -69,7 +65,7 @@ namespace Loader {
                 format = GL_RGBA;
                 break;
             default:
-                throw runtime_error("Unknown texture format (channel=" + std::to_string(channel) + ")");
+                throw runtime_error("Unknown texture format (channel=" + to_string(channel) + ")");
         }
         
         GLuint texture = 0;

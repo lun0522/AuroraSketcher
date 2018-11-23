@@ -6,20 +6,18 @@
 //  Copyright © 2018 Pujun Lun. All rights reserved.
 //
 
+#include "shader.hpp"
+
 #include <fstream>
 #include <sstream>
 #include <stdexcept>
-#include <unordered_map>
+
 #include <glm/gtc/type_ptr.hpp>
 
-#include "shader.hpp"
+using namespace std;
+using namespace glm;
 
-using std::string;
-using std::ifstream;
-using std::ostringstream;
-using std::runtime_error;
-
-static std::unordered_map<string, string> loadedCode;
+unordered_map<string, string> Shader::loadedCode;
 
 const string& Shader::readCode(const string& path) {
     auto loaded = loadedCode.find(path);
@@ -34,7 +32,7 @@ const string& Shader::readCode(const string& path) {
             string code = stream.str();
             auto inserted = loadedCode.insert({ path, code });
             return inserted.first->second;
-        } catch (ifstream::failure e) {
+        } catch (const ifstream::failure& e) {
             throw runtime_error("Failed in reading file: " + e.code().message());
         }
     } else {
@@ -80,9 +78,9 @@ void validateLink(GLuint program) {
     }
 }
 
-Shader::Shader(const std::string& vertexPath,
-               const std::string& fragmentPath,
-               const std::string& geometryPath) {
+Shader::Shader(const string& vertexPath,
+               const string& fragmentPath,
+               const string& geometryPath) {
     GLuint vertex = createShader(GL_VERTEX_SHADER, readCode(vertexPath).c_str());
     GLuint fragment = createShader(GL_FRAGMENT_SHADER, readCode(fragmentPath).c_str());
     GLint geometry = geometryPath.empty() ? GL_INVALID_INDEX : createShader(GL_GEOMETRY_SHADER, readCode(geometryPath).c_str());
@@ -90,19 +88,20 @@ Shader::Shader(const std::string& vertexPath,
         validateShader(vertex);
         validateShader(fragment);
         if (geometry != GL_INVALID_INDEX) validateShader(geometry);
-    } catch (string log) {
+    } catch (const string& log) {
         throw runtime_error("Failed in creating shader: " + log);
     }
     
     programId = createProgram(vertex, fragment, geometry);
     try {
         validateLink(programId);
-    } catch (string log) {
+    } catch (const string& log) {
         throw runtime_error("Failed in linking: " + log);
     }
+    
     glDeleteShader(vertex);
     glDeleteShader(fragment);
-    if (!geometryPath.empty()) glDeleteShader(geometry);
+    if (geometry != GL_INVALID_INDEX) glDeleteShader(geometry);
 }
 
 void Shader::use() const {
@@ -115,7 +114,7 @@ GLuint Shader::getUniform(const string& name) const {
     else throw runtime_error("Cannot find uniform " + name);
 }
 
-void Shader::setBool(const std::string& name, const bool value) const {
+void Shader::setBool(const string& name, const bool value) const {
     setInt(name, value);
 }
 
@@ -127,28 +126,28 @@ void Shader::setFloat(const string& name, const float value) const {
     glUniform1f(getUniform(name), value);
 }
 
-void Shader::setVec2(const std::string& name, const glm::vec2& value) const {
-    glUniform2fv(getUniform(name), 1, glm::value_ptr(value));
+void Shader::setVec2(const string& name, const vec2& value) const {
+    glUniform2fv(getUniform(name), 1, value_ptr(value));
 }
 
-void Shader::setVec3(const std::string& name, const GLfloat v0, const GLfloat v1, const GLfloat v2) const {
+void Shader::setVec3(const string& name, const GLfloat v0, const GLfloat v1, const GLfloat v2) const {
     glUniform3f(getUniform(name), v0, v1, v2);
 }
 
-void Shader::setVec3(const std::string& name, const glm::vec3& value) const {
-    glUniform3fv(getUniform(name), 1, glm::value_ptr(value));
+void Shader::setVec3(const string& name, const vec3& value) const {
+    glUniform3fv(getUniform(name), 1, value_ptr(value));
 }
 
-void Shader::setMat3(const std::string& name, const glm::mat3& value) const {
+void Shader::setMat3(const string& name, const mat3& value) const {
     // how many matrices to send, transpose or not (GLM is already in coloumn order, so no)
-    glUniformMatrix3fv(getUniform(name), 1, GL_FALSE, glm::value_ptr(value));
+    glUniformMatrix3fv(getUniform(name), 1, GL_FALSE, value_ptr(value));
 }
 
-void Shader::setMat4(const std::string& name, const glm::mat4& value) const {
-    glUniformMatrix4fv(getUniform(name), 1, GL_FALSE, glm::value_ptr(value));
+void Shader::setMat4(const string& name, const mat4& value) const {
+    glUniformMatrix4fv(getUniform(name), 1, GL_FALSE, value_ptr(value));
 }
 
-void Shader::setBlock(const std::string& name, const GLuint bindingPoint) const {
+void Shader::setBlock(const string& name, const GLuint bindingPoint) const {
     GLint blockIndex = glGetUniformBlockIndex(programId, name.c_str());
     if (blockIndex == GL_INVALID_INDEX) throw runtime_error("Cannot find block " + name);
     glUniformBlockBinding(programId, blockIndex, bindingPoint);

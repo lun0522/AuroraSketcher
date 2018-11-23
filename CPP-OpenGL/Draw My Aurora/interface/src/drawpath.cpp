@@ -6,27 +6,25 @@
 //  Copyright © 2018 Pujun Lun. All rights reserved.
 //
 
+#include "drawpath.hpp"
+
 #include <iostream>
-#include <unordered_map>
 #include <stdexcept>
+#include <string>
+#include <unordered_map>
+
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/intersect.hpp>
 #include <glm/gtx/vector_angle.hpp>
 
-#include "shader.hpp"
 #include "loader.hpp"
 #include "object.hpp"
-#include "drawpath.hpp"
+#include "shader.hpp"
 
-using std::string;
-using std::vector;
-using std::runtime_error;
-using glm::vec2;
-using glm::vec3;
-using glm::vec4;
-using glm::mat4;
+using namespace std;
+using namespace glm;
 
 static const float EARTH_RADIUS = 6378.1f;
 static const float AURORA_HEIGHT = 100.0f;
@@ -70,7 +68,6 @@ void DrawPath::didMoveMouse(const vec2& position) {
     if (shouldRenderAurora) {
         aurora.didMoveMouse(position);
     }
-    
 }
 
 void DrawPath::didPressButton(const int index) {
@@ -128,8 +125,8 @@ void DrawPath::mainLoop() {
         vec3(230, 126,  34), vec3(211,  84,   0),
         vec3(231,  76,  60), vec3(192,  57,  43),
     };
-    std::for_each(buttonColor.begin(), buttonColor.end(),
-                  [] (vec3& color) { color /= 255.0f; });
+    for_each(buttonColor.begin(), buttonColor.end(),
+             [] (vec3& color) { color /= 255.0f; });
     vector<string> buttonText {
         "Editing",
         "Daylight",
@@ -138,7 +135,7 @@ void DrawPath::mainLoop() {
         "Path 2",
         "Path 3",
     };
-    std::unordered_map<char, Loader::Character> charFrame;
+    unordered_map<char, Loader::Character> charFrame;
     GLuint textTex = Loader::loadCharacter("ostrich.ttf", "character.vs", "character.fs",
                                            buttonText, charFrame, 0, window.getViewPort());
     
@@ -166,19 +163,19 @@ void DrawPath::mainLoop() {
     
     auto initialRotation = [] (mat4& model) {
         // north pole will be in the center of the frame
-        model = glm::rotate(model, glm::radians( 90.0f), vec3(1.0f,  0.0f, 0.0f));
-        model = glm::rotate(model, glm::radians(-90.0f), vec3(0.0f, -1.0f, 0.0f));
+        model = rotate(model, radians( 90.0f), vec3(1.0f,  0.0f, 0.0f));
+        model = rotate(model, radians(-90.0f), vec3(0.0f, -1.0f, 0.0f));
     };
     
     earthShader.use();
     
     mat4 earthModel(1.0f);
-    earthModel = glm::scale(earthModel, vec3(10.0f)); // scaling at last is okay for sphere
+    earthModel = scale(earthModel, vec3(10.0f)); // scaling at last is okay for sphere
     initialRotation(earthModel);
     
     // earth model is shared with the spline
     glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
-    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(mat4), glm::value_ptr(earthModel));
+    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(mat4), value_ptr(earthModel));
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
     
     
@@ -200,7 +197,7 @@ void DrawPath::mainLoop() {
     universeShader.use();
     
     mat4 universeModel(1.0f);
-    universeModel = glm::translate(universeModel, camera.getPosition());
+    universeModel = translate(universeModel, camera.getPosition());
     initialRotation(universeModel);
     universeShader.setMat4("model", universeModel);
     
@@ -219,10 +216,10 @@ void DrawPath::mainLoop() {
     vector<float> latitude = { 60.0f, 70.0f, 80.0f };
     for (int i = 0; i < NUM_AURORA_PATH; ++i) {
         vector<vec3> controlPoints;
-        float lat = glm::radians(latitude[i]);
+        float lat = radians(latitude[i]);
         float sinLat = sin(lat), cosLat = cos(lat);
         for (float angle = 0.0f; angle < 360.0f; angle += 45.0f)
-            controlPoints.push_back(vec3(cos(glm::radians(angle)) * cosLat, sinLat, sin(glm::radians(angle)) * cosLat));
+            controlPoints.push_back(vec3(cos(radians(angle)) * cosLat, sinLat, sin(radians(angle)) * cosLat));
         
         splines.push_back(CRSpline(pointShader, curveShader,
                                    buttonColor[(i + NUM_BUTTON_BOTTOM) * 2],
@@ -244,18 +241,18 @@ void DrawPath::mainLoop() {
     
     int frameCount = 0;
     float rotAngle = 0.0f, scrollStartTime = 0.0f, lastTime = glfwGetTime();
-    mat4 worldToNDC, ndcToWorld, ndcToEarth, worldToEarth = glm::inverse(earthModel);
+    mat4 worldToNDC, ndcToWorld, ndcToEarth, worldToEarth = inverse(earthModel);
     vec3 lastIntersect, rotAxis, cameraEarth = worldToEarth * vec4(CAMERA_POS, 1.0);
     bool shouldRotate = false, shouldScroll = false;
     
     auto updateCamera = [&] () {
         worldToNDC = camera.getProjectionMatrix() * camera.getViewMatrix();
-        ndcToWorld = glm::inverse(worldToNDC);
+        ndcToWorld = inverse(worldToNDC);
         ndcToEarth = worldToEarth * ndcToWorld;
         
         // worldToNDC i.e. viewProjection is shared everywhere
         glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
-        glBufferSubData(GL_UNIFORM_BUFFER, sizeof(mat4), sizeof(mat4), glm::value_ptr(worldToNDC));
+        glBufferSubData(GL_UNIFORM_BUFFER, sizeof(mat4), sizeof(mat4), value_ptr(worldToNDC));
         glBindBuffer(GL_UNIFORM_BUFFER, 0);
     };
     updateCamera(); // initialize matrices declared above
@@ -267,8 +264,8 @@ void DrawPath::mainLoop() {
         earthShader.setInt("earthMap", 0);
         earth.draw(earthShader);
 
-        std::for_each(splines.begin(), splines.end(),
-                      [] (const CRSpline& spline) { spline.draw(); });
+        for_each(splines.begin(), splines.end(),
+                 [] (const CRSpline& spline) { spline.draw(); });
 
         glDepthFunc(GL_LEQUAL);
         universeShader.use();
@@ -280,21 +277,21 @@ void DrawPath::mainLoop() {
         
         // render buttons at last because of alpha blending
         int numDisplay = isEditing ? NUM_BUTTON_TOTAL : NUM_BUTTON_BOTTOM;
-        std::for_each(buttons.begin(), buttons.begin() + numDisplay,
-                      [] (const Button& button) { button.draw(); });
+        for_each(buttons.begin(), buttons.begin() + numDisplay,
+                 [] (const Button& button) { button.draw(); });
     };
     
     auto rotateScene = [&] (const float angle, const vec3& axis) {
-        earthModel = glm::rotate(earthModel, angle, axis);
-        worldToEarth = glm::inverse(earthModel);
+        earthModel = rotate(earthModel, angle, axis);
+        worldToEarth = inverse(earthModel);
         ndcToEarth = worldToEarth * ndcToWorld;
         cameraEarth = worldToEarth * vec4(CAMERA_POS, 1.0);
         
         glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
-        glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(mat4), glm::value_ptr(earthModel));
+        glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(mat4), value_ptr(earthModel));
         glBindBuffer(GL_UNIFORM_BUFFER, 0);
         
-        universeModel = glm::rotate(universeModel, angle, axis);
+        universeModel = rotate(universeModel, angle, axis);
         universeShader.use();
         universeShader.setMat4("model", universeModel);
     };
@@ -316,16 +313,16 @@ void DrawPath::mainLoop() {
                                 const float radius = 1.0f) -> bool {
         vec4 clickEarth = ndcToEarth * vec4(clickPos, 1.0f, 1.0f);
         clickEarth /= clickEarth.w; // important! perpective matrix may not be normalized
-        return glm::intersectRaySphere(cameraEarth, glm::normalize(vec3(clickEarth) - cameraEarth),
-                                       vec3(0.0f), radius, position, normal);
+        return intersectRaySphere(cameraEarth, normalize(vec3(clickEarth) - cameraEarth),
+                                  vec3(0.0f), radius, position, normal);
     };
     
     auto didClickEarth = [&] (const vec3& position) {
         if (shouldRotate) {
-            float angle = glm::angle(lastIntersect, position);
-            if (angle > 3E-3) {
-                rotAngle = angle;
-                rotAxis = glm::cross(lastIntersect, position);
+            float angle_ = angle(lastIntersect, position);
+            if (angle_ > 3E-3) {
+                rotAngle = angle_;
+                rotAxis = cross(lastIntersect, position);
                 rotateScene(rotAngle, rotAxis);
             } else {
                 rotAngle = 0.0f;
@@ -369,7 +366,8 @@ void DrawPath::mainLoop() {
             // shouldRenderAurora remains true until exit
             vec3 position, normal;
             getIntersection(vec3(0.0f), position, normal);
-            aurora.mainLoop(window, position, window.getOriginalSize(), splines, universeTex, 0, window.getViewPort());
+            aurora.mainLoop(window, position, window.getOriginalSize(), splines,
+                            universeTex, 0, window.getViewPort());
             shouldRenderAurora = false;
         }
         
@@ -389,7 +387,8 @@ void DrawPath::mainLoop() {
                 if (buttonHitTest() == BUTTON_NOT_HIT) {
                     vec3 position, normal;
                     if (getIntersection(window.getClickNDC(), position, normal, AURORA_RELA_HEIGHT)) {
-                        splines[editingPath].processMouseClick(false, position, window.getClickNDC(), sideLengthNDC, glm::inverse(ndcToEarth));
+                        splines[editingPath].processMouseClick(false, position, window.getClickNDC(),
+                                                               sideLengthNDC, inverse(ndcToEarth));
                         mayOnSpline = true;
                     }
                 }
@@ -405,7 +404,8 @@ void DrawPath::mainLoop() {
                 vec3 position, normal;
                 if (isEditing) {
                     if (getIntersection(window.getClickNDC(), position, normal, AURORA_RELA_HEIGHT)) {
-                        splines[editingPath].processMouseClick(true, position, window.getClickNDC(), sideLengthNDC, glm::inverse(ndcToEarth));
+                        splines[editingPath].processMouseClick(true, position, window.getClickNDC(),
+                                                               sideLengthNDC, inverse(ndcToEarth));
                         // do not simply assign true to stillClicking!
                         // left mouse key may have already been released
                         stillClicking = wasClicking;
@@ -438,7 +438,7 @@ void DrawPath::mainLoop() {
         ++frameCount;
         float currentTime = glfwGetTime();
         if (currentTime - lastTime > 1.0) {
-            std::cout <<  "FPS: " << std::to_string(frameCount) << std::endl;
+            cout <<  "FPS: " << to_string(frameCount) << endl;
             frameCount = 0;
             lastTime = currentTime;
         }

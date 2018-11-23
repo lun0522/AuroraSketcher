@@ -6,28 +6,18 @@
 //  Copyright © 2018 Pujun Lun. All rights reserved.
 //
 
-#include <fstream>
-#include <sstream>
-#include <vector>
-#include <stdexcept>
-#include <unordered_map>
-#include <glm/glm.hpp>
-
 #include "object.hpp"
 
-using std::string;
-using std::vector;
-using std::unordered_map;
-using std::ifstream;
-using std::istringstream;
-using std::getline;
-using std::stof;
-using std::stoi;
-using std::runtime_error;
-using std::invalid_argument;
-using std::out_of_range;
-using glm::vec2;
-using glm::vec3;
+#include <fstream>
+#include <sstream>
+#include <stdexcept>
+#include <unordered_map>
+#include <vector>
+
+#include <glm/glm.hpp>
+
+using namespace std;
+using namespace glm;
 
 struct Vertex {
     vec3 position;
@@ -122,11 +112,11 @@ Object::Object(const string& path) {
                     throw string("unknown symbol");
                 }
             }
-        } catch (string& err) {
+        } catch (const string& err) {
             throw runtime_error("Failed to parse line: " + err + " in " + line);
-        } catch (invalid_argument& err) {
+        } catch (const invalid_argument& err) {
             throw runtime_error("Invalid argument: " + line);
-        } catch (out_of_range& err) {
+        } catch (const out_of_range& err) {
             throw runtime_error("Index out of range: " + line);
         }
     }

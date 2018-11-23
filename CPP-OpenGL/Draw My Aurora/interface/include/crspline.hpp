@@ -10,10 +10,11 @@
 #define crspline_hpp
 
 #include <vector>
-#include <glm/glm.hpp>
-#include <glad/glad.h>
 
-#include "shader.hpp"
+#include <glad/glad.h>
+#include <glm/glm.hpp>
+
+class Shader;
 
 class CRSpline {
     int selected;

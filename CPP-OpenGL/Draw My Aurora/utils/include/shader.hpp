@@ -10,11 +10,14 @@
 #define shader_hpp
 
 #include <string>
+#include <unordered_map>
+
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
 class Shader {
     GLuint programId;
+    static std::unordered_map<std::string, std::string> loadedCode;
     const std::string& readCode(const std::string& path);
 public:
     Shader(const std::string& vertexPath,

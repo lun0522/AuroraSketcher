@@ -9,8 +9,6 @@
 #ifndef airtrans_hpp
 #define airtrans_hpp
 
-#include <string>
-
 namespace AirTrans {
     void generate(unsigned char *image, const float sampleStep);
 }

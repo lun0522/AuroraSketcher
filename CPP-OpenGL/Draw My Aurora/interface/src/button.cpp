@@ -6,32 +6,28 @@
 //  Copyright © 2018 Pujun Lun. All rights reserved.
 //
 
-#include <vector>
-#include <stdexcept>
-#include <glm/gtc/matrix_transform.hpp>
-
 #include "button.hpp"
 
-using std::string;
-using std::vector;
-using std::runtime_error;
-using std::unordered_map;
-using glm::vec2;
-using glm::vec3;
-using glm::vec4;
-using glm::mat4;
-using Character = Loader::Character;
+#include <stdexcept>
+#include <vector>
+
+#include <glm/gtc/matrix_transform.hpp>
+
+#include "shader.hpp"
+
+using namespace std;
+using namespace glm;
+using namespace Loader;
 
 Button::Button(const Shader& shader,
                const string& alphaMapPath,
                const vec2& buttonCenter,
                const vec2& buttonSize,
                const vec3& selectedColor,
-               const vec3& unselectedColor,
-               const bool selected):
-shader(shader), alphaMap(Loader::loadTexture(alphaMapPath, false)), textLength(0),
+               const vec3& unselectedColor):
+shader(shader), alphaMap(loadTexture(alphaMapPath, false)), textLength(0),
 center(buttonCenter * 2.0f - 1.0f), halfSize(buttonSize * 2.0f / 2.0f), // both in NDC
-selectedColor(selectedColor), unselectedColor(unselectedColor), selected(selected) {
+selectedColor(selectedColor), unselectedColor(unselectedColor), selected(false) {
     float bgAttrib[] = {
         center.x + halfSize.x, center.y + halfSize.y,  1.0f, 1.0f,
         center.x - halfSize.x, center.y + halfSize.y,  0.0f, 1.0f,
@@ -70,7 +66,7 @@ void Button::setText(const string& text,
     float xOffset = 0.0f;
     for (const char& c : text) {
         auto cf = charFrame.find(c);
-        if (cf == charFrame.end()) throw runtime_error("Failed to find char " + std::to_string(c));
+        if (cf == charFrame.end()) throw runtime_error("Failed to find char " + to_string(c));
         
         // https://learnopengl.com/In-Practice/Text-Rendering
         const Character& frame = cf->second;
@@ -115,8 +111,8 @@ bool Button::changeState() {
 }
 
 bool Button::isHit(const vec2& position) const {
-    vec2 toCenter = glm::abs(position - center);
-    return glm::all(glm::lessThanEqual(toCenter, halfSize));
+    vec2 toCenter = abs(position - center);
+    return all(lessThanEqual(toCenter, halfSize));
 }
 
 void Button::draw() const {

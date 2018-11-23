@@ -11,11 +11,13 @@
 
 #include <string>
 #include <unordered_map>
-#include <glm/glm.hpp>
+
 #include <glad/glad.h>
+#include <glm/glm.hpp>
 
 #include "loader.hpp"
-#include "shader.hpp"
+
+class Shader;
 
 class Button {
     const Shader& shader;
@@ -30,8 +32,7 @@ public:
            const glm::vec2& buttonCenter,
            const glm::vec2& buttonSize,
            const glm::vec3& selectedColor,
-           const glm::vec3& unselectedColor,
-           const bool selected = false);
+           const glm::vec3& unselectedColor);
     void setText(const std::string& text,
                  const glm::vec2& scale,
                  const float yOffset,

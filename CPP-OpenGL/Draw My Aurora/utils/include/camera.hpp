@@ -11,9 +11,8 @@
 
 #include <glm/glm.hpp>
 
-enum CameraMoveDirection { UP, DOWN, LEFT, RIGHT };
-
 class Camera {
+    enum class Move { up, down, left, right };
     glm::vec2 lastPos, screenSize;
     glm::vec3 position, front, up, right;
     glm::mat4 view, projection;
@@ -35,7 +34,7 @@ public:
     void setScreenSize(const glm::vec2& size);
     void processMouseMove(const glm::vec2& position);
     void processMouseScroll(const double yOffset, const double minVal, const double maxVal);
-    void processKeyboardInput(const CameraMoveDirection direction, const float distance);
+    void processKeyboardInput(const Move direction, const float distance);
     const glm::vec3& getPosition() const;
     const glm::vec3& getDirection() const;
     const glm::mat4& getViewMatrix() const;

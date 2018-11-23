@@ -6,19 +6,17 @@
 //  Copyright © 2018 Pujun Lun. All rights reserved.
 //
 
+#include "crspline.hpp"
+
 #include <stdexcept>
+
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/vector_angle.hpp>
 
-#include "crspline.hpp"
+#include "shader.hpp"
 
-using std::vector;
-using std::runtime_error;
-using glm::vec2;
-using glm::bvec2;
-using glm::vec3;
-using glm::vec4;
-using glm::mat4;
+using namespace std;
+using namespace glm;
 
 static const int MIN_NUM_CONTROL_POINTS = 3;
 static const int MAX_NUM_CONTROL_POINTS = 100;
@@ -35,7 +33,7 @@ static const mat4 CATMULL_ROM_COEFF_T(-0.5f,  1.5f, -1.5f,  0.5f,
                                        1.0f, -2.5f,  2.0f, -0.5f,
                                       -0.5f,  0.0f,  0.5f,  0.0f,
                                        0.0f,  1.0f,  0.0f,  0.0f);
-static const mat4 CATMULL_ROM_TO_BEZIER_T = CATMULL_ROM_COEFF_T * glm::inverse(BEZIER_COEFF_T);
+static const mat4 CATMULL_ROM_TO_BEZIER_T = CATMULL_ROM_COEFF_T * inverse(BEZIER_COEFF_T);
 
 void CRSpline::tessellate(const vec3& p0,
                           const vec3& p1,
@@ -43,19 +41,19 @@ void CRSpline::tessellate(const vec3& p0,
                           const vec3& p3,
                           int depth) {
     auto isSmooth = [=] (const vec3& l0, const vec3& l1, const vec3& l2, const vec3& l3) -> bool {
-        vec3 l0l1 = glm::normalize(l0 - l1);
-        vec3 l1l2 = glm::normalize(l1 - l2);
-        vec3 l2l3 = glm::normalize(l2 - l3);
-        return glm::angle(l0l1, l1l2) < epsilon && glm::angle(l1l2, l2l3) < epsilon;
+        vec3 l0l1 = normalize(l0 - l1);
+        vec3 l1l2 = normalize(l1 - l2);
+        vec3 l2l3 = normalize(l2 - l3);
+        return angle(l0l1, l1l2) < epsilon && angle(l1l2, l2l3) < epsilon;
     };
     
-    if (++depth == MAX_RECURSSION_DEPTH || glm::distance(p0, p3) < 1E-2 || isSmooth(p0, p1, p2, p3)) {
+    if (++depth == MAX_RECURSSION_DEPTH || distance(p0, p3) < 1E-2 || isSmooth(p0, p1, p2, p3)) {
         // enforce points to be on the atmosphere
-        curvePoints.push_back(glm::normalize(p0) * height);
+        curvePoints.push_back(normalize(p0) * height);
     } else {
-        // modified from glm::slerp
+        // modified from slerp
         auto middlePoint = [] (const vec3& l0, const vec3& l1) -> vec3 {
-            float cosAlpha = dot(glm::normalize(l0), glm::normalize(l1));
+            float cosAlpha = dot(normalize(l0), normalize(l1));
             float alpha = acos(cosAlpha);
             float t = sin(0.5f * alpha) / sin(alpha);
             return (l0 + l1) * t;
@@ -92,7 +90,7 @@ void CRSpline::constructSpline() {
 CRSpline::CRSpline(const Shader& pointShader,
                    const Shader& curveShader,
                    const vec3& color,
-                   const std::vector<vec3>& ctrlPoints,
+                   const vector<vec3>& ctrlPoints,
                    const float height,
                    const float epsilon):
 pointShader(pointShader), curveShader(curveShader), color(color),
@@ -114,8 +112,8 @@ controlPoints(ctrlPoints), height(height), epsilon(epsilon), selected(CONTROL_PO
     };
     
     constructSpline();
-    std::for_each(controlPoints.begin(), controlPoints.end(), [=] (vec3& point)
-                  { point *= height; }); // enforce points to be on the atmosphere
+    for_each(controlPoints.begin(), controlPoints.end(),
+             [=] (vec3& point) { point *= height; }); // enforce points to be on the atmosphere
     
     controlPointsNDC.reserve(MAX_NUM_CONTROL_POINTS + 1);
     configure(pointVAO, pointVBO, controlPoints, MAX_NUM_CONTROL_POINTS);
@@ -139,8 +137,8 @@ void CRSpline::processMouseClick(const bool isLeft,
     auto distPointToLine = [] (const vec2& v0, const vec2& v1, const vec2& v2) {
         // https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
         // additional condition: the point should be "between" two ends of the line
-        if (glm::dot(v0 - v1, v2 - v1) < 0 || glm::dot(v0 - v2, v1 - v2) < 0) return FLT_MAX;
-        else return abs((v2.y - v1.y) * v0.x - (v2.x - v1.x) * v0.y + v2.x * v1.y - v2.y * v1.x) / glm::distance(v2, v1);
+        if (dot(v0 - v1, v2 - v1) < 0 || dot(v0 - v2, v1 - v2) < 0) return FLT_MAX;
+        else return abs((v2.y - v1.y) * v0.x - (v2.x - v1.x) * v0.y + v2.x * v1.y - v2.y * v1.x) / distance(v2, v1);
     };
     
     auto findClosestControlPoint = [&] (int& candidate) -> int {
@@ -148,7 +146,7 @@ void CRSpline::processMouseClick(const bool isLeft,
         candidate = CONTROL_POINT_NOT_SELECTED;
         float minDist = FLT_MAX;
         for (int i = 0; i < controlPoints.size(); ++i) {
-            float dist = glm::distance(posObject, controlPoints[i]);
+            float dist = distance(posObject, controlPoints[i]);
             if (dist < minDist) {
                 minDist = dist;
                 candidate = i;
@@ -156,8 +154,8 @@ void CRSpline::processMouseClick(const bool isLeft,
         }
         // step 2: check whether they are close enough in NDC
         vec2 diff = posNDC - getCoordInNDC(controlPoints[candidate]);
-        bvec2 isClose = glm::lessThanEqual(glm::abs(diff), sideLengthNDC * 0.5f);
-        return glm::all(isClose) ? candidate : CONTROL_POINT_NOT_SELECTED;
+        bvec2 isClose = lessThanEqual(abs(diff), sideLengthNDC * 0.5f);
+        return all(isClose) ? candidate : CONTROL_POINT_NOT_SELECTED;
     };
     
     auto findClosestLine = [&] () -> int {

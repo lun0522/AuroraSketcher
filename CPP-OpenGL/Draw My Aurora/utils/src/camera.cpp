@@ -6,15 +6,14 @@
 //  Copyright © 2018 Pujun Lun. All rights reserved.
 //
 
-#include <stdexcept>
-#include <glm/gtc/matrix_transform.hpp>
-
 #include "camera.hpp"
 
-using std::runtime_error;
-using glm::vec2;
-using glm::vec3;
-using glm::mat4;
+#include <stdexcept>
+
+#include <glm/gtc/matrix_transform.hpp>
+
+using namespace std;
+using namespace glm;
 
 Camera::Camera(const vec3& position,
                const vec3& front,
@@ -48,15 +47,15 @@ void Camera::processMouseMove(const vec2& position) {
     lastPos = position;
     
     yaw += offset.x;
-    yaw = glm::mod(yaw, 360.0f);
+    yaw = mod(yaw, 360.0f);
     
     pitch -= offset.y;
     if (pitch > 89.0f) pitch = 89.0f;
     else if (pitch < -89.0f) pitch = -89.0f;
     
-    front = vec3(cos(glm::radians(pitch)) * cos(glm::radians(yaw)),
-                 sin(glm::radians(pitch)),
-                 cos(glm::radians(pitch)) * sin(glm::radians(yaw)));
+    front = vec3(cos(radians(pitch)) * cos(radians(yaw)),
+                 sin(radians(pitch)),
+                 cos(radians(pitch)) * sin(radians(yaw)));
     updateRight();
     updateViewMatrix();
 }
@@ -68,18 +67,18 @@ void Camera::processMouseScroll(const double yOffset, const double minVal, const
     updateProjectionMatrix();
 }
 
-void Camera::processKeyboardInput(const CameraMoveDirection direction, const float distance) {
+void Camera::processKeyboardInput(const Move direction, const float distance) {
     switch (direction) {
-        case UP:
+        case Move::up:
             position += front * distance;
             break;
-        case DOWN:
+        case Move::down:
             position -= front * distance;
             break;
-        case LEFT:
+        case Move::left:
             position += right * distance;
             break;
-        case RIGHT:
+        case Move::right:
             position -= right * distance;
             break;
         default:
@@ -101,19 +100,19 @@ const mat4& Camera::getViewMatrix() const {
 }
 
 const mat4& Camera::getProjectionMatrix() const {
-    if (glm::any(glm::equal(screenSize, vec2(0.0f)))) throw runtime_error("Screen size not set");
+    if (any(equal(screenSize, vec2(0.0f)))) throw runtime_error("Screen size not set");
     return projection;
 }
 
 void Camera::updateRight() {
-    right = glm::normalize(glm::cross(front, up));
+    right = normalize(cross(front, up));
 }
 
 void Camera::updateProjectionMatrix() {
-    if (glm::any(glm::equal(screenSize, vec2(0.0f)))) throw runtime_error("Screen size not set");
-    projection = glm::perspective(glm::radians(fov), screenSize.x / screenSize.y, near, far);
+    if (any(equal(screenSize, vec2(0.0f)))) throw runtime_error("Screen size not set");
+    projection = perspective(radians(fov), screenSize.x / screenSize.y, near, far);
 }
 
 void Camera::updateViewMatrix() {
-    view = glm::lookAt(position, position + front, up);
+    view = lookAt(position, position + front, up);
 }

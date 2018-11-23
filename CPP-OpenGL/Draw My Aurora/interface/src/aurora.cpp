@@ -6,19 +6,19 @@
 //  Copyright © 2018 Pujun Lun. All rights reserved.
 //
 
+#include "aurora.hpp"
+
 #include <iostream>
+
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "airtrans.hpp"
 #include "loader.hpp"
-#include "aurora.hpp"
+#include "window.hpp"
 
-using std::vector;
-using glm::vec2;
-using glm::vec3;
-using glm::vec4;
-using glm::mat4;
+using namespace std;
+using namespace glm;
 using uchar = unsigned char;
 
 static const int DISTANCE_FIELD_SIZE = 2048;
@@ -37,7 +37,7 @@ originFov(fov), originYaw(yaw), originPitch(pitch), sensitivity(sensitivity),
 pathLineShader("path.vs", "path.fs", "path.gs"),
 pathPointsShader("path.vs", "path.fs"),
 auroraShader("aurora.vs", "aurora.fs"),
-field(DistanceField(DISTANCE_FIELD_SIZE, DISTANCE_FIELD_SIZE)) {
+distFieldGen(DISTANCE_FIELD_SIZE, DISTANCE_FIELD_SIZE) {
     // pre-compute air mass and store as texture lookup table
     int numSample = (int)(1.0f / AIR_SAMPLE_STEP) + 1;
     uchar *airImage = (uchar *)malloc(numSample * sizeof(uchar));
@@ -93,7 +93,7 @@ field(DistanceField(DISTANCE_FIELD_SIZE, DISTANCE_FIELD_SIZE)) {
     auroraShader.setInt("skybox", 4);
 }
 
-void Aurora::generatePath(const std::vector<CRSpline> &splines,
+void Aurora::generatePath(const vector<CRSpline> &splines,
                           const GLuint prevFrameBuffer,
                           const vec4& prevViewPort) {
     // multisampling
@@ -112,7 +112,7 @@ void Aurora::generatePath(const std::vector<CRSpline> &splines,
     glViewport(0, 0, DISTANCE_FIELD_SIZE, DISTANCE_FIELD_SIZE);
     glPointSize(AURORA_WIDTH / 2.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-    std::for_each(splines.begin(), splines.end(), [&] (const CRSpline& spline) {
+    for_each(splines.begin(), splines.end(), [&] (const CRSpline& spline) {
         spline.draw(pathLineShader, GL_LINE_STRIP);
         spline.draw(pathPointsShader, GL_POINTS);
     });
@@ -132,7 +132,7 @@ void Aurora::generatePath(const std::vector<CRSpline> &splines,
     glBindTexture(GL_TEXTURE_2D, 0);
     
     // calculate distance field
-    field.generate(image);
+    distFieldGen(image);
     glGenTextures(1, &fieldTex);
     glBindTexture(GL_TEXTURE_2D, fieldTex);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, DISTANCE_FIELD_SIZE, DISTANCE_FIELD_SIZE, 0, GL_RED, GL_UNSIGNED_BYTE, image);
@@ -171,15 +171,15 @@ void Aurora::mainLoop(const Window& window,
     fov = originFov;
     yaw = originYaw;
     pitch = originPitch;
-    vec3 cameraOrigin = glm::normalize(cameraPos);
+    vec3 cameraOrigin = normalize(cameraPos);
     vec3 normal = cameraOrigin;
     // originally look at the north
-    vec3 originDir = glm::normalize(vec3(0.0f, 1.0f / cameraOrigin.y, 0.0f) - cameraPos);
+    vec3 originDir = normalize(vec3(0.0f, 1.0f / cameraOrigin.y, 0.0f) - cameraPos);
     // transfrom from orignial camera space to world space
-    mat4 toWorld = glm::inverse(glm::lookAt(cameraPos, cameraPos + originDir, normal));
+    mat4 toWorld = inverse(lookAt(cameraPos, cameraPos + originDir, normal));
     auroraShader.use();
     auroraShader.setVec3("cameraPos", cameraPos);
-    auroraShader.setVec3("originX", glm::cross(originDir, normal));
+    auroraShader.setVec3("originX", cross(originDir, normal));
     auroraShader.setVec3("originY", normal);
     auroraShader.setVec3("originZ", originDir);
     
@@ -198,15 +198,15 @@ void Aurora::mainLoop(const Window& window,
             // front and right are in world space
             // rotate using pitch and yaw in original camera space at first,
             // and then convert to world space
-            vec3 front = vec3(cos(glm::radians(pitch)) * cos(glm::radians(yaw)),
-                              sin(glm::radians(pitch)),
-                              cos(glm::radians(pitch)) * sin(glm::radians(yaw)));
+            vec3 front = vec3(cos(radians(pitch)) * cos(radians(yaw)),
+                              sin(radians(pitch)),
+                              cos(radians(pitch)) * sin(radians(yaw)));
             front = vec3(toWorld * vec4(front, 0.0f));
-            vec3 right = glm::cross(front, normal);
-            float zoom = tan(glm::radians(fov / 2.0f));
+            vec3 right = cross(front, normal);
+            float zoom = tan(radians(fov / 2.0f));
             auroraShader.setVec3("origin", cameraOrigin + front);
             auroraShader.setVec3("xAxis", right * ratio * zoom);
-            auroraShader.setVec3("yAxis", glm::cross(right, front) * zoom);
+            auroraShader.setVec3("yAxis", cross(right, front) * zoom);
         }
         glDrawArrays(GL_TRIANGLES, 0, 6);
         window.renderFrame();
@@ -215,7 +215,7 @@ void Aurora::mainLoop(const Window& window,
         ++frameCount;
         float currentTime = glfwGetTime();
         if (currentTime - lastTime > 1.0) {
-            std::cout <<  "FPS: " << std::to_string(frameCount) << std::endl;
+            cout <<  "FPS: " << to_string(frameCount) << endl;
             frameCount = 0;
             lastTime = currentTime;
         }
@@ -250,7 +250,7 @@ void Aurora::didMoveMouse(const vec2& position) {
         lastPos = position;
         
         yaw += offset.x;
-        yaw = glm::mod(yaw, 360.0f);
+        yaw = mod(yaw, 360.0f);
         
         pitch -= offset.y;
         if (pitch > 89.0f) pitch = 89.0f;
@@ -265,5 +265,5 @@ void Aurora::quit() {
 }
 
 Aurora::~Aurora() {
-    if (image) free(image);
+    free(image);
 }

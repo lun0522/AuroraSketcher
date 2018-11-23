@@ -9,9 +9,10 @@
 #ifndef loader_hpp
 #define loader_hpp
 
-#include <vector>
 #include <string>
 #include <unordered_map>
+#include <vector>
+
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 

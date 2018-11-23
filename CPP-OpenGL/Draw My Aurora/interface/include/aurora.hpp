@@ -10,17 +10,19 @@
 #define aurora_hpp
 
 #include <vector>
+
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
-#include "window.hpp"
-#include "shader.hpp"
 #include "crspline.hpp"
 #include "distfield.hpp"
+#include "shader.hpp"
+
+class Window;
 
 class Aurora {
     Shader pathLineShader, pathPointsShader, auroraShader;
-    DistanceField field;
+    DistanceField::Generator distFieldGen;
     unsigned char* image;
     GLuint VAO, airTrans, pathTex, fieldTex, deposition, framebuffer;
     bool firstFrame, isRendering, shouldUpdate, shouldQuit;

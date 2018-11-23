@@ -9,15 +9,15 @@
 #ifndef drawpath_hpp
 #define drawpath_hpp
 
-#include <string>
 #include <vector>
+
 #include <glm/glm.hpp>
 
-#include "window.hpp"
-#include "camera.hpp"
-#include "button.hpp"
 #include "aurora.hpp"
+#include "button.hpp"
+#include "camera.hpp"
 #include "crspline.hpp"
+#include "window.hpp"
 
 class DrawPath {
     Window window;

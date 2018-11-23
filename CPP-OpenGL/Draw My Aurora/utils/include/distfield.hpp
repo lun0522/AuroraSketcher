@@ -11,28 +11,29 @@
 
 #include <immintrin.h>
 
-class DistanceField {
-public:
+namespace DistanceField {
     struct Point {
         int dx, dy;
         int distSq() const { return dx * dx + dy * dy; }
     };
-    struct Grid {
-        Point *points;
+    
+    class Generator {
+    public:
+        Generator(const int width, const int height);
+        void operator()(unsigned char* image);
+        ~Generator();
+    private:
+        Point* grid;
+        int imageWidth, imageHeight;
+        int gridWidth, gridHeight, numPoint;
+        inline Point get(const int x, const int y);
+        inline void put(const int x, const int y, const Point& p);
+        inline Point groupCompare(Point other, const int x, const int y,
+                                  const __m256i& offsets);
+        inline Point singleCompare(Point other, const int x, const int y,
+                                   const int offsetx, const int offsety);
+        void generateSDF();
     };
-    DistanceField(const int width, const int height);
-    void generate(unsigned char* image);
-    ~DistanceField();
-private:
-    int imageWidth, imageHeight;
-    int gridWidth, gridHeight, numPoint;
-    Grid grid;
-    Point get(const int x, const int y);
-    void put(const int x, const int y, const Point &p);
-    Point groupCompare(Point other, const int x, const int y, const __m256i& offsets);
-    Point singleCompare(Point other, const int x, const int y,
-                        const int offsetx, const int offsety);
-    void generateSDF();
-};
+}
 
 #endif /* distfield_hpp */

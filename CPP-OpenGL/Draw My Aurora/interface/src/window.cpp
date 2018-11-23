@@ -6,35 +6,20 @@
 //  Copyright © 2018 Pujun Lun. All rights reserved.
 //
 
-#include <stdexcept>
-#include <glm/glm.hpp>
-
-#include "drawpath.hpp"
 #include "window.hpp"
 
-using std::runtime_error;
-using glm::vec2;
-using glm::vec4;
+#include <stdexcept>
 
-static const int SCREEN_WIDTH = 800;
-static const int SCREEN_HEIGHT = 600;
+#include "drawpath.hpp"
 
-vec2 originalSize, currentSize, retinaRatio;
-vec2 posOffset, clickNDC;
-vec4 viewPort;
+using namespace std;
+using namespace glm;
 
-DrawPath *pathEditor;
-
-inline void setViewPort() {
-    glViewport(viewPort.x, viewPort.y, viewPort.z, viewPort.w); // specify render area
-}
+static DrawPath *pathEditor;
+static Window *currentWindow;
 
 void framebufferSizeCallback(GLFWwindow *window, int width, int height) {
-    currentSize = vec2(width, height);
-    // keep earth in center after resizing window
-    posOffset = (originalSize - currentSize) * 0.5f;
-    viewPort = vec4((currentSize - originalSize) * 0.5f, originalSize);
-    setViewPort();
+    currentWindow->setSize(width, height);
 }
 
 void mouseClickCallback(GLFWwindow *window, int button, int action, int mods) {
@@ -62,6 +47,18 @@ const vec2& Window::getClickNDC() const {
     return clickNDC;
 }
 
+void Window::setSize(int width, int height) {
+    currentSize = vec2(width, height);
+    // keep earth in center after resizing window
+    posOffset = (originalSize - currentSize) * 0.5f;
+    setViewPort(vec4((currentSize - originalSize) * 0.5f, originalSize));
+}
+
+void Window::setViewPort(const vec4& value) {
+    viewPort = value;
+    glViewport(viewPort.x, viewPort.y, viewPort.z, viewPort.w); // specify render area
+}
+
 void Window::updateMousePos() {
     double xPos, yPos;
     glfwGetCursorPos(window, &xPos, &yPos);
@@ -79,8 +76,9 @@ void Window::processKeyboardInput() const {
         glfwSetWindowShouldClose(window, true);
 }
 
-Window::Window(DrawPath *drawPath) {
+Window::Window(DrawPath *drawPath, int width, int height) {
     pathEditor = drawPath;
+    currentWindow = this;
     
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -94,8 +92,8 @@ Window::Window(DrawPath *drawPath) {
     // ------------------------------------
     // window
     
-    window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Draw My Aurora", NULL, NULL);
-    if (window == NULL) throw runtime_error("Failed to create window");
+    window = glfwCreateWindow(width, height, "Draw My Aurora", NULL, NULL);
+    if (!window) throw runtime_error("Failed to create window");
     
     glfwMakeContextCurrent(window);
     // called when window is resized by the user
@@ -111,12 +109,11 @@ Window::Window(DrawPath *drawPath) {
     if (!gladLoadGL()) throw runtime_error("Failed to init GLAD");
     
     // screen size is different from the input width and height on retina screen
-    int width, height;
-    glfwGetFramebufferSize(window, &width, &height);
-    originalSize = currentSize = vec2(width, height);
-    retinaRatio = originalSize / vec2(SCREEN_WIDTH, SCREEN_HEIGHT);
-    viewPort = vec4(0, 0, width, height);
-    setViewPort();
+    int screenWidth, screenHeight;
+    glfwGetFramebufferSize(window, &screenWidth, &screenHeight);
+    originalSize = currentSize = vec2(screenWidth, screenHeight);
+    retinaRatio = originalSize / vec2(width, height);
+    setViewPort(vec4(0, 0, screenWidth, screenHeight));
 }
 
 void Window::renderFrame() const {
