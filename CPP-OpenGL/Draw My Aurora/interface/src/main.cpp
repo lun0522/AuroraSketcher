@@ -10,14 +10,16 @@
 
 #include "drawpath.hpp"
 
+using namespace std;
+
 int main(int argc, const char * argv[]) {
     try {
         DrawPath pathEditor;
         pathEditor.mainLoop();
         glfwTerminate();
         return 0;
-    } catch (std::exception& e) {
-        std::cerr << e.what() << std::endl;
+    } catch (exception& e) {
+        cerr << e.what() << endl;
     }
     glfwTerminate();
     return -1;

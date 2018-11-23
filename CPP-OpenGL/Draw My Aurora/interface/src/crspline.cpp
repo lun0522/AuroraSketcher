@@ -28,9 +28,9 @@ static const int CONTROL_POINT_NOT_SELECTED = -1;
 
 // following matrices are transposed
 static const mat4 BEZIER_COEFF_T(-1.0f,  3.0f, -3.0f,  1.0f,
-                                 3.0f, -6.0f,  3.0f,  0.0f,
-                                -3.0f,  3.0f,  0.0f,  0.0f,
-                                 1.0f,  0.0f,  0.0f,  0.0f);
+                                  3.0f, -6.0f,  3.0f,  0.0f,
+                                 -3.0f,  3.0f,  0.0f,  0.0f,
+                                  1.0f,  0.0f,  0.0f,  0.0f);
 static const mat4 CATMULL_ROM_COEFF_T(-0.5f,  1.5f, -1.5f,  0.5f,
                                        1.0f, -2.5f,  2.0f, -0.5f,
                                       -0.5f,  0.0f,  0.5f,  0.0f,

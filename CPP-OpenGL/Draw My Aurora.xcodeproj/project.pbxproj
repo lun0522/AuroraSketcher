@@ -606,6 +606,7 @@
 		BD91521820785B7A00D7C7DF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_X86_VECTOR_INSTRUCTIONS = avx2;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = DXJ7AC4744;
@@ -629,6 +630,7 @@
 		BD91521920785B7A00D7C7DF /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_X86_VECTOR_INSTRUCTIONS = avx2;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = DXJ7AC4744;

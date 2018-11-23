@@ -81,8 +81,7 @@ Object::Object(const string& path) {
     vector<GLuint> indices;
     unordered_map<string, GLuint> loadedVertices;
     
-    string line;
-    while (getline(file, line)) {
+    for (string line; getline(file, line); ) {
         try {
             vector<string> segments = split(line, ' ');
             if (segments.size() > 0) {
