@@ -23,9 +23,9 @@ namespace DistanceField {
         void operator()(unsigned char* image);
         ~Generator();
     private:
-        Point* grid;
         int imageWidth, imageHeight;
         int gridWidth, gridHeight, numPoint;
+        Point* grid;
         inline Point get(const int x, const int y);
         inline void put(const int x, const int y, const Point& p);
         inline Point groupCompare(Point other, const int x, const int y,

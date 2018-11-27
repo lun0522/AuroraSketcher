@@ -15,8 +15,6 @@
 		BD19718A20912FF40017DD4F /* aurora.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD19718820912FF40017DD4F /* aurora.cpp */; };
 		BD19718E20913F9B0017DD4F /* path.vs in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD19718C20913F7B0017DD4F /* path.vs */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		BD19718F20913F9B0017DD4F /* path.fs in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD19718D20913F860017DD4F /* path.fs */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		BD50D03D208242F9004F2734 /* libfreetype.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BD50D03C208242F9004F2734 /* libfreetype.6.dylib */; };
-		BD50D03E20824309004F2734 /* libfreetype.6.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD50D03C208242F9004F2734 /* libfreetype.6.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		BD50D04620824535004F2734 /* button.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD50D04420824535004F2734 /* button.cpp */; };
 		BD5380B2208ECADF009A63FD /* Draw My Aurora in Sources */ = {isa = PBXBuildFile; fileRef = BD91521020785B7A00D7C7DF /* Draw My Aurora */; };
 		BD5380E9208ED3BC009A63FD /* NegativeX.jpg in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD5380E7208ED3B5009A63FD /* NegativeX.jpg */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -28,13 +26,15 @@
 		BD5380F1208ED855009A63FD /* distfield.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD5380EF208ED855009A63FD /* distfield.cpp */; };
 		BD91521420785B7A00D7C7DF /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD91521320785B7A00D7C7DF /* main.cpp */; };
 		BD91521C20785C5400D7C7DF /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD91521B20785C5400D7C7DF /* OpenGL.framework */; };
-		BD91521E20785C7D00D7C7DF /* libglfw.3.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BD91521D20785C7D00D7C7DF /* libglfw.3.2.dylib */; };
-		BD91521F20785C9800D7C7DF /* libglfw.3.2.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD91521D20785C7D00D7C7DF /* libglfw.3.2.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		BD91533F2078622700D7C7DF /* camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD91533E2078622700D7C7DF /* camera.cpp */; };
 		BD9155732078681D00D7C7DF /* shader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD9155722078681D00D7C7DF /* shader.cpp */; };
 		BD91557C207868BC00D7C7DF /* glad.c in Sources */ = {isa = PBXBuildFile; fileRef = BD91557B207868BC00D7C7DF /* glad.c */; };
 		BD91558C20786C3A00D7C7DF /* loader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD91558920786C3A00D7C7DF /* loader.cpp */; };
 		BD915595207871ED00D7C7DF /* drawpath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD915593207871ED00D7C7DF /* drawpath.cpp */; };
+		BDA56D8021ADA12700A4B992 /* libfreetype.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BD50D03C208242F9004F2734 /* libfreetype.6.dylib */; };
+		BDA56D8121ADA12700A4B992 /* libglfw.3.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BD91521D20785C7D00D7C7DF /* libglfw.3.2.dylib */; };
+		BDA56D8221ADA13600A4B992 /* libfreetype.6.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD50D03C208242F9004F2734 /* libfreetype.6.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		BDA56D8321ADA13600A4B992 /* libglfw.3.2.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD91521D20785C7D00D7C7DF /* libglfw.3.2.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		BDA97B01207BABA20054AAB3 /* crspline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BDA97AFF207BABA20054AAB3 /* crspline.cpp */; };
 		BDCBC8A92087B8BF00F5C91D /* object.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BDCBC8A72087B8BF00F5C91D /* object.cpp */; };
 		BDE2FA4020839AFE008B61E2 /* window.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BDE2FA3E20839AFE008B61E2 /* window.cpp */; };
@@ -64,6 +64,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 7;
 			files = (
+				BDA56D8221ADA13600A4B992 /* libfreetype.6.dylib in CopyFiles */,
+				BDA56D8321ADA13600A4B992 /* libglfw.3.2.dylib in CopyFiles */,
 				BD067D1320951AD300CF6BEC /* deposition.jpg in CopyFiles */,
 				BD067D112094E49700CF6BEC /* path.gs in CopyFiles */,
 				BD181A542092C5EB00A29A8C /* aurora.vs in CopyFiles */,
@@ -93,8 +95,6 @@
 				BDFC866220870D1000F16877 /* earth_night.jpg in CopyFiles */,
 				BDFC866320870D1000F16877 /* rect_rounded.jpg in CopyFiles */,
 				BDFC866420870D1000F16877 /* ostrich.ttf in CopyFiles */,
-				BD50D03E20824309004F2734 /* libfreetype.6.dylib in CopyFiles */,
-				BD91521F20785C9800D7C7DF /* libglfw.3.2.dylib in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -167,8 +167,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BD50D03D208242F9004F2734 /* libfreetype.6.dylib in Frameworks */,
-				BD91521E20785C7D00D7C7DF /* libglfw.3.2.dylib in Frameworks */,
+				BDA56D8021ADA12700A4B992 /* libfreetype.6.dylib in Frameworks */,
+				BDA56D8121ADA12700A4B992 /* libglfw.3.2.dylib in Frameworks */,
 				BD91521C20785C5400D7C7DF /* OpenGL.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -612,17 +612,18 @@
 				DEVELOPMENT_TEAM = DXJ7AC4744;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
-				HEADER_SEARCH_PATHS = /usr/local/include;
+				HEADER_SEARCH_PATHS = "";
 				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					/usr/local/Cellar/glfw/3.2.1/lib,
+					/usr/local/lib,
 					/usr/local/Cellar/freetype/2.9/lib,
+					/usr/local/Cellar/glfw/3.2.1/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SYSTEM_HEADER_SEARCH_PATHS = (
 					/Users/lun/Desktop/Code/libs,
 					/Users/lun/Desktop/Code/libs/glad/include,
 					/usr/local/Cellar/freetype/2.9/include/freetype2,
+					/usr/local/include,
 				);
 			};
 			name = Debug;
@@ -636,17 +637,18 @@
 				DEVELOPMENT_TEAM = DXJ7AC4744;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
-				HEADER_SEARCH_PATHS = /usr/local/include;
+				HEADER_SEARCH_PATHS = "";
 				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					/usr/local/Cellar/glfw/3.2.1/lib,
+					/usr/local/lib,
 					/usr/local/Cellar/freetype/2.9/lib,
+					/usr/local/Cellar/glfw/3.2.1/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SYSTEM_HEADER_SEARCH_PATHS = (
 					/Users/lun/Desktop/Code/libs,
 					/Users/lun/Desktop/Code/libs/glad/include,
 					/usr/local/Cellar/freetype/2.9/include/freetype2,
+					/usr/local/include,
 				);
 			};
 			name = Release;

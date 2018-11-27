@@ -15,11 +15,12 @@ namespace DistanceField {
     static const Point outside { 16384, 16384 };
     
     Generator::Generator(const int width, const int height):
-    imageWidth(width), imageHeight(height),
-    gridWidth(width + 2), gridHeight(height + 2) {
-        numPoint = gridWidth * gridHeight; // include padding
-        grid = (Point *)malloc(numPoint * sizeof(Point));
-    }
+    imageWidth(width),
+    imageHeight(height),
+    gridWidth(width + 2),
+    gridHeight(height + 2),
+    numPoint(gridWidth * gridHeight), // include padding
+    grid((Point *)malloc(numPoint * sizeof(Point))) {}
     
     void Generator::operator()(unsigned char* image) {
         // initialize distance field
