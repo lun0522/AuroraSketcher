@@ -33,9 +33,9 @@
 		BD91557C207868BC00D7C7DF /* glad.c in Sources */ = {isa = PBXBuildFile; fileRef = BD91557B207868BC00D7C7DF /* glad.c */; };
 		BD91558C20786C3A00D7C7DF /* loader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD91558920786C3A00D7C7DF /* loader.cpp */; };
 		BD915595207871ED00D7C7DF /* drawpath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD915593207871ED00D7C7DF /* drawpath.cpp */; };
-		BDA56D8021ADA12700A4B992 /* libfreetype.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BD50D03C208242F9004F2734 /* libfreetype.6.dylib */; };
-		BDA56D8221ADA13600A4B992 /* libfreetype.6.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD50D03C208242F9004F2734 /* libfreetype.6.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		BDA97B01207BABA20054AAB3 /* crspline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BDA97AFF207BABA20054AAB3 /* crspline.cpp */; };
+		BDB23CE6225AF17C00816998 /* libfreetype.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BDB23CE5225AF17C00816998 /* libfreetype.6.dylib */; };
+		BDB23CE7225AF18300816998 /* libfreetype.6.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = BDB23CE5225AF17C00816998 /* libfreetype.6.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		BDCBC8A92087B8BF00F5C91D /* object.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BDCBC8A72087B8BF00F5C91D /* object.cpp */; };
 		BDE2FA4020839AFE008B61E2 /* window.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BDE2FA3E20839AFE008B61E2 /* window.cpp */; };
 		BDFC865920870D1000F16877 /* skybox.obj in CopyFiles */ = {isa = PBXBuildFile; fileRef = BDB57A4720791B3400C1DFC6 /* skybox.obj */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -64,8 +64,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 7;
 			files = (
+				BDB23CE7225AF18300816998 /* libfreetype.6.dylib in CopyFiles */,
 				BD34960B21AF40F400F4C000 /* libglfw.3.3.dylib in CopyFiles */,
-				BDA56D8221ADA13600A4B992 /* libfreetype.6.dylib in CopyFiles */,
 				BD067D1320951AD300CF6BEC /* deposition.jpg in CopyFiles */,
 				BD067D112094E49700CF6BEC /* path.gs in CopyFiles */,
 				BD181A542092C5EB00A29A8C /* aurora.vs in CopyFiles */,
@@ -118,7 +118,6 @@
 		BD34960921AF40EB00F4C000 /* libglfw.3.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libglfw.3.3.dylib; path = "../../../../../../usr/local/Cellar/glfw/HEAD-bb2ca1d/lib/libglfw.3.3.dylib"; sourceTree = "<group>"; };
 		BD4278D8207ACC2600D6E174 /* earth_night.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = earth_night.jpg; sourceTree = "<group>"; };
 		BD4278D9207ACC2600D6E174 /* earth_day.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = earth_day.jpg; sourceTree = "<group>"; };
-		BD50D03C208242F9004F2734 /* libfreetype.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfreetype.6.dylib; path = ../../../../../../usr/local/Cellar/freetype/2.9/lib/libfreetype.6.dylib; sourceTree = "<group>"; };
 		BD50D04420824535004F2734 /* button.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = button.cpp; sourceTree = "<group>"; };
 		BD50D04520824535004F2734 /* button.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = button.hpp; sourceTree = "<group>"; };
 		BD5380E3208ED3B4009A63FD /* PositiveY.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = PositiveY.jpg; sourceTree = "<group>"; };
@@ -150,6 +149,7 @@
 		BD9155982078764100D7C7DF /* earth.fs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = earth.fs; sourceTree = "<group>"; };
 		BDA97AFF207BABA20054AAB3 /* crspline.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = crspline.cpp; sourceTree = "<group>"; };
 		BDA97B00207BABA20054AAB3 /* crspline.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = crspline.hpp; sourceTree = "<group>"; };
+		BDB23CE5225AF17C00816998 /* libfreetype.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfreetype.6.dylib; path = ../../../../../../usr/local/Cellar/freetype/2.10.0/lib/libfreetype.6.dylib; sourceTree = "<group>"; };
 		BDB57A442079131B00C1DFC6 /* universe.vs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = universe.vs; sourceTree = "<group>"; };
 		BDB57A452079131C00C1DFC6 /* universe.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = universe.fs; sourceTree = "<group>"; };
 		BDB57A4720791B3400C1DFC6 /* skybox.obj */ = {isa = PBXFileReference; lastKnownFileType = text; path = skybox.obj; sourceTree = "<group>"; };
@@ -167,8 +167,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BDB23CE6225AF17C00816998 /* libfreetype.6.dylib in Frameworks */,
 				BD34960A21AF40EB00F4C000 /* libglfw.3.3.dylib in Frameworks */,
-				BDA56D8021ADA12700A4B992 /* libfreetype.6.dylib in Frameworks */,
 				BD91521C20785C5400D7C7DF /* OpenGL.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -233,8 +233,8 @@
 		BD91521A20785C5400D7C7DF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				BDB23CE5225AF17C00816998 /* libfreetype.6.dylib */,
 				BD34960921AF40EB00F4C000 /* libglfw.3.3.dylib */,
-				BD50D03C208242F9004F2734 /* libfreetype.6.dylib */,
 				BD91521B20785C5400D7C7DF /* OpenGL.framework */,
 			);
 			name = Frameworks;
@@ -615,14 +615,14 @@
 				HEADER_SEARCH_PATHS = "";
 				LIBRARY_SEARCH_PATHS = (
 					/usr/local/lib,
-					/usr/local/Cellar/freetype/2.9/lib,
 					"/usr/local/Cellar/glfw/HEAD-bb2ca1d/lib",
+					/usr/local/Cellar/freetype/2.10.0/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SYSTEM_HEADER_SEARCH_PATHS = (
 					/Users/lun/Desktop/Code/libs,
 					/Users/lun/Desktop/Code/libs/glad/include,
-					/usr/local/Cellar/freetype/2.9/include/freetype2,
+					/usr/local/Cellar/freetype/2.10.0/include/freetype2,
 					/usr/local/include,
 				);
 			};
@@ -640,14 +640,14 @@
 				HEADER_SEARCH_PATHS = "";
 				LIBRARY_SEARCH_PATHS = (
 					/usr/local/lib,
-					/usr/local/Cellar/freetype/2.9/lib,
 					"/usr/local/Cellar/glfw/HEAD-bb2ca1d/lib",
+					/usr/local/Cellar/freetype/2.10.0/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SYSTEM_HEADER_SEARCH_PATHS = (
 					/Users/lun/Desktop/Code/libs,
 					/Users/lun/Desktop/Code/libs/glad/include,
-					/usr/local/Cellar/freetype/2.9/include/freetype2,
+					/usr/local/Cellar/freetype/2.10.0/include/freetype2,
 					/usr/local/include,
 				);
 			};

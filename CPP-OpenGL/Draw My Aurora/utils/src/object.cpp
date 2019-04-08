@@ -20,9 +20,9 @@ using namespace std;
 using namespace glm;
 
 struct Vertex {
-    vec3 position;
-    vec3 normal;
-    vec2 texCoord;
+  vec3 position;
+  vec3 normal;
+  vec2 texCoord;
 };
 
 static const int OBJ_FILE_INDEX_BASE = 1;
